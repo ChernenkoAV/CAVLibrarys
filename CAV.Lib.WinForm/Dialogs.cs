@@ -137,12 +137,14 @@ namespace Cav
         /// <summary>
         /// Диалог выбора папки(директории)
         /// </summary>
+        /// <param name="Owner">Контрол, к котрому показывается диалог.</param>
         /// <param name="Description">Описание</param>
         /// <param name="RootFolder">Корневая папка</param>
         /// <param name="SelectedPath">Выбранная папка</param>
         /// <param name="ShowNewFolderButton">Показывать кнопку создания новой папки</param>
         /// <returns>Выбранная папка (null - отмена выбора)</returns>
         public static String FolderBrowser(
+            Control Owner = null,
             String Description = null,
             Environment.SpecialFolder? RootFolder = null,
             String SelectedPath = null,
@@ -155,7 +157,14 @@ namespace Cav
                 dg.RootFolder = RootFolder.Value;
             if (!SelectedPath.IsNullOrWhiteSpace())
                 dg.SelectedPath = SelectedPath;
-            if (dg.ShowDialog() != DialogResult.OK)
+
+            DialogResult dr;
+            if (Owner != null)
+                dr = dg.ShowDialog(Owner);
+            else
+                dr = dg.ShowDialog();
+
+            if (dr != DialogResult.OK)
                 return null;
             return dg.SelectedPath;
         }
@@ -163,6 +172,7 @@ namespace Cav
         /// <summary>
         /// Диалог выбора файлов
         /// </summary>
+        /// <param name="Owner">Контрол, к котрому показывается диалог.</param>
         /// <param name="Title">Задает заголовок диалогового окна файла.</param>
         /// <param name="Multiselect">Задает значение, указывающее, можно ли в диалоговом окне выбирать несколько файлов.</param>
         /// <param name="SupportMultiDottedExtensions">Задает условие, поддерживает ли диалоговое окно отображение файлов, которые содержат несколько расширений имени файла.</param>
@@ -176,6 +186,7 @@ namespace Cav
         /// <param name="CheckFileExists">Задает значение, указывающее, отображается ли в диалоговом окне предупреждение, если пользователь указывает несуществующее имя файла.</param>
         /// <param name="AddExtension">Задает значение, определяющее, добавляет ли автоматически диалоговое окно расширение к имени файла, если пользователь опускает данное расширение.</param>
         public static List<String> FileBrowser(
+            Control Owner = null,
             String Title = null,
             Boolean Multiselect = false,
             Boolean SupportMultiDottedExtensions = true,
@@ -207,7 +218,13 @@ namespace Cav
                     AddExtension = AddExtension,
                 };
 
-            if (fd.ShowDialog() == DialogResult.OK)
+            DialogResult dr;
+            if (Owner != null)
+                dr = fd.ShowDialog(Owner);
+            else
+                dr = fd.ShowDialog();
+
+            if (dr == DialogResult.OK)
                 res.AddRange(fd.FileNames);
             return res;
         }
@@ -216,6 +233,7 @@ namespace Cav
         /// <summary>
         /// Диалоговое окно сохранения файла
         /// </summary>
+        /// <param name="Owner">Контрол, к котрому показывается диалог.</param>
         /// <param name="Title">Задает заголовок диалогового окна файла.</param>
         /// <param name="SupportMultiDottedExtensions">Задает условие, поддерживает ли диалоговое окно отображение файлов, которые содержат несколько расширений имени файла.</param>
         /// <param name="InitialDirectory">Задает начальную папку, отображенную диалоговым окном файла.</param>
@@ -230,6 +248,7 @@ namespace Cav
         /// <param name="OverwritePrompt">Задает значение, показывающее, будет ли диалоговое окно Save As выводить предупреждение, если файл с указанным именем уже существует.</param>
         /// <returns>Строка, содержащую имя файла, выбранное в диалоговом окне файла. null, если в диалоге ничего не выбрали</returns>
         public static String SaveFile(
+            Control Owner = null,
             String Title = null,
             String Filter = null,
             String FileName = null,
@@ -261,7 +280,15 @@ namespace Cav
                 AddExtension = AddExtension,
             };
 
-            if (fd.ShowDialog() == DialogResult.OK)
+            DialogResult dr;
+
+            if (Owner != null)
+                dr = fd.ShowDialog(Owner);
+            else
+                dr = fd.ShowDialog();
+
+
+            if (dr == DialogResult.OK)
                 file = fd.FileName;
 
             return file;
@@ -274,29 +301,34 @@ namespace Cav
         /// <param name="Title">Текс в Caption</param>
         /// <param name="DescriptionText">Текст описания</param>
         /// <param name="DefautText">Значение, которое будет в окне ввода при отображении диалога(текст по умолчанию)</param>
+        /// <param name="MaxLength">Длина вводимой строки</param>
         /// <returns>null - если нажали Отмена, значение. если нажали Ok</returns>
         public static String InputBox(
-            Form Owner = null,
+            Control Owner = null,
             String Title = null,
             String DescriptionText = "",
-            String DefautText = "")
+            String DefautText = "",
+            int? MaxLength = null)
         {
 
             var ibf = new InputBoxForm();
             ibf.Text = Title;
             ibf.lbDescriptionText.Text = DescriptionText;
             ibf.tbInputText.Text = DefautText;
+            if (MaxLength.HasValue)
+                ibf.tbInputText.MaxLength = MaxLength.Value;
 
             String res = null;
 
+            DialogResult dr;
+
             if (Owner != null)
-            {
-                if (ibf.ShowDialog(Owner) == DialogResult.OK)
-                    res = ibf.tbInputText.Text;
-            }
+                dr = ibf.ShowDialog(Owner);
             else
-                if (ibf.ShowDialog() == DialogResult.OK)
-                    res = ibf.tbInputText.Text;
+                dr = ibf.ShowDialog();
+
+            if (dr == DialogResult.OK)
+                res = ibf.tbInputText.Text;
 
             return res;
         }

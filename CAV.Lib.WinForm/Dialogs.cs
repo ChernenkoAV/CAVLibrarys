@@ -318,6 +318,8 @@ namespace Cav
             if (MaxLength.HasValue)
                 ibf.tbInputText.MaxLength = MaxLength.Value;
 
+            ibf.CorrrectHeightForm();
+
             String res = null;
 
             DialogResult dr;

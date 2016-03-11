@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
@@ -559,6 +560,17 @@ namespace Cav
         }
 
         #endregion
+
+        /// <summary>
+        /// AddRange для коллекций, в которых этого расширения(метода) нет
+        /// </summary>
+        /// <param name="bl">BindingList</param>
+        /// <param name="collection">Коллекция для вставки</param>
+        public static void AddRange<T>(this Collection<T> cT, IEnumerable<T> collection)
+        {
+            foreach (var item in collection)
+                cT.Add(item);
+        }
 
     }
 }

@@ -13,8 +13,7 @@ namespace Cav.WinForm
         {
             var Xtop = lbDescriptionText.Height + lbDescriptionText.Top;
             var xbottob = tbInputText.Top;
-            this.Height = this.Height - (xbottob - Xtop);
-            this.MinimumSize = new System.Drawing.Size(this.MinimumSize.Width, this.Height);            
+            this.Height = this.Height - (xbottob - Xtop) + 10;
         }
     }
 }

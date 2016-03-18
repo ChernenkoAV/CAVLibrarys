@@ -41,7 +41,7 @@
             this.panel1.Controls.Add(this.btOK);
             this.panel1.Controls.Add(this.btCancel);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(0, 53);
+            this.panel1.Location = new System.Drawing.Point(0, 75);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(224, 49);
             this.panel1.TabIndex = 9999;
@@ -76,10 +76,11 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btCancel;
-            this.ClientSize = new System.Drawing.Size(224, 102);
+            this.ClientSize = new System.Drawing.Size(224, 124);
             this.ControlBox = false;
             this.Controls.Add(this.panel1);
             this.KeyPreview = true;
+            this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(240, 140);
             this.Name = "DialogFormBase";

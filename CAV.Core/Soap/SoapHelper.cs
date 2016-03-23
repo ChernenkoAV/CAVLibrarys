@@ -43,6 +43,8 @@ namespace Cav.Soap
         /// <param name="LoggerType">Тип логгера</param>
         /// <param name="LoggerInstanse">Экземпляр логгера(приоритетнее при указании и экземпляра и типа логгера)</param>
         /// <param name="EnableUnsecuredResponse">Задает значение, указывающее, может ли отправлять и получать небезопасные ответы или безопасные запросы.</param>
+        /// <param name="SenderActor">Actor отправителя</param>
+        /// <param name="RecipientActor">Actor получателя</param>        
         /// <returns>Обертка с клиентом</returns>
         public static WrapClient<T> CreateClient<T>(
             String Uri,
@@ -51,7 +53,9 @@ namespace Cav.Soap
             X509Certificate2 ServerSert = null,
             Type LoggerType = null,
             ISoapPackageLog LoggerInstanse = null,
-            Boolean EnableUnsecuredResponse = false)
+            Boolean EnableUnsecuredResponse = false,
+            String SenderActor = null,
+            String RecipientActor = null)
             where T : ICommunicationObject, IDisposable
         {
 
@@ -69,7 +73,13 @@ namespace Cav.Soap
                 }
                 catch { }
 
-            var binding = SmevBinding.Create(AlgorithmSuite, logger, EnableUnsecuredResponse);
+            var binding = SmevBinding.Create(
+                AlgorithmSuite: AlgorithmSuite,
+                LoggerInstance: logger,
+                EnableUnsecuredResponse: EnableUnsecuredResponse,
+                SenderActor: SenderActor,
+                RecipientActor: RecipientActor);
+
             T client = (T)Activator.CreateInstance(typeof(T), binding, ea);
 
             ClientCredentials cc = (ClientCredentials)client.GetType().GetProperty("ClientCredentials").GetValue(client, null);

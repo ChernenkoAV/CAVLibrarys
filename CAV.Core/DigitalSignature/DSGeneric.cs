@@ -15,24 +15,34 @@ namespace Cav.DigitalSignature
     public static class DSGeneric
     {
         /// <summary>
-        /// Получение сертификата по отпечатоку. (+ невалидные)
+        /// Получение сертификата по отпечатоку или из строки. (+ невалидные)
         /// </summary>
-        /// <param name="Thumbprint">Отперчаток</param>
+        /// <param name="ThumbprintOrBase64Cert">Отперчаток или сертификат в BASE64</param>
         /// <param name="LocalMachine">Хранилище. null - смотреть везде, true - локальный компьютер, false - пользователь</param>
         /// <returns></returns>
-        public static X509Certificate2 FindCertByThumbprint(String Thumbprint, Boolean? LocalMachine = null)
+        public static X509Certificate2 FindCertByThumbprint(String ThumbprintOrBase64Cert, Boolean? LocalMachine = null)
         {
-            if (String.IsNullOrWhiteSpace(Thumbprint))
-                throw new ArgumentNullException("Не указан отпечаток сертификата");
+            if (String.IsNullOrEmpty(ThumbprintOrBase64Cert))
+                return null;
 
             X509Certificate2 cert = null;
             X509Store store = null;
+
+            try
+            {
+                cert = new X509Certificate2(Convert.FromBase64String(ThumbprintOrBase64Cert));
+                if (cert != null)
+                    return cert;
+            }
+            catch
+            {
+            }
 
             if (!LocalMachine.HasValue || LocalMachine.Value == true)
             {
                 store = new X509Store(StoreLocation.LocalMachine);
                 store.Open(OpenFlags.ReadOnly);
-                var cc = store.Certificates.Find(X509FindType.FindByThumbprint, Thumbprint, false);
+                var cc = store.Certificates.Find(X509FindType.FindByThumbprint, ThumbprintOrBase64Cert, false);
                 if (cc.Count != 0)
                     cert = cc[0];
             }
@@ -44,7 +54,7 @@ namespace Cav.DigitalSignature
             {
                 store = new X509Store(StoreLocation.CurrentUser);
                 store.Open(OpenFlags.ReadOnly);
-                var cc = store.Certificates.Find(X509FindType.FindByThumbprint, Thumbprint, false);
+                var cc = store.Certificates.Find(X509FindType.FindByThumbprint, ThumbprintOrBase64Cert, false);
                 if (cc.Count != 0)
                     cert = cc[0];
             }

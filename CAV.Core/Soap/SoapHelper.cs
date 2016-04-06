@@ -131,5 +131,29 @@ namespace Cav.Soap
 
             return new WrapClient<T>(client);
         }
+
+        /// <summary>
+        /// Корректное закрытие клиента
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="client"></param>
+        public static void CloseClient<T>(this ClientBase<T> client) where T : class
+        {
+            if (client == null)
+                return;
+
+            if (client.State == CommunicationState.Faulted)
+            {
+                client.Abort();
+            }
+            else if (client.State != CommunicationState.Closed)
+            {
+                client.Close();
+            }
+
+            ((IDisposable)client).Dispose();
+
+            client = null;
+        }
     }
 }

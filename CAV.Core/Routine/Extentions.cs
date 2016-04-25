@@ -564,7 +564,7 @@ namespace Cav
         /// <summary>
         /// AddRange для коллекций, в которых этого расширения(метода) нет
         /// </summary>
-        /// <param name="bl">BindingList</param>
+        /// <param name="cT">Collection</param>
         /// <param name="collection">Коллекция для вставки</param>
         public static void AddRange<T>(this Collection<T> cT, IEnumerable<T> collection)
         {

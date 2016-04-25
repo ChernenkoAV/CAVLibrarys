@@ -65,6 +65,7 @@
     <Compile Include="Routine\DomainContext.cs" />
     <Compile Include="Routine\ErrorCatcher.cs" />
     <Compile Include="Routine\Extentions.cs" />
+    <Compile Include="Routine\ProgramSettingsBase.cs" />
     <Compile Include="Routine\Utils.cs" />
     <Compile Include="Soap\SmevClientBinding.cs" />
     <Compile Include="Soap\SoapHelper.cs" />

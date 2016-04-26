@@ -62,14 +62,14 @@ namespace Cav.ProgramSettins
         /// Создание экземпляра настроек
         /// </summary>
         /// <typeparam name="T">Класс настроек</typeparam>
-        /// <param name="FileName">Имя файла. Если null = полное имя типа класса, в котором находится свойство, с расширением .settings. Путь в зависимости от <c>Area</c> свойств</param>
+        /// <param name="FileName">Имя файла. Если null = полное имя типа класса, в котором находится свойство, с расширением .prstg. Путь в зависимости от <c>Area</c> свойств</param>
         /// <returns>созданый экземпляр</returns>
         protected static T Create<T>(String FileName = null) where T : ProgramSettingsBase
         {
             ProgramSettingsBase res = (ProgramSettingsBase)Activator.CreateInstance(typeof(T));
 
             if (FileName.IsNullOrWhiteSpace())
-                FileName = typeof(T).FullName + ".settings";
+                FileName = typeof(T).FullName + ".prstg";
 
             res.fileNameApp = Path.Combine(Path.GetDirectoryName(typeof(T).Assembly.Location), FileName);
             res.fileNameUser = Path.Combine(DomainContext.AppDataUserStorage, FileName);

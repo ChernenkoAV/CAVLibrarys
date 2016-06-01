@@ -1,18 +1,24 @@
-<?xml version="1.0"?>
-<package >
-  <metadata>
-    <id>$id$</id>
-    <version>$version$</version>
-    <title>$title$</title>
-    <authors>$author$</authors>
-    <owners>$author$</owners>
-    <licenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</licenseUrl>
-    <projectUrl>http://PROJECT_URL_HERE_OR_DELETE_THIS_LINE</projectUrl>
-    <iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>$description$</description>
-    <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
-    <copyright>Copyright 2016</copyright>
-    <tags>Tag1 Tag2</tags>
-  </metadata>
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>CAV.Core</id>
+        <version>$version$</version>
+        <title>CAV.Core</title>
+        <authors>ChernenkoAV</authors>
+        <owners>ChernenkoAV</owners>
+        <licenseUrl>https://github.com/ChernenkoAV/CAVLibrarys/blob/master/LICENSE</licenseUrl>
+        <projectUrl>https://github.com/ChernenkoAV/CAVLibrarys</projectUrl>
+        <iconUrl>https://raw.githubusercontent.com/ChernenkoAV/CAVLibrarys/master/wheel.png</iconUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>$description$</description>
+        <releaseNotes>Первый релиз</releaseNotes>
+        <copyright>Copyright 2016</copyright>
+        <language>ru-RU</language>
+        <tags>cav utils soap</tags>
+    </metadata>
+    <files>
+        <file src="..\_Build\CAV.Core.dll" target="lib\net45\" />
+        <file src="..\_Build\CAV.Core.pdb" target="lib\net45\" />
+        <file src="..\_Build\CAV.Core.xml" target="lib\net45\" />
+    </files>
 </package>

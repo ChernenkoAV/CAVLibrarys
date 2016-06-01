@@ -14,10 +14,10 @@ namespace Cav
         /// </summary>
         private static String logfile = Path.Combine(DomainContext.AppDataUserStorage, "trace " + DateTime.Now.ToString("yyyy-MM-dd") + ".log");
 
-        /// <summary>
-        /// Экземпляр лога собылтий Windows. Он же флаг, что подсистема логирования инициализированна
-        /// </summary>
-        private static EventLog eventLog = null;
+        ///// <summary>
+        ///// Экземпляр лога собылтий Windows. Он же флаг, что подсистема логирования инициализированна
+        ///// </summary>
+        //private static EventLog eventLog = null;
 
         ///// <summary>
         ///// Инициализация. Отдельный метод для приложений

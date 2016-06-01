@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
 [assembly: AssemblyTitle("CAV.Core")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Сборка с кучей нужной нужности")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("ChernenkoAV")]
 [assembly: AssemblyProduct("CAV.Core")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]

@@ -22,7 +22,7 @@ namespace Cav.DigitalSignature
         /// <returns></returns>
         public static X509Certificate2 FindCertByThumbprint(String ThumbprintOrBase64Cert, Boolean? LocalMachine = null)
         {
-            if (String.IsNullOrEmpty(ThumbprintOrBase64Cert))
+            if (ThumbprintOrBase64Cert.IsNullOrWhiteSpace())
                 return null;
 
             X509Certificate2 cert = null;
@@ -108,7 +108,7 @@ namespace Cav.DigitalSignature
 
             if (!String.IsNullOrWhiteSpace(FileSignBASE64))
             {
-                String signbase64 = 
+                String signbase64 =
                         "-----BEGIN PKCS7-----" + Environment.NewLine +
                         Convert.ToBase64String(sign) + Environment.NewLine +
                         "-----END PKCS7-----";

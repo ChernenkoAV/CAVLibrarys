@@ -1,4 +1,4 @@
 # CAVLibrarys 
-[[https://github.com/ChernenkoAV/CAVLibrarys/blob/master/wheel.png|alt=cavgear]]
+![Иконка проекта](https://raw.githubusercontent.com/ChernenkoAV/CAVLibrarys/master/wheel.png)
 
 Ядерные сборки, в которых кучка всякой нужности.

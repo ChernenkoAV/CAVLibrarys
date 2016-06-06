@@ -39,7 +39,8 @@
     <AssemblyOriginatorKeyFile>cav.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Cav.Core.ico</ApplicationIcon>
+    <ApplicationIcon>
+    </ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -85,9 +86,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="cav.snk" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Cav.Core.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

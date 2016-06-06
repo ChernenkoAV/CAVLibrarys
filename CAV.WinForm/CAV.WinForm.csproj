@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{4B246C9B-15A7-4551-A404-3AFDAC1801A2}</ProjectGuid>
+    <ProjectGuid>{DC8DBC11-CF98-47B1-9260-EF391E1CE7D3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CAV.WPF</RootNamespace>
-    <AssemblyName>CAV.Lib.WPF</AssemblyName>
+    <RootNamespace>Cav.WinForm</RootNamespace>
+    <AssemblyName>CAV.WinForm</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -20,7 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\_Build\CAV.Lib.WPF.XML</DocumentationFile>
+    <DocumentationFile>..\_Build\CAV.WinForm.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,7 +29,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\_Build\CAV.Lib.WPF.XML</DocumentationFile>
+    <DocumentationFile>..\_Build\CAV.WinForm.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -40,6 +40,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -47,10 +49,46 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseClases\DialogFormBase.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BaseClases\DialogFormBase.Designer.cs">
+      <DependentUpon>DialogFormBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BaseClases\UserControlBase.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="BaseClases\UserControlBase.Designer.cs">
+      <DependentUpon>UserControlBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs.cs" />
+    <Compile Include="InputBoxForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="InputBoxForm.Designer.cs">
+      <DependentUpon>InputBoxForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cav.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CAV.Core\CAV.Core.csproj">
+      <Project>{4f15ee08-31c8-45fd-9f6b-5fec2e9f09a7}</Project>
+      <Name>CAV.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="BaseClases\DialogFormBase.resx">
+      <DependentUpon>DialogFormBase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BaseClases\UserControlBase.resx">
+      <DependentUpon>UserControlBase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InputBoxForm.resx">
+      <DependentUpon>InputBoxForm.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

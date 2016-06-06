@@ -84,7 +84,6 @@ namespace Cav.Soap
 
     #endregion
 
-
     #region Биндинг-элемент кодировщика для СМЭВ
 
     internal sealed class SMEVMessageEncodingBindingElement : MessageEncodingBindingElement, IWsdlExportExtension, IPolicyExportExtension

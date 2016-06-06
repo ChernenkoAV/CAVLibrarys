@@ -51,7 +51,7 @@ namespace Cav.WinService
 
         /// <summary>Останов службы</summary>        
         /// <exception cref="ArgumentOutOfRangeException">Если отсутствует служба с указаным именем.</exception>
-        /// <exception cref="TimeoutException">Если служба не остановилась за указанный промежуток времени</exception>
+        /// <exception cref="System.TimeoutException">Если служба не остановилась за указанный промежуток времени</exception>
         /// <param name="ServiceName">Имя службы.</param>
         /// <param name="WaitTimeout">Таймаут ожидания останова</param>
         public static void StopService(String ServiceName, TimeSpan? WaitTimeout = null)

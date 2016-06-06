@@ -8,13 +8,12 @@
         <owners>ChernenkoAV</owners>
         <licenseUrl>https://github.com/ChernenkoAV/CAVLibrarys/blob/master/LICENSE</licenseUrl>
         <projectUrl>https://github.com/ChernenkoAV/CAVLibrarys</projectUrl>
-        <iconUrl>https://raw.githubusercontent.com/ChernenkoAV/CAVLibrarys/master/wheel.png</iconUrl>
+        <iconUrl>https://raw.githubusercontent.com/ChernenkoAV/CAVLibrarys/master/CAV.Core/Cav.Core.jpg</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>$description$</description>
-        <releaseNotes>Первый релиз</releaseNotes>
         <copyright>Copyright 2016</copyright>
         <language>ru-RU</language>
-        <tags>cav utils soap</tags>
+        <tags>cav utils soap смев smev</tags>
     </metadata>
     <files>
         <file src="..\_Build\CAV.Core.dll" target="lib\net45\" />

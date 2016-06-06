@@ -39,6 +39,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.IdentityModel" />
@@ -47,6 +48,7 @@
     <Reference Include="System.Security" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceModel.Activation" />
+    <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -63,6 +65,7 @@
     </Compile>
     <Compile Include="DigitalSignature\CryptoPro.cs" />
     <Compile Include="DigitalSignature\DSGeneric.cs" />
+    <Compile Include="WinServiceManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Routine\DomainContext.cs" />
     <Compile Include="Routine\ErrorCatcher.cs" />

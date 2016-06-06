@@ -75,7 +75,7 @@ namespace Cav.WinService
             }
         }
 
-        /// <summary>Проверка на наличие администраторских апрв у текущего процесса.</summary>        
+        /// <summary>Проверка на наличие администраторских прав у текущего процесса.</summary>        
         /// <returns>true - если админ</returns>
         public static Boolean IsAdmin()
         {

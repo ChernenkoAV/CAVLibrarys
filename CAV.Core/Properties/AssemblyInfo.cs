@@ -6,7 +6,7 @@ using System.Resources;
 // набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
 [assembly: AssemblyTitle("CAV.Core")]
-[assembly: AssemblyDescription("Сборка с кучей нужной нужности")]
+[assembly: AssemblyDescription("Ядерная сборка + утилиты. облегчающие рутинные оперции")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ChernenkoAV")]
 [assembly: AssemblyProduct("CAV.Core")]
@@ -32,6 +32,6 @@ using System.Resources;
 // Можно задать все значения или принять номера сборки и редакции по умолчанию 
 // используя "*", как показано ниже:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.1.0")]
-[assembly: AssemblyFileVersion("0.1.0.0")]
+[assembly: AssemblyVersion("0.2.0")]
+[assembly: AssemblyFileVersion("0.1.0.1")]
 [assembly: NeutralResourcesLanguageAttribute("ru-RU")]

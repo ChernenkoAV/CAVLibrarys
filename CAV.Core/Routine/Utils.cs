@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Deployment.Application;
 using System.IO;
-using System.Management;
 using System.Net;
 using System.Text;
 using System.Web;
@@ -45,16 +44,12 @@ namespace Cav
             if (GoogleForm.IsNullOrWhiteSpace())
                 throw new ArgumentNullException("Не указанна ссылка на форму");
 
-
-
             var request = WebRequest.Create(GoogleForm);
 
             String postData = null;
             foreach (var pv in ParamValueForm)
                 postData = pv.Key + "=" + pv.Value + "&";
-
             postData = postData.Remove(postData.Length - 1);
-
             postData = HttpUtility.UrlPathEncode(postData);
             var data = Encoding.UTF8.GetBytes(postData);
 

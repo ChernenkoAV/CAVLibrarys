@@ -8,7 +8,7 @@
         <owners>ChernenkoAV</owners>
         <licenseUrl>https://github.com/ChernenkoAV/CAVLibrarys/blob/master/LICENSE</licenseUrl>
         <projectUrl>https://github.com/ChernenkoAV/CAVLibrarys</projectUrl>
-        <iconUrl>https://raw.githubusercontent.com/ChernenkoAV/CAVLibrarys/master/CAV.Core/Cav.Core.jpg</iconUrl>
+        <iconUrl>https://raw.githubusercontent.com/ChernenkoAV/CAVLibrarys/master/CAV.Core/CAV.Core.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>$description$</description>
         <copyright>Copyright 2016</copyright>

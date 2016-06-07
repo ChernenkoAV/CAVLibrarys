@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Deployment.Application;
 using System.IO;
 using System.Management;
@@ -29,21 +30,31 @@ namespace Cav
             directory.Delete(true);
         }
 
-        /// <summary>Посыл информации о компьютере в гугловую форму </summary>        
-        /// <remarks>12.05.2016</remarks>
-        public static void SendInfo()
+        /// <summary>
+        /// Посыл информации о в гугловую форму.
+        /// </summary>
+        /// <param name="GoogleForm">url формы вида "https://docs.google.com/forms/d/ХэшФормы/formResponse"</param>
+        /// <param name="ParamValueForm">Словарь с параметрами полей формы вида "имяполя","значение"</param>
+        public static void SendInfo(
+            String GoogleForm,
+            Dictionary<String, String> ParamValueForm)
         {
-            String info = Environment.MachineName + " " + Environment.UserName + " " + Environment.OSVersion.VersionString + " " + Environment.OSVersion.Version.ToString();
-            var xx = new ManagementClass("Win32_Processor");
-            foreach (var pr in xx.GetInstances())
-                info += " ProcessorId=" + pr["ProcessorId"];
+            if (ParamValueForm == null || ParamValueForm.Count == 0)
+                throw new ArgumentNullException("Словарь полей-значений не задан или пуст");
 
-            String gform = @"https://docs.google.com/forms/d/1dNoWy70qq1PrXjK9reYElS3YoZhgghFk0dGVHkBDd1c/formResponse";
-            String tBoxName = "entry.1848206053";
-            String tBoxPOName = "entry.327074483";
+            if (GoogleForm.IsNullOrWhiteSpace())
+                throw new ArgumentNullException("Не указанна ссылка на форму");
 
-            var request = WebRequest.Create(gform);
-            String postData = tBoxName + "=" + info + "&" + tBoxPOName + "=" + DomainContext.ApplicationName;
+
+
+            var request = WebRequest.Create(GoogleForm);
+
+            String postData = null;
+            foreach (var pv in ParamValueForm)
+                postData = pv.Key + "=" + pv.Value + "&";
+
+            postData = postData.Remove(postData.Length - 1);
+
             postData = HttpUtility.UrlPathEncode(postData);
             var data = Encoding.UTF8.GetBytes(postData);
 

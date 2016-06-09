@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
+using System.Transactions;
 using System.Xml;
 
 namespace Cav.BaseClases
@@ -15,24 +17,24 @@ namespace Cav.BaseClases
         /// <summary>
         /// Имя соединения для использования адаптером
         /// </summary>
-        protected String SqlConnectionName = null;
+        protected String ConnectionName = null;
 
-        private SqlConnection connection = null;
+        private DbConnection connection = null;
 
         /// <summary>
         /// Получение открытого соединения с БД 
         /// </summary>
-        protected SqlConnection Connection
+        protected DbConnection Connection
         {
             get
             {
-                if (transaction != null && connection != null)
+                if (Transaction.Current != null && connection != null)
                     return connection;
 
                 if (connection != null)
                     return connection;
 
-                connection = DomainContext.Connection(SqlConnectionName);
+                connection = DomainContext.Connection(ConnectionName);
                 return connection;
             }
         }
@@ -43,7 +45,7 @@ namespace Cav.BaseClases
         /// </summary>        
         public void CloseConnection()
         {
-            if (transaction != null)
+            if (Transaction.Current != null)
                 return;
             try
             {
@@ -55,108 +57,17 @@ namespace Cav.BaseClases
                 // коннекшен уже задиспозен
             }
             connection = null;
-        }
-
-        #region Работа с транзакциями
-
-        private SqlTransaction transaction = null;
-
-        /// <summary>
-        /// Маркер транзакции относительно адаптеров
-        /// </summary>
-        private Guid? rootTranMarker = null;
-
-        /// <summary>
-        /// Локальный маркер транзакции относительно текущего адаптера
-        /// </summary>
-        private Guid? localTranMarker = null;
-
-        /// <summary>
-        /// Начать транзакцию
-        /// </summary>
-        public void BeginTransaction()
-        {
-            if (localTranMarker.HasValue)
-                return;
-            localTranMarker = Guid.NewGuid();
-
-            if (rootTranMarker.HasValue)
-                return;
-            rootTranMarker = localTranMarker;
-
-            transaction = this.Connection.BeginTransaction();
-        }
-
-        /// <summary>
-        /// Завершить транзакцию
-        /// </summary>
-        public void CommintTransaction()
-        {
-            if (!localTranMarker.HasValue)
-                return;
-            if (localTranMarker != rootTranMarker)
-                return;
-
-            try
-            {
-                transaction.Commit();
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                rootTranMarker = null;
-                localTranMarker = null;
-
-                transaction.Dispose();
-                transaction = null;
-
-                CloseConnection();
-            }
-        }
-
-        /// <summary>
-        /// Откатить транзакцию
-        /// </summary>
-        public void RollbackTransaction()
-        {
-            try
-            {
-                if (transaction != null)
-                    transaction.Rollback();
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                localTranMarker = null;
-                rootTranMarker = null;
-
-                if (transaction != null)
-                    transaction.Dispose();
-
-                transaction = null;
-
-                CloseConnection();
-            }
-        }
-
-        #endregion
+        }      
 
         /// <summary>
         /// Настройка комманды перед использованием
         /// </summary>
         /// <param name="comm"></param>
         /// <returns></returns>
-        private SqlCommand tuneCommand(SqlCommand comm)
+        private DbCommand tuneCommand(DbCommand comm)
         {
             comm.CommandTimeout = 0;
-            comm.Connection = this.Connection;
-            comm.Transaction = transaction;
+            comm.Connection = this.Connection;            
             return comm;
         }
 
@@ -177,8 +88,8 @@ namespace Cav.BaseClases
         /// Выполнение команды с открытием соединения с БД
         /// </summary>
         /// <param name="comm"></param>
-        /// <returns>SqlDataReader</returns>
-        protected SqlDataReader ExecuteReader(SqlCommand comm)
+        /// <returns>DbDataReader</returns>
+        protected DbDataReader ExecuteReader(DbCommand comm)
         {
             return tuneCommand(comm).ExecuteReader();
         }
@@ -188,7 +99,7 @@ namespace Cav.BaseClases
         /// </summary>
         /// <param name="comm"></param>
         /// <returns>Object</returns>
-        protected Object ExecuteScalar(SqlCommand comm)
+        protected Object ExecuteScalar(DbCommand comm)
         {
             return tuneCommand(comm).ExecuteScalar();
         }
@@ -200,16 +111,16 @@ namespace Cav.BaseClases
         /// <returns>XmlReader</returns>
         protected XmlReader ExecuteXmlReader(SqlCommand comm)
         {
-            return tuneCommand(comm).ExecuteXmlReader();
+            return ((SqlCommand)tuneCommand(comm)).ExecuteXmlReader();
         }
 
         #endregion
 
         #region Выполнение адаптеров, Заполнение Датасетов
 
-        private List<SqlCommand> GetCommands(SqlDataAdapter Adapter)
+        private List<DbCommand> GetCommands(DbDataAdapter Adapter)
         {
-            var lcmd = new List<SqlCommand>();
+            var lcmd = new List<DbCommand>();
             if (Adapter.SelectCommand != null)
                 lcmd.Add(Adapter.SelectCommand);
             if (Adapter.InsertCommand != null)
@@ -223,22 +134,22 @@ namespace Cav.BaseClases
 
 
         /// <summary>
-        /// Заполнение таблиц командой + транзакция
+        /// Заполнение таблиц командой
         /// </summary>
         /// <param name="Command"></param>
         /// <param name="Tables"></param>
         protected void FillTables(SqlCommand Command, params DataTable[] Tables)
         {
-            (new SqlDataAdapter(tuneCommand(Command))).Fill(0, 0, Tables);
+            (new SqlDataAdapter((SqlCommand)tuneCommand(Command))).Fill(0, 0, Tables);
         }
 
 
         /// <summary>
-        /// Заполнение таблиц адаптером + транзакция
+        /// Заполнение таблиц адаптером
         /// </summary>
         /// <param name="Adapter"></param>
         /// <param name="Tables"></param>
-        protected void FillTables(SqlDataAdapter Adapter, params DataTable[] Tables)
+        protected void FillTables(DbDataAdapter Adapter, params DataTable[] Tables)
         {
             foreach (var comm in GetCommands(Adapter))
                 tuneCommand(comm);
@@ -250,7 +161,7 @@ namespace Cav.BaseClases
         /// </summary>
         /// <param name="Adapter">Адаптер с командами обновления</param>
         /// <param name="Table">Таблица для обновления</param>
-        protected void UpdateAdapter(SqlDataAdapter Adapter, DataTable Table)
+        protected void UpdateAdapter(DbDataAdapter Adapter, DataTable Table)
         {
             foreach (var comm in GetCommands(Adapter))
                 tuneCommand(comm);
@@ -262,7 +173,7 @@ namespace Cav.BaseClases
         /// </summary>
         /// <param name="Adapter">Адаптер с командами обновления</param>
         /// <param name="DataRows">Строки для обновления</param>
-        protected void UpdateAdapter(SqlDataAdapter Adapter, DataRow[] DataRows)
+        protected void UpdateAdapter(DbDataAdapter Adapter, DataRow[] DataRows)
         {
             foreach (var comm in GetCommands(Adapter))
                 tuneCommand(comm);

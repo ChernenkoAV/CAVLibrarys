@@ -1,5 +1,5 @@
 # CAVLibrarys 
-![Иконка проекта](https://raw.githubusercontent.com/ChernenkoAV/CAVLibrarys/master/CAV.png)
+![Иконка проекта](https://raw.githubusercontent.com/ChernenkoAV/CAVLibrarys/master/CAV.png = 100x100)
 
 [Публикация Cav.Core](https://www.nuget.org/packages/CAV.Core/)
 

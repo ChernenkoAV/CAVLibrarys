@@ -8,9 +8,9 @@
         <owners>ChernenkoAV</owners>
         <licenseUrl>https://github.com/ChernenkoAV/CAVLibrarys/blob/master/LICENSE</licenseUrl>
         <projectUrl>https://github.com/ChernenkoAV/CAVLibrarys</projectUrl>
-        <iconUrl>https://raw.githubusercontent.com/ChernenkoAV/CAVLibrarys/master/CAV.Core/CAV.Core.png</iconUrl>
+        <iconUrl>https://raw.githubusercontent.com/ChernenkoAV/CAVLibrarys/master/CAV.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>$description$</description>
+        <description>Ядерная сборка + утилиты, облегчающие рутинные оперции</description>
         <copyright>Copyright 2016</copyright>
         <language>ru-RU</language>
         <tags>cav utils soap смев smev</tags>

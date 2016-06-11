@@ -1,16 +1,16 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Resources;
 
 // Управление общими сведениями о сборке осуществляется с помощью 
 // набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
-[assembly: AssemblyTitle("CAV.Core")]
-[assembly: AssemblyDescription("Ядерная сборка + утилиты, облегчающие рутинные оперции")]
+[assembly: AssemblyTitle("CAV.DataLayer")]
+[assembly: AssemblyDescription("Слой для работы с БД")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ChernenkoAV")]
-[assembly: AssemblyProduct("CAV.Core")]
-[assembly: AssemblyCopyright("Copyright ©  2015")]
+[assembly: AssemblyProduct("CAV.DataLayer")]
+[assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Resources;
 [assembly: ComVisible(false)]
 
 // Следующий GUID служит для идентификации библиотеки типов, если этот проект будет видимым для COM
-[assembly: Guid("ab8d5d25-e46b-45f6-88e5-6d7cedbb0f99")]
+[assembly: Guid("39008540-8e7a-46eb-a482-a6356df4f353")]
 
 // Сведения о версии сборки состоят из следующих четырех значений:
 //
@@ -32,6 +32,5 @@ using System.Resources;
 // Можно задать все значения или принять номера сборки и редакции по умолчанию 
 // используя "*", как показано ниже:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.1.0")]
-[assembly: AssemblyFileVersion("0.1.0.2")]
-[assembly: NeutralResourcesLanguageAttribute("ru-RU")]
+[assembly: AssemblyVersion("0.1.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]

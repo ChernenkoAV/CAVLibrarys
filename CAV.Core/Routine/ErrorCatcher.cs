@@ -7,6 +7,7 @@ namespace Cav
     /// <summary>
     /// Отображение исключений с занесением в лог. Криво рабтает в службах(не юзать).
     /// </summary>
+    [Obsolete("Не доделано. Не юзать", true)]
     public static partial class ErrorCatcher
     {
         /// <summary>
@@ -14,10 +15,18 @@ namespace Cav
         /// </summary>
         private static String logfile = Path.Combine(DomainContext.AppDataUserStorage, "trace " + DateTime.Now.ToString("yyyy-MM-dd") + ".log");
 
-        ///// <summary>
-        ///// Экземпляр лога собылтий Windows. Он же флаг, что подсистема логирования инициализированна
-        ///// </summary>
-        //private static EventLog eventLog = null;
+        /// <summary>
+        /// Экземпляр лога собылтий Windows. Он же флаг, что подсистема логирования инициализированна
+        /// </summary>
+        private static EventLog eventLog = null;
+
+        /// <summary>Инициализация с внешним источником</summary>
+        /// <remarks>Черненко А.В.,.</remarks>
+        /// <param name="Event">The event.</param>
+        public static void Init(EventLog Event)
+        {
+            eventLog = Event;
+        }
 
         ///// <summary>
         ///// Инициализация. Отдельный метод для приложений
@@ -88,25 +97,26 @@ namespace Cav
         //    }
         //}
 
-        //public static void SaveToLogWithoutDialog(Exception ex)
-        //{
-        //    Init();
+        /// <summary>Сохранение в журнал исключения</summary>
+        /// <param name="ex">Исключение</param>
+        public static void SaveToLogWithoutDialog(Exception ex)
+        {
+            if (eventLog == null)
+                return;
 
-        //    String msg = ex.Expand();
-        //    msg += (ex.TargetSite == null ? String.Empty : "TargetSite: " + ex.TargetSite.ToString() + Environment.NewLine);
-        //    msg += (ex.StackTrace == null ? String.Empty : "StackTrace: " + ex.StackTrace);
+            String msg = ex.Expand();
+            msg = (ex.TargetSite == null ? String.Empty : "TargetSite: " + ex.TargetSite.ToString() + Environment.NewLine) + msg;
+            
+            if (msg.Length > 30000)
+            {
+                Trace.Write(msg);
+                msg = String.Format("Полный текст в file:///{0}" + Environment.NewLine + "{1}", logfile, msg.Substring(0, 300));
+                eventLog.WriteEntry(msg, EventLogEntryType.Error);
+                return;
+            }
 
-
-        //    if (msg.Length > 30000)
-        //    {
-        //        Trace.Write(msg);
-        //        msg = String.Format("Полный текст в file:///{0}" + Environment.NewLine + "{1}", logfile, msg.Substring(0, 300));
-        //        eventLog.WriteEntry(msg, EventLogEntryType.Error);
-        //        return;
-        //    }
-
-        //    Debug.Write(msg);
-        //    eventLog.WriteEntry(msg, EventLogEntryType.Error);
-        //}
+            Debug.Write(msg);
+            eventLog.WriteEntry(msg, EventLogEntryType.Error);
+        }
     }
 }

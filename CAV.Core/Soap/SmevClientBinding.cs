@@ -29,6 +29,7 @@ namespace Cav.Soap
         /// Создание биндинга для взаимодействия по СМЭВ
         /// </summary>
         /// <param name="AlgorithmSuite">Указывает набор алгоритмов.</param>
+        /// <param name="Proxy">Прокси для клиента</param>
         /// <param name="LoggerInstance">Экземпляр объекта, реализующего ISoapPackageLog для логирования</param>
         /// <param name="EnableUnsecuredResponse">Задает значение, указывающее, может ли отправлять и получать небезопасные ответы или безопасные запросы.</param>
         /// <param name="SenderActor">Actor отправителя</param>
@@ -36,15 +37,15 @@ namespace Cav.Soap
         /// <returns></returns>
         public static SmevBinding Create(
             SecurityAlgorithmSuite AlgorithmSuite,
-            ISoapPackageLog LoggerInstance = null,
-            Boolean EnableUnsecuredResponse = false,
+            String Proxy = null,
             String SenderActor = null,
-            String RecipientActor = null)
+            String RecipientActor = null,
+            ISoapPackageLog LoggerInstance = null,
+            Boolean EnableUnsecuredResponse = false)
         {
             System.Net.WebRequest.DefaultWebProxy.Credentials = System.Net.CredentialCache.DefaultNetworkCredentials;
 
             BasicHttpBinding basicHttpBinding = new BasicHttpBinding();
-            basicHttpBinding.UseDefaultWebProxy = true;
             basicHttpBinding.Security.Mode = BasicHttpSecurityMode.Message;
             basicHttpBinding.Security.Transport.ClientCredentialType = HttpClientCredentialType.None;
             basicHttpBinding.Security.Transport.ProxyCredentialType = HttpProxyCredentialType.None;
@@ -77,6 +78,12 @@ namespace Cav.Soap
             htbe.MaxReceivedMessageSize = int.MaxValue - 1;
             htbe.MaxBufferSize = int.MaxValue - 1;
             htbe.MaxBufferPoolSize = int.MaxValue - 1;
+
+            if (!Proxy.IsNullOrWhiteSpace())
+            {
+                htbe.ProxyAddress = new Uri(Proxy);
+                htbe.UseDefaultWebProxy = false;
+            }
 
             return binding;
         }

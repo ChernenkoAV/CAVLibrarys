@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CAV.WPF", "CAV.WPF\CAV.WPF.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CAV.Resources", "CAV.Resources\CAV.Resources.csproj", "{621CDCB8-0959-4BF6-B205-EE36A385F518}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CAV.DataLayer", "CAV.DataLayer\CAV.DataLayer.csproj", "{1C0B7A32-167B-4C49-8B3A-15E0BB733933}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{621CDCB8-0959-4BF6-B205-EE36A385F518}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{621CDCB8-0959-4BF6-B205-EE36A385F518}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{621CDCB8-0959-4BF6-B205-EE36A385F518}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C0B7A32-167B-4C49-8B3A-15E0BB733933}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C0B7A32-167B-4C49-8B3A-15E0BB733933}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C0B7A32-167B-4C49-8B3A-15E0BB733933}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C0B7A32-167B-4C49-8B3A-15E0BB733933}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

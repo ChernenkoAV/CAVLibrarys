@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Deployment.Application;
 using System.Diagnostics;
@@ -73,7 +74,7 @@ namespace Cav
         /// <summary>
         /// Коллекция строк соединения с SQL Server
         /// </summary>
-        private static Dictionary<String, SqlConnectionStringBuilder> dcsb = new Dictionary<string, SqlConnectionStringBuilder>();
+        private static Dictionary<String, DbConnectionStringBuilder> dcsb = new Dictionary<string, DbConnectionStringBuilder>();
 
         /// <summary>
         /// Инициализация подключения к БД.
@@ -85,7 +86,7 @@ namespace Cav
         /// <param name="IntegratedSecurity">IntegratedSecurity</param>
         /// <param name="MARS">MultipleActiveResultSets</param>
         /// <param name="ApplicationName">Наименование приожения</param>
-        /// <param name="SqlConnectionName">има подключения для коллекции</param>
+        /// <param name="ConnectionName">има подключения для коллекции</param>
         /// <returns>Сформированная строка соединения</returns>
         public static string InitConnection(
             String Server,
@@ -95,7 +96,7 @@ namespace Cav
             Boolean IntegratedSecurity = false,
             Boolean MARS = false,
             String ApplicationName = null,
-            String SqlConnectionName = null)
+            String ConnectionName = null)
         {
             var scsb = new SqlConnectionStringBuilder();
             scsb.DataSource = Server;
@@ -110,12 +111,12 @@ namespace Cav
             if (!ApplicationName.IsNullOrWhiteSpace())
                 scsb.ApplicationName = ApplicationName;
 
-            if (SqlConnectionName.IsNullOrWhiteSpace())
-                SqlConnectionName = defaultNameConnection;
+            if (ConnectionName.IsNullOrWhiteSpace())
+                ConnectionName = defaultNameConnection;
 
             InitConnection(
                 ConnectionString: scsb.ToString(),
-                SqlConnectionName: SqlConnectionName);
+                ConnectionName: ConnectionName);
 
             return scsb.ToString();
         }
@@ -124,13 +125,13 @@ namespace Cav
         /// Настройка подключения к БД. Проверка соединения.
         /// </summary>
         /// <param name="ConnectionString">Строка подключения</param>
-        /// <param name="SqlConnectionName">има подключения для коллекции</param>
+        /// <param name="ConnectionName">има подключения для коллекции</param>
         public static void InitConnection(
             String ConnectionString,
-            String SqlConnectionName = null)
+            String ConnectionName = null)
         {
-            if (SqlConnectionName.IsNullOrWhiteSpace())
-                SqlConnectionName = defaultNameConnection;
+            if (ConnectionName.IsNullOrWhiteSpace())
+                ConnectionName = defaultNameConnection;
 
             SqlConnectionStringBuilder scsb = new SqlConnectionStringBuilder(ConnectionString);
             scsb["LANGUAGE"] = "Russian";
@@ -139,26 +140,26 @@ namespace Cav
             using (var connection = new SqlConnection(scsb.ToString()))
                 connection.Open();
 
-            if (dcsb.ContainsKey(SqlConnectionName))
-                dcsb[SqlConnectionName] = scsb;
+            if (dcsb.ContainsKey(ConnectionName))
+                dcsb[ConnectionName] = scsb;
             else
-                dcsb.Add(SqlConnectionName, scsb);
+                dcsb.Add(ConnectionName, scsb);
         }
 
         /// <summary>
         /// Получение экземпляра открытого соединения с БД
         /// </summary>
-        /// <param name="SqlConnectionName">Имя соединения в коллекции</param>
+        /// <param name="ConnectionName">Имя соединения в коллекции</param>
         /// <returns></returns>
-        public static SqlConnection Connection(String SqlConnectionName = null)
+        public static SqlConnection Connection(String ConnectionName = null)
         {
-            if (SqlConnectionName.IsNullOrWhiteSpace())
-                SqlConnectionName = defaultNameConnection;
+            if (ConnectionName.IsNullOrWhiteSpace())
+                ConnectionName = defaultNameConnection;
 
-            if (!dcsb.ContainsKey(SqlConnectionName))
+            if (!dcsb.ContainsKey(ConnectionName))
                 throw new Exception("Соединение с БД не настроено");
 
-            var connection = new SqlConnection(dcsb[SqlConnectionName].ToString());
+            var connection = new SqlConnection(dcsb[ConnectionName].ToString());
             connection.Open();
             return connection;
         }
@@ -278,17 +279,19 @@ namespace Cav
         /// <summary>
         /// Текущая версия приложения.
         /// </summary>
-        /// <returns>null - если оно не развернуто ClickOnce</returns>
+        /// <returns>ClickOnce или версию AssemblyVersion исполняемого файла</returns>
         public static Version CurrentVersion
         {
             get
             {
-                if (!ApplicationDeployment.IsNetworkDeployed)
-                    return null;
-                ApplicationDeployment curdep = ApplicationDeployment.CurrentDeployment;
-                if (curdep == null)
-                    return null;
-                return curdep.CurrentVersion;
+                if (ApplicationDeployment.IsNetworkDeployed)
+                {
+                    ApplicationDeployment curdep = ApplicationDeployment.CurrentDeployment;
+                    if (curdep != null)
+                        return curdep.CurrentVersion;
+                }
+
+                return Assembly.GetEntryAssembly().GetName().Version;
             }
         }
 
@@ -311,16 +314,16 @@ namespace Cav
         /// <summary>
         /// Логин, под которым прилогинены к БД
         /// </summary>
-        /// <param name="SqlConnectionName">Имя соедиения</param>
-        public static String UserLogin(String SqlConnectionName = null)
+        /// <param name="ConnectionName">Имя соедиения</param>
+        public static String UserLogin(String ConnectionName = null)
         {
-            if (SqlConnectionName.IsNullOrWhiteSpace())
-                SqlConnectionName = defaultNameConnection;
+            if (ConnectionName.IsNullOrWhiteSpace())
+                ConnectionName = defaultNameConnection;
 
-            if (!dcsb.ContainsKey(SqlConnectionName))
+            if (!dcsb.ContainsKey(ConnectionName))
                 throw new Exception("Не настроено соединение с БД");
 
-            return dcsb[SqlConnectionName].UserID;
+            return ((SqlConnectionStringBuilder)dcsb[ConnectionName]).UserID;
         }
 
         #endregion

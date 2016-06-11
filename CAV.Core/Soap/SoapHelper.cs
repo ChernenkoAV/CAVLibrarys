@@ -44,7 +44,8 @@ namespace Cav.Soap
         /// <param name="LoggerInstanse">Экземпляр логгера(приоритетнее при указании и экземпляра и типа логгера)</param>
         /// <param name="EnableUnsecuredResponse">Задает значение, указывающее, может ли отправлять и получать небезопасные ответы или безопасные запросы.</param>
         /// <param name="SenderActor">Actor отправителя</param>
-        /// <param name="RecipientActor">Actor получателя</param>        
+        /// <param name="RecipientActor">Actor получателя</param>
+        /// <param name="Proxy">Прокси для клиента</param>
         /// <returns>Обертка с клиентом</returns>
         public static WrapClient<T> CreateClient<T>(
             String Uri,
@@ -55,7 +56,8 @@ namespace Cav.Soap
             ISoapPackageLog LoggerInstanse = null,
             Boolean EnableUnsecuredResponse = false,
             String SenderActor = null,
-            String RecipientActor = null)
+            String RecipientActor = null,
+            String Proxy = null)
             where T : ICommunicationObject, IDisposable
         {
 
@@ -75,6 +77,7 @@ namespace Cav.Soap
 
             var binding = SmevBinding.Create(
                 AlgorithmSuite: AlgorithmSuite,
+                Proxy: Proxy,
                 LoggerInstance: logger,
                 EnableUnsecuredResponse: EnableUnsecuredResponse,
                 SenderActor: SenderActor,
@@ -103,17 +106,24 @@ namespace Cav.Soap
         /// </summary>
         /// <typeparam name="T">Тип клиента, наследник от <c>ClientBase&lt;TChannel&gt;</c></typeparam>
         /// <param name="Uri">Uri сервиса</param>
+        /// <param name="Proxy">Прокси для клиента</param>
         /// <param name="LoggerType">Тип логгера</param>
         /// <param name="LoggerInstanse">Экземпляр логгера</param>
         /// <returns></returns>
         public static WrapClient<T> CreateClient<T>(
             String Uri,
+            String Proxy = null,
             Type LoggerType = null,
             ISoapPackageLog LoggerInstanse = null)
             where T : ICommunicationObject, IDisposable
         {
             var ea = new EndpointAddress(Uri);
             var binding = new BasicHttpBinding() { MaxReceivedMessageSize = int.MaxValue };
+            if (!Proxy.IsNullOrWhiteSpace())
+            {
+                binding.ProxyAddress = new Uri(Proxy);
+                binding.UseDefaultWebProxy = false;
+            }
             T client = (T)Activator.CreateInstance(typeof(T), binding, ea);
 
             ISoapPackageLog logger = LoggerInstanse;
@@ -152,8 +162,6 @@ namespace Cav.Soap
             }
 
             ((IDisposable)client).Dispose();
-
-            client = null;
         }
     }
 }

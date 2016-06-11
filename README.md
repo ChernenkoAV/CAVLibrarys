@@ -1,5 +1,5 @@
 # CAVLibrarys 
-![Иконка проекта](https://raw.githubusercontent.com/ChernenkoAV/CAVLibrarys/master/wheel.png)
+![Иконка проекта](https://raw.githubusercontent.com/ChernenkoAV/CAVLibrarys/master/CAV.png)
 
 [Публикация Cav.Core](https://www.nuget.org/packages/CAV.Core/)
 

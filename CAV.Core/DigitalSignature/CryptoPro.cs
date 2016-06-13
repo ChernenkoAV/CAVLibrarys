@@ -131,12 +131,12 @@ namespace Cav.DigitalSignature
             public const string XmlDsigGost3411UrlObsolete = "http://www.w3.org/2001/04/xmldsig-more#gostr3411";
 
             /// <summary>
-            /// 
+            /// Пространство имен  для wssecurity-utility
             /// </summary>
             public const string WSSecurityWSUNamespaceUrl = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd";
 
             /// <summary>
-            /// 
+            /// Пространство имен  для wssecurity-secext
             /// </summary>
             public const string WSSecurityWSSENamespaceUrl = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd";
         }
@@ -144,12 +144,22 @@ namespace Cav.DigitalSignature
         /// <summary>
         /// Класс SmevSignedXml - наследник класса SignedXml с перегруженным GetIdElement для корректной обработки атрибута wsu:Id. 
         /// </summary>
-        private class SmevSignedXml : SignedXml
+        public class SmevSignedXml : SignedXml
         {
+            /// <summary>
+            /// Создание нового экземпляра SmevSignedXml
+            /// </summary>
+            /// <param name="document"></param>
             public SmevSignedXml(XmlDocument document)
                 : base(document)
             { }
 
+            /// <summary>
+            /// Перегрузка GetIdElement
+            /// </summary>
+            /// <param name="document"></param>
+            /// <param name="idValue"></param>
+            /// <returns></returns>
             public override XmlElement GetIdElement(XmlDocument document, string idValue)
             {
                 XmlNamespaceManager nsmgr = new XmlNamespaceManager(document.NameTable);

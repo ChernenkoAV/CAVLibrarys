@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>CAV.Core</id>
+        <version>0.0.0</version>
+        <title>CAV.Core</title>
+        <authors>ChernenkoAV</authors>
+        <owners>ChernenkoAV</owners>
+        <licenseUrl>https://github.com/ChernenkoAV/CAVLibrarys/blob/master/LICENSE</licenseUrl>
+        <projectUrl>https://github.com/ChernenkoAV/CAVLibrarys</projectUrl>
+        <iconUrl>https://raw.githubusercontent.com/ChernenkoAV/CAVLibrarys/master/CAV.png</iconUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Ядерная сборка + утилиты, облегчающие рутинные оперции</description>
+        <copyright>Copyright 2016</copyright>
+        <language>ru-RU</language>
+        <tags>cav utils soap смев smev</tags>
+    </metadata>
+    <files>
+        <file src="CAV.Core.dll" target="lib\net45\" />
+        <file src="CAV.Core.pdb" target="lib\net45\" />
+        <file src="CAV.Core.xml" target="lib\net45\" />
+    </files>
+</package>

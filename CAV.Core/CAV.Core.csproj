@@ -90,7 +90,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>..\nuget pack ..\Cav.Core\Cav.Core.csproj -OutputDirectory ..\_Build</PostBuildEvent>
+    <PostBuildEvent>PowerShell -NoProfile -ExecutionPolicy Bypass -Command "&amp; '$(SolutionDir)NuGetPack\CreatePackage.ps1' -ProjectName '$(ProjectName)'</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

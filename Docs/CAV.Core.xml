@@ -1,0 +1,1099 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CAV.Core</name>
+    </assembly>
+    <members>
+        <member name="T:Cav.BaseClases.BusinessLogicBase">
+            <summary>
+            Базовый класс для реализации бизнесс-логик
+            </summary>
+        </member>
+        <member name="P:Cav.BaseClases.BusinessLogicBase.IsDesignMode">
+            <summary>
+            Компонент находится в режиме дизайнера
+            </summary>
+        </member>
+        <member name="T:Cav.BaseClases.DBAdapterBase">
+            <summary>
+            Базовый класс для создания адаптеров к БД
+            </summary>
+        </member>
+        <member name="F:Cav.BaseClases.DBAdapterBase.ConnectionName">
+            <summary>
+            Имя соединения для использования адаптером
+            </summary>
+        </member>
+        <member name="M:Cav.BaseClases.DBAdapterBase.CloseConnection">
+            <summary>
+            Закрытие соединения. Обязательно вызывать в конце выполнения методов работы с БД
+            Иначе будут утечки памяти на соединения с БД.
+            </summary>        
+        </member>
+        <member name="M:Cav.BaseClases.DBAdapterBase.tuneCommand(System.Data.Common.DbCommand)">
+            <summary>
+            Настройка комманды перед использованием
+            </summary>
+            <param name="comm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cav.BaseClases.DBAdapterBase.ExecuteNonQuery(System.Data.SqlClient.SqlCommand)">
+            <summary>
+            Выполнение команды с открытием соединения с БД
+            </summary>
+            <param name="comm"></param>
+            <returns>Количество задействованных строк</returns>
+        </member>
+        <member name="M:Cav.BaseClases.DBAdapterBase.ExecuteReader(System.Data.Common.DbCommand)">
+            <summary>
+            Выполнение команды с открытием соединения с БД
+            </summary>
+            <param name="comm"></param>
+            <returns>DbDataReader</returns>
+        </member>
+        <member name="M:Cav.BaseClases.DBAdapterBase.ExecuteScalar(System.Data.Common.DbCommand)">
+            <summary>
+            Выполнение команды с открытием соединения с БД
+            </summary>
+            <param name="comm"></param>
+            <returns>Object</returns>
+        </member>
+        <member name="M:Cav.BaseClases.DBAdapterBase.ExecuteXmlReader(System.Data.SqlClient.SqlCommand)">
+            <summary>
+            Выполнение команды с открытием соединения с БД
+            </summary>
+            <param name="comm"></param>
+            <returns>XmlReader</returns>
+        </member>
+        <member name="M:Cav.BaseClases.DBAdapterBase.FillTables(System.Data.SqlClient.SqlCommand,System.Data.DataTable[])">
+            <summary>
+            Заполнение таблиц командой
+            </summary>
+            <param name="Command"></param>
+            <param name="Tables"></param>
+        </member>
+        <member name="M:Cav.BaseClases.DBAdapterBase.FillTables(System.Data.Common.DbDataAdapter,System.Data.DataTable[])">
+            <summary>
+            Заполнение таблиц адаптером
+            </summary>
+            <param name="Adapter"></param>
+            <param name="Tables"></param>
+        </member>
+        <member name="M:Cav.BaseClases.DBAdapterBase.UpdateAdapter(System.Data.Common.DbDataAdapter,System.Data.DataTable)">
+            <summary>
+            Выполнение Update адаптера с присвоением транзанкции
+            </summary>
+            <param name="Adapter">Адаптер с командами обновления</param>
+            <param name="Table">Таблица для обновления</param>
+        </member>
+        <member name="M:Cav.BaseClases.DBAdapterBase.UpdateAdapter(System.Data.Common.DbDataAdapter,System.Data.DataRow[])">
+            <summary>
+            Выполнение Update адаптера с присвоением транзанкции
+            </summary>
+            <param name="Adapter">Адаптер с командами обновления</param>
+            <param name="DataRows">Строки для обновления</param>
+        </member>
+        <member name="M:Cav.BaseClases.DBAdapterBase.Dispose(System.Boolean)">
+            <summary>
+            Dispose(bool disposing)
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="P:Cav.BaseClases.DBAdapterBase.Connection">
+            <summary>
+            Получение открытого соединения с БД 
+            </summary>
+        </member>
+        <member name="P:Cav.BaseClases.DBAdapterBase.IsDesignMode">
+            <summary>
+            Компонент находится в режиме дизайнера
+            </summary>
+        </member>
+        <member name="T:Cav.DigitalSignature.CryptoProRutine">
+            <summary>
+            Реализация ЭЦП по нашим гостам по ЭЦП средствами КриптоПро
+            </summary>
+        </member>
+        <member name="M:Cav.DigitalSignature.CryptoProRutine.SignXMLElementSMEV(System.Xml.XmlElement,System.Security.Cryptography.X509Certificates.X509Certificate2,System.String)">
+            <summary>
+            Подпись узла XML AppData структурированных данных СМЕВ в пакете SOAP
+            </summary>
+            <param name="XMLForSign">XML для подписи</param>
+            <param name="Certificate">Сертификат для подписания</param>
+            <param name="ReferenceUri">Референс в подписи</param>
+            <returns>Подпись</returns>
+        </member>
+        <member name="M:Cav.DigitalSignature.CryptoProRutine.ViewDSigSMEV(System.String)">
+            <summary>
+            Визуализация ЭЦП в XML
+            </summary>
+            <param name="Xml"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Cav.DigitalSignature.CryptoProRutine.CPSignedXml">
+            <summary>
+            Дополнительная информация для упрощения создания Xml подписи по ГОСТ 34.10.
+            </summary>
+        </member>
+        <member name="F:Cav.DigitalSignature.CryptoProRutine.CPSignedXml.XmlDsigGost3410Url">
+            <summary>
+            Представляет универсальный код ресурса (URI) метода подписи ГОСТ 34.10-2001 для цифровых подписей XML. Это поле имеет постоянное значение.
+            </summary>
+        </member>
+        <member name="F:Cav.DigitalSignature.CryptoProRutine.CPSignedXml.XmlDsigGost3410UrlObsolete">
+            <summary>
+            Представляет универсальный код ресурса (URI) метода подписи ГОСТ 34.10-2001 для цифровых подписей XML. Это поле имеет постоянное значение.
+            </summary>
+        </member>
+        <member name="F:Cav.DigitalSignature.CryptoProRutine.CPSignedXml.XmlDsigGost3411HMACUrl">
+            <summary>
+            Представляет универсальный код ресурса (URI) алгоритма GOST3411HMAC для цифровых подписей XML. Это поле имеет постоянное значение.
+            </summary>
+        </member>
+        <member name="F:Cav.DigitalSignature.CryptoProRutine.CPSignedXml.XmlDsigGost3411Url">
+            <summary>
+            Представляет универсальный код ресурса (URI) метода хэширования ГОСТ Р 34.11. Это поле имеет постоянное значение.
+            </summary>
+        </member>
+        <member name="F:Cav.DigitalSignature.CryptoProRutine.CPSignedXml.XmlDsigGost3411UrlObsolete">
+            <summary>
+            Представляет универсальный код ресурса (URI) метода хэширования ГОСТ Р 34.11. Это поле имеет постоянное значение.
+            </summary>
+        </member>
+        <member name="F:Cav.DigitalSignature.CryptoProRutine.CPSignedXml.WSSecurityWSUNamespaceUrl">
+            <summary>
+            Пространство имен  для wssecurity-utility
+            </summary>
+        </member>
+        <member name="F:Cav.DigitalSignature.CryptoProRutine.CPSignedXml.WSSecurityWSSENamespaceUrl">
+            <summary>
+            Пространство имен  для wssecurity-secext
+            </summary>
+        </member>
+        <member name="T:Cav.DigitalSignature.CryptoProRutine.SmevSignedXml">
+            <summary>
+            Класс SmevSignedXml - наследник класса SignedXml с перегруженным GetIdElement для корректной обработки атрибута wsu:Id. 
+            </summary>
+        </member>
+        <member name="M:Cav.DigitalSignature.CryptoProRutine.SmevSignedXml.#ctor(System.Xml.XmlDocument)">
+            <summary>
+            Создание нового экземпляра SmevSignedXml
+            </summary>
+            <param name="document"></param>
+        </member>
+        <member name="M:Cav.DigitalSignature.CryptoProRutine.SmevSignedXml.GetIdElement(System.Xml.XmlDocument,System.String)">
+            <summary>
+            Перегрузка GetIdElement
+            </summary>
+            <param name="document"></param>
+            <param name="idValue"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Cav.DigitalSignature.DSGeneric">
+            <summary>
+            Общие механизмы, не зависящие от провайдера криптографии
+            </summary>
+        </member>
+        <member name="M:Cav.DigitalSignature.DSGeneric.FindCertByThumbprint(System.String,System.Nullable{System.Boolean})">
+            <summary>
+            Получение сертификата по отпечатоку или из строки. (+ невалидные)
+            </summary>
+            <param name="ThumbprintOrBase64Cert">Отперчаток или сертификат в BASE64</param>
+            <param name="LocalMachine">Хранилище. null - смотреть везде, true - локальный компьютер, false - пользователь</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cav.DigitalSignature.DSGeneric.SelectCertificate(System.Boolean,System.String)">
+            <summary>
+            Выбор сертификата(ов)
+            </summary>
+            <param name="SingleCertificate">true - выбор одного сертификата(по умолчанию)</param>
+            <param name="NameCertificate">Имя сертификата, по которому будет осуществлен поиск в хранилище</param>
+            <returns>Коллекция сертификатов</returns>
+        </member>
+        <member name="M:Cav.DigitalSignature.DSGeneric.SignPKCS7(System.Security.Cryptography.X509Certificates.X509Certificate2,System.Byte[],System.Boolean,System.String)">
+            <summary>
+            Подписывание сообщения в виде массива байт
+            </summary>
+            <param name="Certificate">Сертификат</param>
+            <param name="Message">Сообщение в виде массива байт</param>
+            <param name="Detached">Подпись откреплена от сообщения(по умолчанию)</param>
+            <param name="FileSignBASE64">Путь к файлу для записи результата подписания(кодирование в Base64) (null - запись в файл не производится) </param>
+            <returns>Результат подписания</returns>
+        </member>
+        <member name="M:Cav.DigitalSignature.DSGeneric.VerifiXML(System.String)">
+            <summary>
+            Проверка всех подписей в Xml. Если хоть одна не верна - false, если их нет - true
+            </summary>
+            <param name="BodyXml">Тело Xml</param>
+            <returns>Результат проверки</returns>
+        </member>
+        <member name="M:Cav.DigitalSignature.DSGeneric.GetSignatures(System.String)">
+            <summary>
+            Получение подписей в Xml
+            </summary>
+            <param name="BodyXml"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cav.DigitalSignature.DSGeneric.ReadXml(System.String)">
+            <summary>
+            Чтение String в необходимый XmlDocument
+            </summary>
+            <param name="BodyXml"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cav.DigitalSignature.DSGeneric.ViewCertificat(System.Security.Cryptography.X509Certificates.X509Certificate2)">
+            <summary>
+            Визуализация элементов сертификата
+            </summary>
+            <param name="ct"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Cav.DigitalSignature.DSGeneric.CertificateCollection">
+            <summary>
+            Коллекция сертификатов (буфер)
+            </summary>
+        </member>
+        <member name="P:Cav.DigitalSignature.DSGeneric.Certificate">
+            <summary>
+            Сертификат (буфер)
+            </summary>
+        </member>
+        <member name="T:Cav.WinService.Manager">
+            <summary>Менеджер управления виндовыми службами</summary>
+        </member>
+        <member name="M:Cav.WinService.Manager.InstallAsService(System.String)">
+            <summary>Установка в качестве службы.</summary>
+            <remarks>1. Сборка должна быть .Net-кая. Наверное. Системная обертка к Installutil.exe</remarks>
+            <remarks>2. Служба будет установлена для файла по указанному пути.</remarks>        
+            <param name="FileName">Файл для установки.</param>
+        </member>
+        <member name="M:Cav.WinService.Manager.UninstallService(System.String)">
+            <summary>Удаление сервиса</summary>
+            <remarks>Сборка должна быть .Net-кая. Наверное. Системная обертка к Installutil.exe</remarks>
+            <param name="FileName">Файл службы</param>
+        </member>
+        <member name="M:Cav.WinService.Manager.ServiceExist(System.String)">
+            <summary>Проверка существования службы по имени</summary>
+            <param name="ServiceName">Имя службы</param>
+            <returns>True - служба установлена</returns>
+        </member>
+        <member name="M:Cav.WinService.Manager.StartService(System.String)">
+            <summary>Запуск службы</summary>        
+            <exception cref="T:System.ArgumentOutOfRangeException">Если отсутствует служба с указаным именем.</exception>
+            <param name="ServiceName">Имя службы.</param>
+        </member>
+        <member name="M:Cav.WinService.Manager.StopService(System.String,System.Nullable{System.TimeSpan})">
+            <summary>Останов службы</summary>        
+            <exception cref="T:System.ArgumentOutOfRangeException">Если отсутствует служба с указаным именем.</exception>
+            <exception cref="T:System.TimeoutException">Если служба не остановилась за указанный промежуток времени</exception>
+            <param name="ServiceName">Имя службы.</param>
+            <param name="WaitTimeout">Таймаут ожидания останова</param>
+        </member>
+        <member name="M:Cav.WinService.Manager.IsAdmin">
+            <summary>Проверка на наличие администраторских прав у текущего процесса.</summary>        
+            <returns>true - если админ</returns>
+        </member>
+        <member name="M:Cav.WinService.Manager.RunAsAdmin(System.String,System.String)">
+            <summary>Запуск приложения с администраторскими правами</summary>        
+            <param name="FileName">Файл приложенияч для запуска</param>
+            <param name="Arguments">аргументы приложения</param>
+            <returns>The Process.</returns>
+        </member>
+        <member name="T:Cav.DomainContext">
+            <summary>
+            Домен приложения.
+            </summary>
+        </member>
+        <member name="M:Cav.DomainContext.FindStartedProgram(System.Boolean)">
+            <summary>
+            Поиск процесса запущенного приложения
+            </summary>
+            <param name="SetForeground">Если приложение имеет окна, то вывести окно вперед</param>
+            <returns>true - приложение найдено(можно не запускать вторую копию), false - приложение не найдено.</returns>
+        </member>
+        <member name="F:Cav.DomainContext.dcsb">
+            <summary>
+            Коллекция строк соединения с SQL Server
+            </summary>
+        </member>
+        <member name="M:Cav.DomainContext.InitConnection(System.String,System.String,System.String,System.String,System.Boolean,System.Boolean,System.String,System.String)">
+            <summary>
+            Инициализация подключения к БД.
+            </summary>
+            <param name="Server"></param>
+            <param name="DBName"></param>
+            <param name="Login"></param>
+            <param name="Pass"></param>
+            <param name="IntegratedSecurity">IntegratedSecurity</param>
+            <param name="MARS">MultipleActiveResultSets</param>
+            <param name="ApplicationName">Наименование приожения</param>
+            <param name="ConnectionName">има подключения для коллекции</param>
+            <returns>Сформированная строка соединения</returns>
+        </member>
+        <member name="M:Cav.DomainContext.InitConnection(System.String,System.String)">
+            <summary>
+            Настройка подключения к БД. Проверка соединения.
+            </summary>
+            <param name="ConnectionString">Строка подключения</param>
+            <param name="ConnectionName">има подключения для коллекции</param>
+        </member>
+        <member name="M:Cav.DomainContext.Connection(System.String)">
+            <summary>
+            Получение экземпляра открытого соединения с БД
+            </summary>
+            <param name="ConnectionName">Имя соединения в коллекции</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cav.DomainContext.UserLogin(System.String)">
+            <summary>
+            Логин, под которым прилогинены к БД
+            </summary>
+            <param name="ConnectionName">Имя соедиения</param>
+        </member>
+        <member name="P:Cav.DomainContext.NamesConnectionOnCollection">
+            <summary>
+            Имена соединений, присутствующие в коллекции
+            </summary>
+        </member>
+        <member name="P:Cav.DomainContext.ProgramArguments">
+            <summary>
+            Получение параметров командной строки приложения ClickOnce
+            </summary>
+        </member>
+        <member name="P:Cav.DomainContext.AppDataUserStorage">
+            <summary>
+            Путь в AppData для текущего пользователя текущего приложения(%AppData%\"NameEntryAssembly") (Если отсутствует - то он создается...)
+            </summary>
+        </member>
+        <member name="P:Cav.DomainContext.AppDataCommonStorage">
+            <summary>
+            Путь в AppData для приложения(%PROGRAMDATA%\"NameEntryAssembly") (Если отсутствует - то он создается...)
+            </summary>
+        </member>
+        <member name="P:Cav.DomainContext.TempPath">
+            <summary>
+            Путь к временной папке в %Temp%\"NameEntryAssembly". Если отсутствует - создается
+            </summary>
+        </member>
+        <member name="P:Cav.DomainContext.NameEntryAssembly">
+            <summary>
+            Имя сборки, из которого запущенно приложение (имя exe файла) (ТОЛЬКО ЕСЛИ ЭТО НЕ COM!!!)
+            При работе в IIS бесмысленно, ибо там всегда процесс w3c. вроде. Какой-то один, короче...
+            </summary>
+        </member>
+        <member name="P:Cav.DomainContext.CurrentVersion">
+            <summary>
+            Текущая версия приложения.
+            </summary>
+            <returns>ClickOnce или версию AssemblyVersion исполняемого файла</returns>
+        </member>
+        <member name="P:Cav.DomainContext.ApplicationName">
+            <summary>
+            Имя приложения
+            </summary>
+        </member>
+        <member name="T:Cav.ErrorCatcher">
+            <summary>
+            Отображение исключений с занесением в лог. Криво рабтает в службах(не юзать).
+            </summary>
+        </member>
+        <member name="F:Cav.ErrorCatcher.logfile">
+            <summary>
+            Путь с файлом лога.
+            </summary>
+        </member>
+        <member name="F:Cav.ErrorCatcher.eventLog">
+            <summary>
+            Экземпляр лога собылтий Windows. Он же флаг, что подсистема логирования инициализированна
+            </summary>
+        </member>
+        <member name="M:Cav.ErrorCatcher.Init(System.Diagnostics.EventLog)">
+            <summary>Инициализация с внешним источником</summary>
+            <remarks>Черненко А.В.,.</remarks>
+            <param name="Event">The event.</param>
+        </member>
+        <member name="M:Cav.ErrorCatcher.SaveToLogWithoutDialog(System.Exception)">
+            <summary>Сохранение в журнал исключения</summary>
+            <param name="ex">Исключение</param>
+        </member>
+        <member name="T:Cav.Extentions">
+            <summary>
+            Вспомогательные расширения
+            </summary>
+        </member>
+        <member name="M:Cav.Extentions.XMLSerialize(System.Object,System.String)">
+            <summary>
+            Сериализатор XML
+            </summary>
+            <param name="o">Обьект</param>
+            <param name="FileName">Файл, куда сохранить</param>
+        </member>
+        <member name="M:Cav.Extentions.XMLSerialize(System.Object)">
+            <summary>
+            Сериализатор 
+            </summary>
+            <param name="o">Объект</param>
+            <returns>Результат сериализации</returns>
+        </member>
+        <member name="M:Cav.Extentions.XMLDeserialize``1(System.Xml.Linq.XDocument)">
+            <summary>
+            Десиарелизатор 
+            </summary>
+            <typeparam name="T">Тип для десиарелизации</typeparam>
+            <param name="XDoc">XDocument, из которого десириализовать</param>
+            <returns>Объект указанного типа</returns>
+        </member>
+        <member name="M:Cav.Extentions.XMLDeserialize``1(System.Xml.Linq.XElement)">
+            <summary>
+            Десиарелизатор 
+            </summary>
+            <typeparam name="T">Тип для десиарелизации</typeparam>
+            <param name="XElm">XElement, из которого десириализовать</param>
+            <returns>Объект указанного типа</returns>
+        </member>
+        <member name="M:Cav.Extentions.XMLDeserialize``1(System.Xml.XmlElement)">
+            <summary>
+            Десиарелизатор. Если XmlElement = null, то вернет default(T).
+            </summary>
+            <typeparam name="T">Тип для десиарелизации</typeparam>
+            <param name="XElm">XmlElement, из которого десириализовать</param>
+            <returns>Объект указанного типа или default(T), если XmlElement = null</returns>
+        </member>
+        <member name="M:Cav.Extentions.XMLDeserialize``1(System.String)">
+            <summary>
+            Десиреализатор из строки, содержащей XML.
+            </summary>
+            <typeparam name="T">Тип для десиарелизации</typeparam>
+            <param name="xml">Строка, содержащая XML</param>
+            <returns>Объект указанного типа или default(T), если строка IsNullOrWhiteSpace</returns>
+        </member>
+        <member name="M:Cav.Extentions.XMLDeserializeFromFile``1(System.String)">
+            <summary>
+            Десиарелизатор из файла
+            </summary>
+            <typeparam name="T">Тип для десиарелизации</typeparam>
+            <param name="FileName">Файл, из которого десириализовать</param>
+            <returns>Объект указанного типа</returns>
+        </member>
+        <member name="M:Cav.Extentions.XMLTransform(System.Xml.Linq.XDocument,System.Xml.Linq.XDocument)">
+            <summary>
+            Преобразование XML
+            </summary>
+            <param name="XML">XML для преобразования</param>
+            <param name="XSLT">XSLT-шаблона перобразования </param>
+            <returns>Результат преобразования</returns>
+        </member>
+        <member name="M:Cav.Extentions.XMLTransform(System.Xml.Linq.XDocument,System.String)">
+            <summary>
+            Преобразование XML
+            </summary>
+            <param name="XML">XML для преобразования</param>
+            <param name="XSLT">XSLT-шаблона перобразования </param>
+            <returns>Результат преобразования</returns>
+        </member>
+        <member name="M:Cav.Extentions.XMLValidate(System.String,System.String)">
+            <summary>
+            Валидация xml схеме xsd
+            </summary>
+            <param name="XML">Строка, содержащяя валидируемый xml</param>
+            <param name="XSD">Строка, содержащая схему xsd</param>
+            <returns>Текст реультатов валидации. Если валидация успешна - null</returns>
+        </member>
+        <member name="M:Cav.Extentions.XMLValidate(System.Xml.Linq.XDocument,System.String)">
+            <summary>
+            Валидация xml схеме xsd
+            </summary>
+            <param name="XML">XDocument, содержащий валидируемый xml</param>
+            <param name="XSD">Строка, содержащая схему xsd</param>
+            <returns>Текст реультатов валидации. Если валидация успешна - null</returns>
+        </member>
+        <member name="M:Cav.Extentions.XMLValidate(System.Xml.Linq.XDocument,System.Xml.Linq.XDocument)">
+            <summary>
+            Валидация xml схеме xsd
+            </summary>
+            <param name="XML">XDocument, содержащий валидируемый xml</param>
+            <param name="XSD">XDocument, содержащий схему xsd</param>
+            <returns>Текст реультатов валидации. Если валидация успешна - null</returns>
+        </member>
+        <member name="M:Cav.Extentions.MatchText(System.String,System.String)">
+            <summary>
+            Соответствие поисковому шаблону
+            </summary>
+            <param name="text"></param>
+            <param name="pattern"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cav.Extentions.FormatRegexPattern(System.String)">
+            <summary>
+            Форматирование строки для передачи в качестве паттерна для регулярного выражения.
+            Применять для передачи в хранимые процедуры, в которых используется Regex
+            </summary>
+            <param name="text"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cav.Extentions.Trim2(System.String)">
+            <summary>
+            Усечение начальных и конечных пробелов. Если строка null или состояла из пробелов - вернет null.
+            </summary>
+            <param name="str"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cav.Extentions.GetNullIfIsNullOrWhiteSpace(System.String)">
+            <summary>
+            Возврат null, если IsNullOrWhiteSpace. 
+            </summary>
+            <param name="str"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cav.Extentions.IsNullOrWhiteSpace(System.String)">
+            <summary>
+            true, если строка null, пустая или содержт только пробелы. Только это метод структуры String, а тут расширение....
+            </summary>
+            <param name="str"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cav.Extentions.SubString(System.String,System.Int32,System.Int32)">
+            <summary>
+            Извлекает подстроку из данного экземпляра. Подстрока начинается с указанной позиции и имеет указанную длину.
+            Поведение максимально приближенно к SUBSTRING из T-SQL (без исключений)
+            </summary>
+            <param name="str">Исходный экземпляр строки</param>
+            <param name="startIndex">начальная позиция (с нуля)</param>
+            <param name="length">Число извлекаемых символов</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cav.Extentions.ReplaceInvalidPathChars(System.String,System.Char)">
+            <summary>
+            Замена символов, запрещенных в пути и имени файла, на указанный символ.
+            </summary>
+            <param name="FilePath">Путь, имя файла, путь файла</param>
+            <param name="ReplasmentChar">Символ для замены. Если символ является запрещенным, то он приводится в подчеркиванию: "_"</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cav.Extentions.Expand(System.Exception)">
+            <summary>
+            Развертывание текста исключения
+            </summary>
+            <param name="ex"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cav.Extentions.GZipCompress(System.Byte[])">
+            <summary>
+            Gzip сжатие массива байт
+            </summary>
+            <param name="sourse"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cav.Extentions.GZipDecompress(System.Byte[])">
+            <summary>
+            Распаковка GZip
+            </summary>
+            <param name="sourse"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cav.Extentions.JoinValuesToString``1(System.Collections.Generic.IEnumerable{``0},System.String)">
+            <summary>
+            Соеденяет значения в коллекции с заданым разделителем
+            </summary>
+            <typeparam name="T">Тип идентификатора</typeparam>
+            <param name="values">Значения</param>
+            <param name="separator">Разделитель</param>
+            <returns>Значения разделенные разделителем</returns>
+        </member>
+        <member name="M:Cav.Extentions.MakeIDsList``1(System.Collections.Generic.IEnumerable{``0},System.String)">
+            <summary>
+            Получиние строки ИД-ков
+            </summary>
+            <typeparam name="T">Тип коллекции</typeparam>
+            <param name="rows">Коллекция</param>
+            <param name="ColumnName">Колонка для получения значений (Для коллекции DataRow)</param>
+            <returns>Строка ИД-ков через ','</returns>
+        </member>
+        <member name="M:Cav.Extentions.ComputeMD5Checksum(System.IO.Stream)">
+            <summary>
+            Вычисление MD5-хеша для потока
+            </summary>
+            <param name="inputData">Поток</param>
+            <returns>Хеш, перобразованный к Guid</returns>
+        </member>
+        <member name="M:Cav.Extentions.ComputeMD5Checksum(System.Byte[])">
+            <summary>
+            Вычисление MD5-хеша массива байт
+            </summary>
+            <param name="inputData">Массив байт</param>
+            <returns>Хеш, перобразованный к Guid</returns>
+        </member>
+        <member name="M:Cav.Extentions.ComputeMD5Checksum(System.String)">
+            <summary>
+            Вычисление MD5-хеша файла
+            </summary>
+            <param name="FilePath">Путь к файлу</param>
+            <returns>Хеш, перобразованный к Guid</returns>
+        </member>
+        <member name="M:Cav.Extentions.GetID(System.Data.DataRow)">
+            <summary>
+            Получение значения поля ID в DataRow. Если поля нет - исключение...
+            </summary>
+            <param name="drow"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cav.Extentions.GetParentID(System.Data.DataRow)">
+            <summary>
+            Получение значения поля ID в DataRow. Если поля нет - исключение...
+            </summary>
+            <param name="drow"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cav.Extentions.GetID(System.Data.DataRowView)">
+            <summary>
+            Получение значения поля ID в DataRowView. Если поля нет - исключение...
+            </summary>
+            <param name="drow"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cav.Extentions.GetColumnValue(System.Data.DataRow,System.String)">
+            <summary>
+            Получить значение поля
+            </summary>
+            <param name="row">Строка таблицы</param>
+            <param name="ColumnName">Наименование поля</param>
+            <returns>Значение (если значения нет, то null)</returns>
+        </member>
+        <member name="M:Cav.Extentions.GetColumnValues``1(System.Data.DataTable,System.String)">
+            <summary>
+            Получение коллекции значений поля из DataTable
+            </summary>
+            <typeparam name="T">Результирующий тип</typeparam>
+            <param name="Table">Таблица</param>
+            <param name="ColumnName">Наименование колонки</param>
+            <returns>Лист значений</returns>
+        </member>
+        <member name="M:Cav.Extentions.GetColumnValues``1(System.Collections.Generic.IEnumerable{System.Data.DataRow},System.String)">
+            <summary>
+            Получение коллекции значений поля из коллекции строк DataRow
+            </summary>
+            <typeparam name="T">Результирующий тип</typeparam>
+            <param name="ERows">коллекция строк</param>
+            <param name="ColumnName">Наименование колонки</param>
+            <returns>Лист значений</returns>
+        </member>
+        <member name="M:Cav.Extentions.AddRange``1(System.Collections.ObjectModel.Collection{``0},System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            AddRange для коллекций, в которых этого расширения(метода) нет
+            </summary>
+            <param name="cT">Collection</param>
+            <param name="collection">Коллекция для вставки</param>
+        </member>
+        <member name="T:Cav.ProgramSettins.Area">
+            <summary>
+            Область сохранения настрек
+            </summary>
+        </member>
+        <member name="F:Cav.ProgramSettins.Area.User">
+            <summary>
+            Для пользователя
+            </summary>
+        </member>
+        <member name="F:Cav.ProgramSettins.Area.App">
+            <summary>
+            Для приложения (В папке сборки)
+            </summary>
+        </member>
+        <member name="F:Cav.ProgramSettins.Area.CommonApp">
+            <summary>
+            Общее хранилице для всех пользователей
+            </summary>
+        </member>
+        <member name="T:Cav.ProgramSettins.ProgramSettingsBase">
+            <summary>
+            Базовый класс для хранения настроек
+            </summary>    
+            <example>
+            Пример использования
+            <code>
+            public class ProgramSetting : ProgramSettingsBase
+            {
+                private static ProgramSetting instance = null;
+            
+                public static ProgramSetting Instance
+                {
+                    get
+                    {
+                        if (instance == null)
+                            instance = ProgramSettingsBase.Create&lt;ProgramSetting&gt;();
+            
+                        return instance;
+                    }
+                }
+                
+                public String OutputDir
+                {
+                    get { return this.GetValue&lt;String&gt;("OutputDir"); }
+                    set { this.SetValue(Area.User, "OutputDir", value); }
+                }
+            }    
+            </code>
+            </example>
+        </member>
+        <member name="M:Cav.ProgramSettins.ProgramSettingsBase.Create``1(System.String)">
+            <summary>
+            Создание экземпляра настроек
+            </summary>
+            <typeparam name="T">Класс настроек</typeparam>
+            <param name="FileName">Имя файла. Если null = полное имя типа класса, в котором находится свойство, с расширением .prstg. Путь в зависимости от <c>Area</c> свойств</param>
+            <returns>созданый экземпляр</returns>
+        </member>
+        <member name="M:Cav.ProgramSettins.ProgramSettingsBase.GetValue``1(System.String)">
+            <summary>
+            Получения значения свойства по его имени 
+            </summary>
+            <typeparam name="T">Тип</typeparam>
+            <param name="PropName">Имя свойства</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cav.ProgramSettins.ProgramSettingsBase.SetValue(Cav.ProgramSettins.Area,System.String,System.Object)">
+            <summary>
+            Сохранение значения в экземпляре настроек
+            </summary>
+            <param name="AreaProp">область хранения</param>
+            <param name="PropName">Имя свойства</param>
+            <param name="Value">Значение свойства</param>
+        </member>
+        <member name="M:Cav.ProgramSettins.ProgramSettingsBase.Reload">
+            <summary>
+            Загрузить все настройки заново
+            </summary>
+        </member>
+        <member name="M:Cav.ProgramSettins.ProgramSettingsBase.Save">
+            <summary>
+            Сохранить настройки
+            </summary>
+        </member>
+        <member name="E:Cav.ProgramSettins.ProgramSettingsBase.PropertyChanging">
+            <summary/>
+        </member>
+        <member name="E:Cav.ProgramSettins.ProgramSettingsBase.PropertyChanged">
+            <summary/>
+        </member>
+        <member name="T:Cav.ProgramSettins.ProgramSettingsBase.SetItem">
+            <summary>
+            Элемент настроек
+            </summary>
+        </member>
+        <member name="M:Cav.ProgramSettins.ProgramSettingsBase.SetItem.#ctor">
+            <summary>
+            Для сериализатора
+            </summary>
+        </member>
+        <member name="M:Cav.ProgramSettins.ProgramSettingsBase.SetItem.#ctor(System.String)">
+            <summary>
+            </summary>
+            <param name="PropName">Имя свойства</param>
+        </member>
+        <member name="F:Cav.ProgramSettins.ProgramSettingsBase.SetItem.PropName">
+            <summary>
+            Имя свойства
+            </summary>
+        </member>
+        <member name="F:Cav.ProgramSettins.ProgramSettingsBase.SetItem.AreaVal">
+            <summary>
+            Область хранения
+            </summary>
+        </member>
+        <member name="F:Cav.ProgramSettins.ProgramSettingsBase.SetItem.SelzeVal">
+            <summary>
+            Сериализованонное значение свойства
+            </summary>
+        </member>
+        <member name="F:Cav.ProgramSettins.ProgramSettingsBase.SetItem.ValVal">
+            <summary>
+            Значение свойства(типа кэш)
+            </summary>
+        </member>
+        <member name="T:Cav.Utils">
+            <summary>
+            Утилиты, которые не пошли расширениями
+            </summary>
+        </member>
+        <member name="M:Cav.Utils.DeleteDirectory(System.String)">
+            <summary>
+            Удаление папки и всего, что в ней. Включая файлы с атрибутом ReadOnly
+            </summary>
+            <param name="Path">Полный путь для удаления</param>
+        </member>
+        <member name="M:Cav.Utils.SendInfo(System.String,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Посыл информации о в гугловую форму.
+            </summary>
+            <param name="GoogleForm">url формы вида "https://docs.google.com/forms/d/ХэшФормы/formResponse"</param>
+            <param name="ParamValueForm">Словарь с параметрами полей формы вида "имяполя","значение"</param>
+        </member>
+        <member name="M:Cav.Utils.ClickOnceFirstRun">
+            <summary>   Флаг первого запуска приложения ClickOnce </summary>
+            <returns>true - ели приложение ClickOnce и выполняется впервые. в остальных случаях - false </returns>
+        </member>
+        <member name="T:Cav.Soap.SmevBinding">
+            <summary>
+            Инкапсуляция настроек биндинга для СМЭВ
+            </summary>
+        </member>
+        <member name="M:Cav.Soap.SmevBinding.Create(System.ServiceModel.Security.SecurityAlgorithmSuite,System.String,System.String,System.String,Cav.Soap.ISoapPackageLog,System.Boolean)">
+            <summary>
+            Создание биндинга для взаимодействия по СМЭВ
+            </summary>
+            <param name="AlgorithmSuite">Указывает набор алгоритмов.</param>
+            <param name="Proxy">Прокси для клиента</param>
+            <param name="LoggerInstance">Экземпляр объекта, реализующего ISoapPackageLog для логирования</param>
+            <param name="EnableUnsecuredResponse">Задает значение, указывающее, может ли отправлять и получать небезопасные ответы или безопасные запросы.</param>
+            <param name="SenderActor">Actor отправителя</param>
+            <param name="RecipientActor">Actor получателя</param>
+            <returns></returns>
+        </member>
+        <member name="T:Cav.Soap.SmevServiceHostFactoryBase">
+            <summary>
+            Фабрика создания хоста в IIS. Дабы не писать всякие расширения...
+            </summary>
+        </member>
+        <member name="F:Cav.Soap.SmevServiceHostFactoryBase.ImplemetationServiceType">
+            <summary>
+            Реализация сервиса (класс)
+            </summary>
+        </member>
+        <member name="F:Cav.Soap.SmevServiceHostFactoryBase.CertificateServer">
+            <summary>
+            Сертификат сервера
+            </summary>
+        </member>
+        <member name="F:Cav.Soap.SmevServiceHostFactoryBase.AlgorithmSuite">
+            <summary>
+            Набор алгоритмов (Типа криптопрошных...)
+            </summary>
+        </member>
+        <member name="F:Cav.Soap.SmevServiceHostFactoryBase.SenderActor">
+            <summary>
+            actor в исходящем сообщении
+            </summary>
+        </member>
+        <member name="F:Cav.Soap.SmevServiceHostFactoryBase.RecipientActor">
+            <summary>
+            actor в входящем сообщении
+            </summary>
+        </member>
+        <member name="M:Cav.Soap.SmevServiceHostFactoryBase.CreateServiceHost(System.Type,System.Uri[])">
+            <summary>
+            Создание нового экземпляра хоста службы
+            </summary>
+            <param name="t"></param>
+            <param name="baseAddresses"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cav.Soap.SmevServiceHostFactoryBase.CreateServiceHost(System.String,System.Uri[])">
+            <summary>
+            Создание нового экземпляра хоста службы
+            </summary>
+            <param name="constructorString"></param>
+            <param name="baseAddresses"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Cav.Soap.SmevServiceHost">
+            <summary>
+            Кастомизированный хост сервиса
+            </summary>
+        </member>
+        <member name="M:Cav.Soap.SmevServiceHost.#ctor(System.Type,System.Uri[],System.ServiceModel.Security.SecurityAlgorithmSuite,System.Security.Cryptography.X509Certificates.X509Certificate2,System.String,System.String)">
+            <summary>
+            Экземпляр хоста
+            </summary>
+            <param name="IS">Тип класа, реализующего сервис</param>
+            <param name="uri">Uri базовых адресов</param>
+            <param name="AlgorithmSuite">Набор алгоритмов</param>
+            <param name="CertificateServer">Сертификат сервера</param>
+            <param name="SenderActor">actor отправителя сообщения</param>
+            <param name="RecipientActor">actor получателя сообщения</param>
+        </member>
+        <member name="F:Cav.Soap.SmevServiceHost.algorithmSuite">
+            <summary>
+            Набор алгоритмов (Типа криптопрошных...)
+            </summary>
+        </member>
+        <member name="F:Cav.Soap.SmevServiceHost.сertificateServer">
+            <summary>
+            Сертификат сервера
+            </summary>
+        </member>
+        <member name="F:Cav.Soap.SmevServiceHost.senderActor">
+            <summary>
+            actor в посылаемом сообщении
+            </summary>
+        </member>
+        <member name="F:Cav.Soap.SmevServiceHost.recipientActor">
+            <summary>
+            actor в принимаемом сообщении
+            </summary>
+        </member>
+        <member name="M:Cav.Soap.SmevServiceHost.AddDefaultEndpoints">
+            <summary>
+            Добавление конечной точки по умолчанию. Вызывается IIS, если в конфиге не указать конечную точку
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Cav.Soap.SoapHelper">
+            <summary>
+            Хелпер для работы с сервисами/клиентами веб-служб
+            </summary>
+        </member>
+        <member name="M:Cav.Soap.SoapHelper.ToStr(Cav.Soap.DirectionMessage)">
+            <summary>
+            Приведение к строке для записи в БД. А то там вообще не понятно
+            </summary>
+            <param name="dm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cav.Soap.SoapHelper.CreateClient``1(System.String,System.ServiceModel.Security.SecurityAlgorithmSuite,System.Security.Cryptography.X509Certificates.X509Certificate2,System.Security.Cryptography.X509Certificates.X509Certificate2,System.Type,Cav.Soap.ISoapPackageLog,System.Boolean,System.String,System.String,System.String)">
+            <summary>
+            Создание клиента в обертке в котором сообщение подписывается(На базе биндинга для СМЭВ)
+            </summary>
+            <typeparam name="T">Тип клиента, наследник от <c>ClientBase&lt;TChannel&gt;</c></typeparam>
+            <param name="Uri">Uri сервиса</param>
+            <param name="ClientSert">Клиентский сертификат</param>
+            <param name="ServerSert">Серверный сертификат</param>
+            <param name="AlgorithmSuite">Алгоритм подписи</param>
+            <param name="LoggerType">Тип логгера</param>
+            <param name="LoggerInstanse">Экземпляр логгера(приоритетнее при указании и экземпляра и типа логгера)</param>
+            <param name="EnableUnsecuredResponse">Задает значение, указывающее, может ли отправлять и получать небезопасные ответы или безопасные запросы.</param>
+            <param name="SenderActor">Actor отправителя</param>
+            <param name="RecipientActor">Actor получателя</param>
+            <param name="Proxy">Прокси для клиента</param>
+            <returns>Обертка с клиентом</returns>
+        </member>
+        <member name="M:Cav.Soap.SoapHelper.CreateClient``1(System.String,System.String,System.Type,Cav.Soap.ISoapPackageLog)">
+            <summary>
+            Создание клиента в обертке. На базе BasicHttpBinding. 
+            Если клиент реализует ISoapPackageLog, то его экземпляр используется для логгирования.
+            </summary>
+            <typeparam name="T">Тип клиента, наследник от <c>ClientBase&lt;TChannel&gt;</c></typeparam>
+            <param name="Uri">Uri сервиса</param>
+            <param name="Proxy">Прокси для клиента</param>
+            <param name="LoggerType">Тип логгера</param>
+            <param name="LoggerInstanse">Экземпляр логгера</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cav.Soap.SoapHelper.CloseClient``1(System.ServiceModel.ClientBase{``0})">
+            <summary>
+            Корректное закрытие клиента
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="client"></param>
+        </member>
+        <member name="T:Cav.Soap.Correlation">
+            <summary>
+            Передача данных между вызовами 
+            </summary>
+        </member>
+        <member name="T:Cav.Soap.ExecLogThreadHelper">
+            <summary>
+            Хелпер для запуска метода логирования в потоке
+            </summary>
+        </member>
+        <member name="T:Cav.Soap.SoapPackageLoggingBehaviorAttribute">
+            <summary>
+            Выполняет привязку инспектора сообщений к конкретной реализации сервиса
+            </summary>
+        </member>
+        <member name="T:Cav.Soap.SoapLogEndpointBehavior">
+            <summary>
+            Кастомный обработчик поведения конечной точки. Для добавления испектора
+            </summary>
+        </member>
+        <member name="T:Cav.Soap.ISoapPackageLog">
+            <summary>
+            Интерфейс для реализации логирования пакетов SOAP. 
+            Реализовывать: в сервисе - в реализации интерфеса контракта
+            
+            </summary>
+        </member>
+        <member name="M:Cav.Soap.ISoapPackageLog.ActionLog(Cav.Soap.SoapPackage)">
+            <summary>
+            Необходимые действия логирования
+            </summary>
+        </member>
+        <member name="T:Cav.Soap.SoapPackage">
+            <summary>
+            Инкапсуляция параметров пакета
+            </summary>
+        </member>
+        <member name="M:Cav.Soap.SoapPackage.FromToAction">
+            <summary>
+            Сцепление значений From, To и Action
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Cav.Soap.SoapPackage.Action">
+            <summary>
+            Вызываемый метод
+            </summary>
+        </member>
+        <member name="P:Cav.Soap.SoapPackage.Message">
+            <summary>
+            Тело пакета. 
+            </summary>
+        </member>
+        <member name="P:Cav.Soap.SoapPackage.Direction">
+            <summary>
+            Направление пакета
+            </summary>
+        </member>
+        <member name="P:Cav.Soap.SoapPackage.To">
+            <summary>
+            Целевая конечная точа сообщения
+            </summary>
+        </member>
+        <member name="P:Cav.Soap.SoapPackage.From">
+            <summary>
+            Адрес узла, отправившего сообщение
+            </summary>
+        </member>
+        <member name="P:Cav.Soap.SoapPackage.MessageID">
+            <summary>
+            Уникальный ИД для связывания двух пакетов запрос-ответ
+            </summary>
+        </member>
+        <member name="T:Cav.Soap.DirectionMessage">
+            <summary>
+            Направление сообщения
+            </summary>
+        </member>
+        <member name="F:Cav.Soap.DirectionMessage.Receive">
+            <summary>
+            Полученное
+            </summary>
+        </member>
+        <member name="F:Cav.Soap.DirectionMessage.Send">
+            <summary>
+            Отправленое
+            </summary> 
+        </member>
+        <member name="T:Cav.Soap.WrapClient`1">
+            <summary>
+            Обертка для клиентов на базе ICommunicationObject для корректного закрытия канала.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:Cav.Soap.WrapClient`1.#ctor(`0)">
+            <summary>
+            Создание обертки на базе клиента
+            </summary>
+            <param name="Client">Экземпляр клиента</param>
+        </member>
+        <member name="M:Cav.Soap.WrapClient`1.Dispose">
+            <summary>
+            Dispose()
+            </summary>
+        </member>
+        <member name="P:Cav.Soap.WrapClient`1.Client">
+            <summary>
+            Экземпляр клиента
+            </summary>
+        </member>
+    </members>
+</doc>

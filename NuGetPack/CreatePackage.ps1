@@ -1,14 +1,13 @@
 param ([string]$ProjectName)
 
-Write-Host "Сборка пакета NuGet для проекта:" $ProjectName
-
-$NuGetPath = [System.IO.Path]::GetDirectoryName($MyInvocation.MyCommand.Definition)
-$ProgectPath = [System.IO.Path]::GetDirectoryName($NuGetPath)
+$NuspecPath = [System.IO.Path]::GetDirectoryName($MyInvocation.MyCommand.Definition)
+$ProgectPath = [System.IO.Path]::GetDirectoryName($NuspecPath)
+$NuGetPath = [System.IO.Path]::Combine($ProgectPath, '.nuget')
 $BuildPath = [System.IO.Path]::Combine($ProgectPath, '_Build')
 $DocsPath = [System.IO.Path]::Combine($ProgectPath, 'Docs')
 
 # Копируем .nuspec в папку со сборкой
-Copy-Item -Path "$NuGetPath\$ProjectName.nuspec" -Destination "$BuildPath\$ProjectName.nuspec" -Force
+Copy-Item -Path "$NuspecPath\$ProjectName.nuspec" -Destination "$BuildPath\$ProjectName.nuspec" -Force
 
 function Get-Version([string]$PathFile)
 {

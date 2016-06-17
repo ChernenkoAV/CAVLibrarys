@@ -1,6 +1,6 @@
-﻿using Cav.WinForm.BaseClases;
+﻿using CAV.WinForms.BaseClases;
 
-namespace Cav.WinForm
+namespace CAV.WinForms
 {
     internal partial class InputBoxForm : DialogFormBase
     {

@@ -1,4 +1,4 @@
-﻿namespace Cav.WinForm.BaseClases
+﻿namespace CAV.WinForms.BaseClases
 {
     partial class DialogFormBase
     {

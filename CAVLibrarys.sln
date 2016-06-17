@@ -5,13 +5,20 @@ VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CAV.Core", "CAV.Core\CAV.Core.csproj", "{4F15EE08-31C8-45FD-9F6B-5FEC2E9F09A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CAV.WinForm", "CAV.WinForm\CAV.WinForm.csproj", "{DC8DBC11-CF98-47B1-9260-EF391E1CE7D3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CAV.WinForms", "CAV.WinForms\CAV.WinForms.csproj", "{DC8DBC11-CF98-47B1-9260-EF391E1CE7D3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CAV.WPF", "CAV.WPF\CAV.WPF.csproj", "{4B246C9B-15A7-4551-A404-3AFDAC1801A2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CAV.Resources", "CAV.Resources\CAV.Resources.csproj", "{621CDCB8-0959-4BF6-B205-EE36A385F518}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CAV.DataLayer", "CAV.DataLayer\CAV.DataLayer.csproj", "{1C0B7A32-167B-4C49-8B3A-15E0BB733933}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{4952747D-AC6A-4024-B65E-7B930BB0338E}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

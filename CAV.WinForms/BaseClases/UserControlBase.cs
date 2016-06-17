@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using Cav.BaseClases;
 
-namespace Cav.WinForm.BaseClases
+namespace CAV.WinForms.BaseClases
 {
     /// <summary>
     /// Базовый клас модуля интерфейса (UserControl)

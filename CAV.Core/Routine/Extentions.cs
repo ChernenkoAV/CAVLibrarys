@@ -286,14 +286,15 @@ namespace Cav
         /// </summary>
         /// <param name="str">Исходный экземпляр строки</param>
         /// <param name="startIndex">начальная позиция (с нуля)</param>
-        /// <param name="length">Число извлекаемых символов</param>
+        /// <param name="length">Число извлекаемых символов (null - до конца строки)</param>
         /// <returns></returns>
-        public static String SubString(this String str, int startIndex, int length)
+        public static String SubString(this String str, int startIndex, int? length = null)
         {
             if (str == null | startIndex < 0 | length < 0)
                 return null;
 
             int lstr = str.Length;
+            length = length ?? lstr;
 
             if (startIndex >= lstr)
                 return null;
@@ -301,7 +302,7 @@ namespace Cav
             if (startIndex + length > lstr)
                 length = lstr - startIndex;
 
-            return str.Substring(startIndex, length);
+            return str.Substring(startIndex, length.Value);
         }
 
 

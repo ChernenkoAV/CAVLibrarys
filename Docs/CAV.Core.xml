@@ -162,32 +162,18 @@
         </member>
         <member name="F:Cav.DigitalSignature.CryptoProRutine.CPSignedXml.WSSecurityWSUNamespaceUrl">
             <summary>
-            Пространство имен  для wssecurity-utility
+            
             </summary>
         </member>
         <member name="F:Cav.DigitalSignature.CryptoProRutine.CPSignedXml.WSSecurityWSSENamespaceUrl">
             <summary>
-            Пространство имен  для wssecurity-secext
+            
             </summary>
         </member>
         <member name="T:Cav.DigitalSignature.CryptoProRutine.SmevSignedXml">
             <summary>
             Класс SmevSignedXml - наследник класса SignedXml с перегруженным GetIdElement для корректной обработки атрибута wsu:Id. 
             </summary>
-        </member>
-        <member name="M:Cav.DigitalSignature.CryptoProRutine.SmevSignedXml.#ctor(System.Xml.XmlDocument)">
-            <summary>
-            Создание нового экземпляра SmevSignedXml
-            </summary>
-            <param name="document"></param>
-        </member>
-        <member name="M:Cav.DigitalSignature.CryptoProRutine.SmevSignedXml.GetIdElement(System.Xml.XmlDocument,System.String)">
-            <summary>
-            Перегрузка GetIdElement
-            </summary>
-            <param name="document"></param>
-            <param name="idValue"></param>
-            <returns></returns>
         </member>
         <member name="T:Cav.DigitalSignature.DSGeneric">
             <summary>

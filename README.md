@@ -1,7 +1,7 @@
 # CAVLibrarys 
-![Иконка проекта](https://raw.githubusercontent.com/ChernenkoAV/CAVLibrarys/master/CAV.png)
+![Иконка проекта](https://raw.githubusercontent.com/ChernenkoAV/CAVLibrarys/master/Cav.png)
 
-[Публикация Cav.Core](https://www.nuget.org/packages/CAV.Core/)
+[Публикация Cav.Core](https://www.nuget.org/packages/Cav.Core/)
 
 Ядерные сборки, в которых кучка всякой нужности.
 

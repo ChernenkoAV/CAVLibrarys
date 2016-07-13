@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <doc>
     <assembly>
-        <name>CAV.Core</name>
+        <name>Cav.Core</name>
     </assembly>
     <members>
         <member name="T:Cav.BaseClases.BusinessLogicBase">
@@ -162,18 +162,32 @@
         </member>
         <member name="F:Cav.DigitalSignature.CryptoProRutine.CPSignedXml.WSSecurityWSUNamespaceUrl">
             <summary>
-            
+            Пространство имен  для wssecurity-utility
             </summary>
         </member>
         <member name="F:Cav.DigitalSignature.CryptoProRutine.CPSignedXml.WSSecurityWSSENamespaceUrl">
             <summary>
-            
+            Пространство имен  для wssecurity-secext
             </summary>
         </member>
         <member name="T:Cav.DigitalSignature.CryptoProRutine.SmevSignedXml">
             <summary>
             Класс SmevSignedXml - наследник класса SignedXml с перегруженным GetIdElement для корректной обработки атрибута wsu:Id. 
             </summary>
+        </member>
+        <member name="M:Cav.DigitalSignature.CryptoProRutine.SmevSignedXml.#ctor(System.Xml.XmlDocument)">
+            <summary>
+            Создание нового экземпляра SmevSignedXml
+            </summary>
+            <param name="document"></param>
+        </member>
+        <member name="M:Cav.DigitalSignature.CryptoProRutine.SmevSignedXml.GetIdElement(System.Xml.XmlDocument,System.String)">
+            <summary>
+            Перегрузка GetIdElement
+            </summary>
+            <param name="document"></param>
+            <param name="idValue"></param>
+            <returns></returns>
         </member>
         <member name="T:Cav.DigitalSignature.DSGeneric">
             <summary>
@@ -289,6 +303,12 @@
             <summary>
             Домен приложения.
             </summary>
+        </member>
+        <member name="M:Cav.DomainContext.NewTransactionScope">
+            <summary>
+            Новый TransactionScope. Что бы не референсить на System.Transaction
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:Cav.DomainContext.FindStartedProgram(System.Boolean)">
             <summary>
@@ -538,14 +558,14 @@
             <param name="str"></param>
             <returns></returns>
         </member>
-        <member name="M:Cav.Extentions.SubString(System.String,System.Int32,System.Int32)">
+        <member name="M:Cav.Extentions.SubString(System.String,System.Int32,System.Nullable{System.Int32})">
             <summary>
             Извлекает подстроку из данного экземпляра. Подстрока начинается с указанной позиции и имеет указанную длину.
             Поведение максимально приближенно к SUBSTRING из T-SQL (без исключений)
             </summary>
             <param name="str">Исходный экземпляр строки</param>
             <param name="startIndex">начальная позиция (с нуля)</param>
-            <param name="length">Число извлекаемых символов</param>
+            <param name="length">Число извлекаемых символов (null - до конца строки)</param>
             <returns></returns>
         </member>
         <member name="M:Cav.Extentions.ReplaceInvalidPathChars(System.String,System.Char)">

@@ -1,84 +1,84 @@
 <?xml version="1.0"?>
 <doc>
     <assembly>
-        <name>CAV.WinForms</name>
+        <name>Cav.WinForms</name>
     </assembly>
     <members>
-        <member name="T:CAV.WinForms.BaseClases.DialogFormBase">
+        <member name="T:Cav.WinForms.BaseClases.DialogFormBase">
             <summary>
             Базовое окно для диалоговых окон. С кнопками ок и отмена.
             </summary>
         </member>
-        <member name="M:CAV.WinForms.BaseClases.DialogFormBase.#ctor">
+        <member name="M:Cav.WinForms.BaseClases.DialogFormBase.#ctor">
             <summary>
             конструктор по умолчанию
             </summary>
         </member>
-        <member name="F:CAV.WinForms.BaseClases.DialogFormBase.components">
+        <member name="F:Cav.WinForms.BaseClases.DialogFormBase.components">
             <summary>
             Required designer variable.
             </summary>
         </member>
-        <member name="M:CAV.WinForms.BaseClases.DialogFormBase.Dispose(System.Boolean)">
+        <member name="M:Cav.WinForms.BaseClases.DialogFormBase.Dispose(System.Boolean)">
             <summary>
             Clean up any resources being used.
             </summary>
             <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         </member>
-        <member name="M:CAV.WinForms.BaseClases.DialogFormBase.InitializeComponent">
+        <member name="M:Cav.WinForms.BaseClases.DialogFormBase.InitializeComponent">
             <summary>
             Required method for Designer support - do not modify
             the contents of this method with the code editor.
             </summary>
         </member>
-        <member name="P:CAV.WinForms.BaseClases.DialogFormBase.BusinessLogic">
+        <member name="P:Cav.WinForms.BaseClases.DialogFormBase.BusinessLogic">
             <summary>
             Экземпляр бизнесслогики, необходимый для работы диалогового окна
             </summary>
         </member>
-        <member name="P:CAV.WinForms.BaseClases.DialogFormBase.IsDesignMode">
+        <member name="P:Cav.WinForms.BaseClases.DialogFormBase.IsDesignMode">
             <summary>
             Компонент находится в режиме дизайнера
             </summary>
         </member>
-        <member name="T:CAV.WinForms.BaseClases.UserControlBase">
+        <member name="T:Cav.WinForms.BaseClases.UserControlBase">
             <summary>
             Базовый клас модуля интерфейса (UserControl)
             </summary>
         </member>
-        <member name="M:CAV.WinForms.BaseClases.UserControlBase.#ctor">
+        <member name="M:Cav.WinForms.BaseClases.UserControlBase.#ctor">
             <summary>
             Конструктор по умолчанию
             </summary>
         </member>
-        <member name="M:CAV.WinForms.BaseClases.UserControlBase.RefreshControl">
+        <member name="M:Cav.WinForms.BaseClases.UserControlBase.RefreshControl">
             <summary>
             Метод для обновления состояния модуля пользовательского интерфейса
             </summary>
         </member>
-        <member name="F:CAV.WinForms.BaseClases.UserControlBase.components">
+        <member name="F:Cav.WinForms.BaseClases.UserControlBase.components">
             <summary> 
             Требуется переменная конструктора.
             </summary>
         </member>
-        <member name="M:CAV.WinForms.BaseClases.UserControlBase.Dispose(System.Boolean)">
+        <member name="M:Cav.WinForms.BaseClases.UserControlBase.Dispose(System.Boolean)">
             <summary> 
             Освободить все используемые ресурсы.
             </summary>
             <param name="disposing">истинно, если управляемый ресурс должен быть удален; иначе ложно.</param>
         </member>
-        <member name="M:CAV.WinForms.BaseClases.UserControlBase.InitializeComponent">
+        <member name="M:Cav.WinForms.BaseClases.UserControlBase.InitializeComponent">
             <summary> 
             Обязательный метод для поддержки конструктора - не изменяйте 
             содержимое данного метода при помощи редактора кода.
             </summary>
         </member>
-        <member name="P:CAV.WinForms.BaseClases.UserControlBase.BusinessLogic">
+        <member name="P:Cav.WinForms.BaseClases.UserControlBase.BusinessLogic">
             <summary>
             Экземпляр бизнесслогики, необходимый для работы модуля интерфейса
             </summary>
         </member>
-        <member name="P:CAV.WinForms.BaseClases.UserControlBase.IsDesignMode">
+        <member name="P:Cav.WinForms.BaseClases.UserControlBase.IsDesignMode">
             <summary>
             Компонент находится в режиме дизайнера
             </summary>
@@ -195,18 +195,18 @@
             <param name="MaxLength">Длина вводимой строки</param>
             <returns>null - если нажали Отмена, значение. если нажали Ok</returns>
         </member>
-        <member name="F:CAV.WinForms.InputBoxForm.components">
+        <member name="F:Cav.WinForms.InputBoxForm.components">
             <summary>
             Required designer variable.
             </summary>
         </member>
-        <member name="M:CAV.WinForms.InputBoxForm.Dispose(System.Boolean)">
+        <member name="M:Cav.WinForms.InputBoxForm.Dispose(System.Boolean)">
             <summary>
             Clean up any resources being used.
             </summary>
             <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         </member>
-        <member name="M:CAV.WinForms.InputBoxForm.InitializeComponent">
+        <member name="M:Cav.WinForms.InputBoxForm.InitializeComponent">
             <summary>
             Required method for Designer support - do not modify
             the contents of this method with the code editor.

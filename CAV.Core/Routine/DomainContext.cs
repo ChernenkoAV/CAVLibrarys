@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Transactions;
 
 namespace Cav
 {
@@ -17,6 +18,20 @@ namespace Cav
     /// </summary>
     public static partial class DomainContext
     {
+
+        #region Новый TransactionScope
+
+        /// <summary>
+        /// Новый TransactionScope. Что бы не референсить на System.Transaction
+        /// </summary>
+        /// <returns></returns>
+        public static TransactionScope NewTransactionScope()
+        { 
+            return new TransactionScope();
+        }
+                
+        #endregion
+
         #region Для запуска программы в одном экземпляре (На базе поиска процесса)
 
         [DllImport("User32.dll")]

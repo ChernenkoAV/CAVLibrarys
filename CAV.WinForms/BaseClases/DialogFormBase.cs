@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using Cav.BaseClases;
 
-namespace CAV.WinForms.BaseClases
+namespace Cav.WinForms.BaseClases
 {
     /// <summary>
     /// Базовое окно для диалоговых окон. С кнопками ок и отмена.

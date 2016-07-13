@@ -1,4 +1,4 @@
-﻿namespace CAV.WinForms
+﻿namespace Cav.WinForms
 {
     partial class InputBoxForm
     {

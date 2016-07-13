@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // Управление общими сведениями о сборке осуществляется с помощью 
 // набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
-[assembly: AssemblyTitle("CAV.DataLayer")]
+[assembly: AssemblyTitle("Cav.DataLayer")]
 [assembly: AssemblyDescription("Слой для работы с БД")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ChernenkoAV")]
-[assembly: AssemblyProduct("CAV.DataLayer")]
+[assembly: AssemblyProduct("Cav.DataLayer")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

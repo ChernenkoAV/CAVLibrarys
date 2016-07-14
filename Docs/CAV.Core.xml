@@ -955,7 +955,7 @@
             <param name="dm"></param>
             <returns></returns>
         </member>
-        <member name="M:Cav.Soap.SoapHelper.CreateClient``1(System.String,System.ServiceModel.Security.SecurityAlgorithmSuite,System.Security.Cryptography.X509Certificates.X509Certificate2,System.Security.Cryptography.X509Certificates.X509Certificate2,System.Type,Cav.Soap.ISoapPackageLog,System.Boolean,System.String,System.String,System.String)">
+        <member name="M:Cav.Soap.SoapHelper.CreateClient``1(System.String,System.ServiceModel.Security.SecurityAlgorithmSuite,System.Security.Cryptography.X509Certificates.X509Certificate2,System.Security.Cryptography.X509Certificates.X509Certificate2,System.Type,Cav.Soap.ISoapPackageLog,System.Boolean,System.String,System.String,System.String,System.Nullable{System.TimeSpan})">
             <summary>
             Создание клиента в обертке в котором сообщение подписывается(На базе биндинга для СМЭВ)
             </summary>
@@ -970,6 +970,7 @@
             <param name="SenderActor">Actor отправителя</param>
             <param name="RecipientActor">Actor получателя</param>
             <param name="Proxy">Прокси для клиента</param>
+            <param name="SendTimeout">Таймаут работы клиента</param>
             <returns>Обертка с клиентом</returns>
         </member>
         <member name="M:Cav.Soap.SoapHelper.CreateClient``1(System.String,System.String,System.Type,Cav.Soap.ISoapPackageLog)">

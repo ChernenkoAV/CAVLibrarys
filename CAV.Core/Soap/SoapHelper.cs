@@ -47,6 +47,7 @@ namespace Cav.Soap
         /// <param name="RecipientActor">Actor получателя</param>
         /// <param name="Proxy">Прокси для клиента</param>
         /// <param name="SendTimeout">Таймаут работы клиента</param>
+        /// <param name="AllowInsecureTransport">Можно ли отправлять сообщения в смешанном режиме безопасности</param>
         /// <returns>Обертка с клиентом</returns>
         public static WrapClient<T> CreateClient<T>(
             String Uri,
@@ -59,7 +60,8 @@ namespace Cav.Soap
             String SenderActor = null,
             String RecipientActor = null,
             String Proxy = null,
-            TimeSpan? SendTimeout = null)
+            TimeSpan? SendTimeout = null,
+            Boolean AllowInsecureTransport = false)
             where T : ICommunicationObject, IDisposable
         {
 
@@ -81,9 +83,10 @@ namespace Cav.Soap
                 AlgorithmSuite: AlgorithmSuite,
                 Proxy: Proxy,
                 LoggerInstance: logger,
-                EnableUnsecuredResponse: EnableUnsecuredResponse,
                 SenderActor: SenderActor,
-                RecipientActor: RecipientActor);
+                RecipientActor: RecipientActor,
+                EnableUnsecuredResponse: EnableUnsecuredResponse,
+                AllowInsecureTransport: AllowInsecureTransport);
 
             if (SendTimeout.HasValue)
                 binding.SendTimeout = SendTimeout.Value;

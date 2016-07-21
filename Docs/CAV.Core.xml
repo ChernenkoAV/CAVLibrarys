@@ -843,7 +843,7 @@
             Инкапсуляция настроек биндинга для СМЭВ
             </summary>
         </member>
-        <member name="M:Cav.Soap.SmevBinding.Create(System.ServiceModel.Security.SecurityAlgorithmSuite,System.String,System.String,System.String,Cav.Soap.ISoapPackageLog,System.Boolean)">
+        <member name="M:Cav.Soap.SmevBinding.Create(System.ServiceModel.Security.SecurityAlgorithmSuite,System.String,System.String,System.String,Cav.Soap.ISoapPackageLog,System.Boolean,System.Boolean)">
             <summary>
             Создание биндинга для взаимодействия по СМЭВ
             </summary>
@@ -853,6 +853,7 @@
             <param name="EnableUnsecuredResponse">Задает значение, указывающее, может ли отправлять и получать небезопасные ответы или безопасные запросы.</param>
             <param name="SenderActor">Actor отправителя</param>
             <param name="RecipientActor">Actor получателя</param>
+            <param name="AllowInsecureTransport">Можно ли отправлять сообщения в смешанном режиме безопасности</param>
             <returns></returns>
         </member>
         <member name="T:Cav.Soap.SmevServiceHostFactoryBase">
@@ -955,7 +956,7 @@
             <param name="dm"></param>
             <returns></returns>
         </member>
-        <member name="M:Cav.Soap.SoapHelper.CreateClient``1(System.String,System.ServiceModel.Security.SecurityAlgorithmSuite,System.Security.Cryptography.X509Certificates.X509Certificate2,System.Security.Cryptography.X509Certificates.X509Certificate2,System.Type,Cav.Soap.ISoapPackageLog,System.Boolean,System.String,System.String,System.String,System.Nullable{System.TimeSpan})">
+        <member name="M:Cav.Soap.SoapHelper.CreateClient``1(System.String,System.ServiceModel.Security.SecurityAlgorithmSuite,System.Security.Cryptography.X509Certificates.X509Certificate2,System.Security.Cryptography.X509Certificates.X509Certificate2,System.Type,Cav.Soap.ISoapPackageLog,System.Boolean,System.String,System.String,System.String,System.Nullable{System.TimeSpan},System.Boolean)">
             <summary>
             Создание клиента в обертке в котором сообщение подписывается(На базе биндинга для СМЭВ)
             </summary>
@@ -971,6 +972,7 @@
             <param name="RecipientActor">Actor получателя</param>
             <param name="Proxy">Прокси для клиента</param>
             <param name="SendTimeout">Таймаут работы клиента</param>
+            <param name="AllowInsecureTransport">Можно ли отправлять сообщения в смешанном режиме безопасности</param>
             <returns>Обертка с клиентом</returns>
         </member>
         <member name="M:Cav.Soap.SoapHelper.CreateClient``1(System.String,System.String,System.Type,Cav.Soap.ISoapPackageLog)">

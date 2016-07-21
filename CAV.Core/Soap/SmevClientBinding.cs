@@ -34,6 +34,7 @@ namespace Cav.Soap
         /// <param name="EnableUnsecuredResponse">Задает значение, указывающее, может ли отправлять и получать небезопасные ответы или безопасные запросы.</param>
         /// <param name="SenderActor">Actor отправителя</param>
         /// <param name="RecipientActor">Actor получателя</param>
+        /// <param name="AllowInsecureTransport">Можно ли отправлять сообщения в смешанном режиме безопасности</param>
         /// <returns></returns>
         public static SmevBinding Create(
             SecurityAlgorithmSuite AlgorithmSuite,
@@ -41,7 +42,8 @@ namespace Cav.Soap
             String SenderActor = null,
             String RecipientActor = null,
             ISoapPackageLog LoggerInstance = null,
-            Boolean EnableUnsecuredResponse = false)
+            Boolean EnableUnsecuredResponse = false,
+            Boolean AllowInsecureTransport = false)
         {
             System.Net.WebRequest.DefaultWebProxy.Credentials = System.Net.CredentialCache.DefaultNetworkCredentials;
 
@@ -51,6 +53,9 @@ namespace Cav.Soap
             basicHttpBinding.Security.Transport.ProxyCredentialType = HttpProxyCredentialType.None;
             basicHttpBinding.Security.Message.ClientCredentialType = BasicHttpMessageCredentialType.Certificate;
             basicHttpBinding.Security.Message.AlgorithmSuite = AlgorithmSuite;
+
+            
+            
 
             SmevBinding binding = new SmevBinding(basicHttpBinding);
             binding.Name = "SmevBinding";
@@ -72,6 +77,7 @@ namespace Cav.Soap
             asbe.AllowSerializedSigningTokenOnReply = true;
             asbe.RecipientTokenParameters.RequireDerivedKeys = false;
             asbe.RecipientTokenParameters.InclusionMode = SecurityTokenInclusionMode.AlwaysToInitiator;
+            asbe.AllowInsecureTransport = AllowInsecureTransport;
 
             HttpTransportBindingElement htbe = binding.Elements.Find<HttpTransportBindingElement>();
             htbe.ManualAddressing = false;

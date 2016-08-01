@@ -94,7 +94,11 @@ namespace Cav.Soap
             T client = (T)Activator.CreateInstance(typeof(T), binding, ea);
 
             ClientCredentials cc = (ClientCredentials)client.GetType().GetProperty("ClientCredentials").GetValue(client, null);
+            if (ClientSert == null)
+                throw new NullReferenceException("Не указан клиентский сертификат. Либо не найден в хранилище, либо строка с BASE64 невалидна.");
             cc.ClientCertificate.Certificate = ClientSert;
+            if (ServerSert == null)
+                throw new NullReferenceException("Не указан серверный сертификат. Либо не найден в хранилище, либо строка с BASE64 невалидна.");
             cc.ServiceCertificate.DefaultCertificate = ServerSert;
             cc.ServiceCertificate.Authentication.CertificateValidationMode = X509CertificateValidationMode.None;
             cc.ServiceCertificate.Authentication.RevocationMode = X509RevocationMode.NoCheck;

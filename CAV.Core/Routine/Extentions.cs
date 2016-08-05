@@ -334,9 +334,9 @@ namespace Cav
         /// </summary>
         /// <param name="str"></param>
         /// <param name="Pettern">Искомый текст</param>
-        /// <param name="FullMath">Искать полное совпадение</param>
+        /// <param name="FullMatch">Искать полное совпадение</param>
         /// <returns></returns>
-        public static Boolean MatchText(this String str, String Pattern, Boolean FullMath = false)
+        public static Boolean MatchText(this String str, String Pattern, Boolean FullMatch = false)
         {
             if (str == null & Pattern == null)
                 return true;
@@ -348,7 +348,7 @@ namespace Cav
             Pattern = Pattern.Replace(" ", "").ToLowerInvariant();
 
             Boolean res;
-            if (FullMath)
+            if (FullMatch)
                 res = str.Equals(Pattern);
             else
                 res = str.Contains(Pattern);

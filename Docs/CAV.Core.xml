@@ -582,7 +582,7 @@
             </summary>
             <param name="str"></param>
             <param name="Pettern">Искомый текст</param>
-            <param name="FullMath">Искать полное совпадение</param>
+            <param name="FullMatch">Искать полное совпадение</param>
             <returns></returns>
         </member>
         <member name="M:Cav.Extentions.Expand(System.Exception)">

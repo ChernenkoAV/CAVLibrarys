@@ -333,7 +333,7 @@ namespace Cav
         /// Совпадение(вхождение) строк с реплейсом пробелов (регистронезависимонезависимо)
         /// </summary>
         /// <param name="str"></param>
-        /// <param name="Pettern">Искомый текст</param>
+        /// <param name="Pattern">Искомый текст</param>
         /// <param name="FullMatch">Искать полное совпадение</param>
         /// <returns></returns>
         public static Boolean MatchText(this String str, String Pattern, Boolean FullMatch = false)

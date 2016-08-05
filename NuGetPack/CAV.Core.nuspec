@@ -14,10 +14,13 @@
         <copyright>Copyright 2016</copyright>
         <language>ru-RU</language>
         <tags>Cav utils soap смев smev</tags>
+        <dependencies> 
+            <group targetFramework="net45"></group>
+        </dependencies> 
     </metadata>
     <files>
         <file src="Cav.Core.dll" target="lib\net45\" />
         <file src="Cav.Core.pdb" target="lib\net45\" />
         <file src="Cav.Core.xml" target="lib\net45\" />
-    </files>
+    </files>	
 </package>

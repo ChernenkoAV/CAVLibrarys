@@ -523,7 +523,7 @@
         </member>
         <member name="M:Cav.Extentions.MatchText(System.String,System.String)">
             <summary>
-            Соответствие поисковому шаблону
+            Соответствие поисковому шаблону (формируется в регулярку)
             </summary>
             <param name="text"></param>
             <param name="pattern"></param>
@@ -574,6 +574,15 @@
             </summary>
             <param name="FilePath">Путь, имя файла, путь файла</param>
             <param name="ReplasmentChar">Символ для замены. Если символ является запрещенным, то он приводится в подчеркиванию: "_"</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cav.Extentions.MathText(System.String,System.String,System.Boolean)">
+            <summary>
+            Совпадение(вхождение) строк с реплейсом пробелов (регистронезависимонезависимо)
+            </summary>
+            <param name="str"></param>
+            <param name="Pettern">Искомый текст</param>
+            <param name="FullMath">Искать полное совпадение</param>
             <returns></returns>
         </member>
         <member name="M:Cav.Extentions.Expand(System.Exception)">

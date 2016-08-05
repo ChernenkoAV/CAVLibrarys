@@ -209,7 +209,7 @@ namespace Cav
         [ThreadStatic]
         private static String prn = null;
         /// <summary>
-        /// Соответствие поисковому шаблону
+        /// Соответствие поисковому шаблону (формируется в регулярку)
         /// </summary>
         /// <param name="text"></param>
         /// <param name="pattern"></param>
@@ -326,6 +326,34 @@ namespace Cav
                 FilePath = FilePath.Replace(ic, '_');
 
             return FilePath;
+        }
+
+
+        /// <summary>
+        /// Совпадение(вхождение) строк с реплейсом пробелов (регистронезависимонезависимо)
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="Pettern">Искомый текст</param>
+        /// <param name="FullMath">Искать полное совпадение</param>
+        /// <returns></returns>
+        public static Boolean MathText(this String str, String Pattern, Boolean FullMath = false)
+        {
+            if (str == null & Pattern == null)
+                return true;
+
+            if (str == null | Pattern == null)
+                return false;
+
+            str = str.Replace(" ", "").ToLowerInvariant();
+            Pattern = Pattern.Replace(" ", "").ToLowerInvariant();
+
+            Boolean res;
+            if (FullMath)
+                res = str.Equals(Pattern);
+            else
+                res = str.Contains(Pattern);
+
+            return res;
         }
 
         #endregion

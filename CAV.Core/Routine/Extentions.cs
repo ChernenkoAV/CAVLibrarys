@@ -336,7 +336,7 @@ namespace Cav
         /// <param name="Pettern">Искомый текст</param>
         /// <param name="FullMath">Искать полное совпадение</param>
         /// <returns></returns>
-        public static Boolean MathText(this String str, String Pattern, Boolean FullMath = false)
+        public static Boolean MatchText(this String str, String Pattern, Boolean FullMath = false)
         {
             if (str == null & Pattern == null)
                 return true;

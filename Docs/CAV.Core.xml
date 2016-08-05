@@ -576,7 +576,7 @@
             <param name="ReplasmentChar">Символ для замены. Если символ является запрещенным, то он приводится в подчеркиванию: "_"</param>
             <returns></returns>
         </member>
-        <member name="M:Cav.Extentions.MathText(System.String,System.String,System.Boolean)">
+        <member name="M:Cav.Extentions.MatchText(System.String,System.String,System.Boolean)">
             <summary>
             Совпадение(вхождение) строк с реплейсом пробелов (регистронезависимонезависимо)
             </summary>

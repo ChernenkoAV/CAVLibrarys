@@ -20,6 +20,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{495274
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuspec", "nuspec", "{8BC4D227-0737-4D45-AADC-314CF0350732}"
+	ProjectSection(SolutionItems) = preProject
+		nuspec\CAV.Core.nuspec = nuspec\CAV.Core.nuspec
+		nuspec\CAV.WinForms.nuspec = nuspec\CAV.WinForms.nuspec
+		nuspec\CreatePackage.ps1 = nuspec\CreatePackage.ps1
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

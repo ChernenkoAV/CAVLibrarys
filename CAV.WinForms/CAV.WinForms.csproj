@@ -2,7 +2,7 @@
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Configuration Condition=" '$(Configuration)' == '' ">DebugNet45</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{DC8DBC11-CF98-47B1-9260-EF391E1CE7D3}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -24,21 +24,47 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>..\_Build\Cav.WinForms.xml</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+ 
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugNet45|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\_Build\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <DefineConstants>DEBUG;TRACE;NET45</DefineConstants>
     <DocumentationFile>..\_Build\Cav.WinForms.xml</DocumentationFile>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>Cav.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>..\_Build\</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+        <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+        <DefineConstants>NET45</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+        <DocumentationFile>..\_Build\Cav.WinForms.xml</DocumentationFile>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseNet45|AnyCPU'">
+        <OutputPath>..\_Build\Net45\</OutputPath>
+        <DocumentationFile>..\_Build\Net45\Cav.WinForms.xml</DocumentationFile>
+        <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+        <DefineConstants>NET45</DefineConstants>
+        <Optimize>true</Optimize>
+        <DebugType>pdbonly</DebugType>
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <ErrorReport>prompt</ErrorReport>
+        <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    </PropertyGroup>
+    <PropertyGroup>
+        <SignAssembly>true</SignAssembly>
+    </PropertyGroup>
+    <PropertyGroup>
+        <AssemblyOriginatorKeyFile>Cav.snk</AssemblyOriginatorKeyFile>
+    </PropertyGroup>
   <ItemGroup>
     <Reference Include="Cav.Core, Version=1.1.2.0, Culture=neutral, PublicKeyToken=f136b1fd0b87e3f0, processorArchitecture=MSIL">
       <HintPath>..\packages\CAV.Core.1.1.2\lib\net45\Cav.Core.dll</HintPath>
@@ -100,7 +126,7 @@
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>if $(ConfigurationName) == Release PowerShell -NoProfile -ExecutionPolicy Bypass -Command "&amp; '$(SolutionDir)nuspec\CreatePackage.ps1' -ProjectName '$(ProjectName)'</PostBuildEvent>
+    <PostBuildEvent>if $(ConfigurationName)==Release PowerShell -NoProfile -ExecutionPolicy Bypass -Command "&amp; '$(SolutionDir)nuspec\CreatePackage.ps1' -ProjectPath '$(ProjectPath)' -MSBuid '$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)'</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

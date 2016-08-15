@@ -11,19 +11,6 @@ namespace Cav.Soap
     /// </summary>
     public static class SoapHelper
     {
-        /// <summary>
-        /// Приведение к строке для записи в БД. А то там вообще не понятно
-        /// </summary>
-        /// <param name="dm"></param>
-        /// <returns></returns>
-        public static String ToStr(this DirectionMessage dm)
-        {
-            if (dm == DirectionMessage.Receive)
-                return "R";
-            else
-                return "S";
-        }
-
         ///// <summary>
         ///// Для клиентов, написаных на базе System.Web.Services.Protocols.SoapHttpClientProtocol
         ///// </summary>
@@ -108,6 +95,11 @@ namespace Cav.Soap
             ChannelFactory channelFactory = (ChannelFactory)client.GetType().GetProperty("ChannelFactory").GetValue(client, null);
             channelFactory.Endpoint.Contract.ProtectionLevel = System.Net.Security.ProtectionLevel.Sign;
             channelFactory.Endpoint.Behaviors.Add(new SoapLogEndpointBehavior());
+
+#if NET461
+            // в NET461 по умолчанию отключили доверенность в многоименным сертификатам и включили проверку. Как то так.
+            AppContext.SetSwitch("Switch.System.IdentityModel.DisableMultipleDNSEntriesInSANCertificate", true);
+#endif
 
             return new WrapClient<T>(client);
         }

@@ -11,6 +11,7 @@ using System.ServiceModel.Security;
 using System.ServiceModel.Security.Tokens;
 using System.Text;
 using System.Xml;
+using Cav.DigitalSignature;
 
 namespace Cav.Soap
 {
@@ -54,8 +55,8 @@ namespace Cav.Soap
             basicHttpBinding.Security.Message.ClientCredentialType = BasicHttpMessageCredentialType.Certificate;
             basicHttpBinding.Security.Message.AlgorithmSuite = AlgorithmSuite;
 
-            
-            
+
+
 
             SmevBinding binding = new SmevBinding(basicHttpBinding);
             binding.Name = "SmevBinding";
@@ -103,33 +104,33 @@ namespace Cav.Soap
     {
         public SMEVMessageEncodingBindingElement()
         {
-            theInnerBindingElement = new TextMessageEncodingBindingElement();
-            theInnerBindingElement.MessageVersion = theVers;
+            innerBindingElement = new TextMessageEncodingBindingElement();
+            innerBindingElement.MessageVersion = messageVer;
         }
 
         public SMEVMessageEncodingBindingElement(MessageEncodingBindingElement innerBindingElement)
         {
-            theInnerBindingElement = innerBindingElement;
+            this.innerBindingElement = innerBindingElement;
         }
 
         public ISoapPackageLog LoggerInstance { get; set; }
 
-        private MessageEncodingBindingElement theInnerBindingElement;
-        private MessageVersion theVers = MessageVersion.Soap11;
-        private string theSenderActor = "http://smev.gosuslugi.ru/actors/smev";
-        private string theRecipientActor = "http://smev.gosuslugi.ru/actors/recipient";
+        private MessageEncodingBindingElement innerBindingElement;
+        private MessageVersion messageVer = MessageVersion.Soap11;
+        private string senderActor = "http://smev.gosuslugi.ru/actors/smev";
+        private string recipientActor = "http://smev.gosuslugi.ru/actors/recipient";
 
         public string SenderActor
         {
             get
             {
-                return theSenderActor;
+                return senderActor;
             }
             set
             {
                 if (value == null)
                     return;
-                theSenderActor = value;
+                senderActor = value;
             }
         }
 
@@ -137,13 +138,13 @@ namespace Cav.Soap
         {
             get
             {
-                return theRecipientActor;
+                return recipientActor;
             }
             set
             {
                 if (value == null)
                     return;
-                theRecipientActor = value;
+                recipientActor = value;
             }
         }
 
@@ -151,24 +152,24 @@ namespace Cav.Soap
         {
             get
             {
-                return theInnerBindingElement.MessageVersion;
+                return innerBindingElement.MessageVersion;
             }
             set
             {
-                theInnerBindingElement.MessageVersion = value;
+                innerBindingElement.MessageVersion = value;
             }
         }
 
         public override MessageEncoderFactory CreateMessageEncoderFactory()
         {
-            SMEVMessageEncoderFactory sef = new SMEVMessageEncoderFactory("text/xml", "utf-8", theVers, theInnerBindingElement.CreateMessageEncoderFactory(), this.SenderActor, this.RecipientActor);
+            SMEVMessageEncoderFactory sef = new SMEVMessageEncoderFactory("text/xml", "utf-8", messageVer, innerBindingElement.CreateMessageEncoderFactory(), this.SenderActor, this.RecipientActor);
             sef.SetEvents(LoggerInstance);
             return sef;
         }
 
         public override BindingElement Clone()
         {
-            SMEVMessageEncodingBindingElement clone = new SMEVMessageEncodingBindingElement(theInnerBindingElement);
+            SMEVMessageEncodingBindingElement clone = new SMEVMessageEncodingBindingElement(innerBindingElement);
             clone.MessageVersion = this.MessageVersion;
             clone.RecipientActor = this.RecipientActor;
             clone.SenderActor = this.SenderActor;
@@ -179,7 +180,7 @@ namespace Cav.Soap
         public override T GetProperty<T>(BindingContext context)
         {
             if (typeof(T) == typeof(XmlDictionaryReaderQuotas))
-                return theInnerBindingElement.GetProperty<T>(context);
+                return innerBindingElement.GetProperty<T>(context);
             else
                 return base.GetProperty<T>(context);
         }
@@ -214,7 +215,7 @@ namespace Cav.Soap
 
         public void ExportEndpoint(WsdlExporter exporter, WsdlEndpointConversionContext context)
         {
-            ((IWsdlExportExtension)theInnerBindingElement).ExportEndpoint(exporter, context);
+            ((IWsdlExportExtension)innerBindingElement).ExportEndpoint(exporter, context);
         }
 
         #endregion
@@ -223,7 +224,7 @@ namespace Cav.Soap
 
         public void ExportPolicy(MetadataExporter exporter, PolicyConversionContext context)
         {
-            ((IPolicyExportExtension)theInnerBindingElement).ExportPolicy(exporter, context);
+            ((IPolicyExportExtension)innerBindingElement).ExportPolicy(exporter, context);
 
         }
 
@@ -236,19 +237,27 @@ namespace Cav.Soap
 
     internal class SMEVMessageEncoder : MessageEncoder
     {
-        public SMEVMessageEncoder(SMEVMessageEncoderFactory factory)
+        public SMEVMessageEncoder(SMEVMessageEncoderFactory Factory)
         {
-            theFactory = factory;
-            theContentType = theFactory.MediaType;
+            this.factory = Factory;
+
+            writerSettings = new XmlWriterSettings();
+            this.writerSettings.ConformanceLevel = ConformanceLevel.Fragment;
+            this.writerSettings.OmitXmlDeclaration = true;
+            this.writerSettings.NewLineHandling = NewLineHandling.Entitize;
+            if (factory.CharSet.Trim().ToLower() == "utf-8")
+                this.writerSettings.Encoding = new UTF8Encoding(false);
+            else
+                this.writerSettings.Encoding = Encoding.GetEncoding(factory.CharSet);
+
+            theContentType = String.Format("{0}; charset={1}", factory.MediaType, writerSettings.Encoding.HeaderName);
         }
 
         public ISoapPackageLog LoggerInstance { get; set; }
 
         private string theContentType;
-        private SMEVMessageEncoderFactory theFactory;
-
-        private const string Soap11Namespace = "http://schemas.xmlsoap.org/soap/envelope/";
-
+        private SMEVMessageEncoderFactory factory;
+        private XmlWriterSettings writerSettings;
 
         public override string ContentType
         {
@@ -262,7 +271,7 @@ namespace Cav.Soap
         {
             get
             {
-                return theFactory.MediaType;
+                return factory.MediaType;
             }
         }
 
@@ -270,40 +279,35 @@ namespace Cav.Soap
         {
             get
             {
-                return theFactory.MessageVersion;
+                return factory.MessageVersion;
             }
         }
 
-        public override T GetProperty<T>()
-        {
-            return theFactory.InnerFactory.Encoder.GetProperty<T>();
-        }
-
         private Correlation CorrelationObject = null;
+
+        #region ReadMessage
 
         public override Message ReadMessage(ArraySegment<byte> buffer, BufferManager bufferManager, string contentType)
         {
             var msgContents = new byte[buffer.Count];
             Array.Copy(buffer.Array, buffer.Offset, msgContents, 0, msgContents.Length);
-            var messageStr = new UTF8Encoding().GetString(msgContents);
 
-            var xmlDocument = new XmlDocument();
-            using (var reader = XmlReader.Create(new MemoryStream(msgContents)))
-                xmlDocument.Load(reader);
+            using (MemoryStream mstr = new MemoryStream(msgContents))
+                return this.ReadMessage(mstr, int.MaxValue, contentType);
+        }
 
-            var elementsByTagName = xmlDocument.GetElementsByTagName("Envelope", Soap11Namespace);
-            if (elementsByTagName.Count == 0)
-                throw new XmlException("Не найден узел Envelope");
-            var prefixOfNamespace = elementsByTagName[0].GetPrefixOfNamespace(Soap11Namespace);
-            if (string.IsNullOrEmpty(prefixOfNamespace))
-                throw new XmlException(string.Format("Не найден префикс пространста имен {0}", Soap11Namespace));
+        public override Message ReadMessage(Stream stream, int maxSizeOfHeaders, string contentType)
+        {
+            XmlDocument xmlDocument = new XmlDocument();
+            xmlDocument.PreserveWhitespace = true;
+            xmlDocument.Load(stream);
 
             #region Логирование
 
-            try
-            {
-                if (LoggerInstance != null)
+            if (LoggerInstance != null)
+                try
                 {
+
                     if (CorrelationObject == null)
                     {
                         CorrelationObject = new Correlation();
@@ -316,7 +320,7 @@ namespace Cav.Soap
                     }
 
                     StringBuilder sb = new StringBuilder();
-                    using (var xw = XmlWriter.Create(sb, new XmlWriterSettings() { OmitXmlDeclaration = true }))
+                    using (var xw = XmlWriter.Create(sb, this.writerSettings))
                         xmlDocument.WriteTo(xw);
 
 
@@ -330,75 +334,90 @@ namespace Cav.Soap
 
                     ExecLogThreadHelper.WriteLog(LoggerInstance, sp);
                 }
-            }
-            catch
-            {
-                // TODO залогировать исключение
-            }
-            finally
-            {
-                if (CorrelationObject != null && CorrelationObject.Direction == Dir.ClientDirection)
-                    CorrelationObject = null;
-            }
+                catch
+                {
+                    // TODO залогировать исключение
+                }
+                finally
+                {
+                    if (CorrelationObject != null && CorrelationObject.Direction == Dir.ClientDirection)
+                        CorrelationObject = null;
+                }
 
             #endregion
 
-            messageStr = messageStr.Replace(prefixOfNamespace + ":mustUnderstand=\"1\"", "");
-            messageStr = messageStr.Replace(prefixOfNamespace + ":actor=\"" + theFactory.SenderActor + "\"", "");
-            messageStr = messageStr.Replace(prefixOfNamespace + ":actor=\"" + theFactory.RecipientActor + "\"", "");
-            var bytes = new UTF8Encoding().GetBytes(messageStr);
-            var length = bytes.Length;
-            var array = bufferManager.TakeBuffer(length);
-            Array.Copy(bytes, 0, array, 0, length);
-            buffer = new ArraySegment<byte>(array, 0, length);
+            XmlNodeList secNodeList = xmlDocument.GetElementsByTagName("Security", CPSignedXml.WSSecurityWSSENamespaceUrl);
+            foreach (XmlNode secNode in secNodeList)
+            {
+                XmlAttribute actorAttrib = secNode.Attributes["actor", SoapHelper.Soap11Namespace];
+                if (actorAttrib != null && actorAttrib.Value == factory.RecipientActor)
+                    secNode.Attributes.Remove(actorAttrib);
 
-            return theFactory.InnerFactory.Encoder.ReadMessage(buffer, bufferManager, contentType);
+                secNode.Attributes.RemoveNamedItem("mustUnderstand", SoapHelper.Soap11Namespace);
+            }
+
+            Message res = null;
+
+            using (MemoryStream mstrm = new MemoryStream())
+            {
+                using (XmlWriter xwr = XmlWriter.Create(mstrm, this.writerSettings))
+                    xmlDocument.WriteTo(xwr);
+
+                mstrm.Position = 0;
+
+                using (XmlReader xrdr = XmlReader.Create(mstrm))
+                    res = Message.CreateMessage(xrdr, maxSizeOfHeaders, this.MessageVersion).CreateBufferedCopy(maxSizeOfHeaders).CreateMessage();
+            }
+
+            return res;
         }
 
-        public override Message ReadMessage(System.IO.Stream stream, int maxSizeOfHeaders, string contentType)
-        {
-            return theFactory.InnerFactory.Encoder.ReadMessage(stream, maxSizeOfHeaders, contentType);
-        }
+        #endregion
+
+        #region WriteMessage
 
         public override ArraySegment<byte> WriteMessage(Message message, int maxMessageSize, BufferManager bufferManager, int messageOffset)
         {
-            var arraySegment = theFactory.InnerFactory.Encoder.WriteMessage(message, maxMessageSize, bufferManager, messageOffset);
-            var buffer1 = new byte[arraySegment.Count];
-            Array.Copy(arraySegment.Array, arraySegment.Offset, buffer1, 0, buffer1.Length);
-
-            var xmlDocument = new XmlDocument();
-            using (var reader = XmlReader.Create(new MemoryStream(buffer1)))
-                xmlDocument.Load(reader);
-
-            var prefixOfNamespace = xmlDocument.FirstChild.GetPrefixOfNamespace(Soap11Namespace);
-            if (string.IsNullOrEmpty(prefixOfNamespace))
-                throw new XmlException(string.Format("Не найден префикс пространста имен {0}", Soap11Namespace));
-            var elementsByTagName = xmlDocument.GetElementsByTagName("Security", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd");
-            if (elementsByTagName.Count == 1)
-            {
-                // Добавляем actor в исходящие сообщение
-                var attribute = xmlDocument.CreateAttribute(prefixOfNamespace + ":actor", Soap11Namespace);
-                attribute.Value = theFactory.SenderActor;
-                var xmlAttributeCollection = elementsByTagName[0].Attributes;
-                if (xmlAttributeCollection != null)
-                {
-                    xmlAttributeCollection.Append(attribute);
-                }
-            }
             var memoryStream = new MemoryStream();
-            using (var w = XmlWriter.Create(memoryStream, new XmlWriterSettings()
-                {
-                    OmitXmlDeclaration = true,
-                    Encoding = new UTF8Encoding(false)
-                }))
-                xmlDocument.Save(w);
+            this.WriteMessage(message, memoryStream);
+
+            var buffer2 = memoryStream.GetBuffer();
+            var messageLength = (int)memoryStream.Position;
+            memoryStream.Close();
+            var bufferSize = messageLength + messageOffset;
+            var array = bufferManager.TakeBuffer(bufferSize);
+            Array.Copy(buffer2, 0, array, messageOffset, messageLength);
+            return new ArraySegment<byte>(array, messageOffset, messageLength);
+        }
+
+        public override void WriteMessage(Message message, Stream stream)
+        {
+            XmlDocument xmlDocument = new XmlDocument();
+            xmlDocument.PreserveWhitespace = true;
+
+            using (MemoryStream memstr = new MemoryStream())
+            {
+                using (XmlWriter xwriter = XmlWriter.Create(memstr, writerSettings))
+                    message.WriteMessage(xwriter);
+                memstr.Position = 0;
+                xmlDocument.Load(memstr);
+            }
+
+            XmlNodeList SecurityXmlNodeList = xmlDocument.GetElementsByTagName("Security", CPSignedXml.WSSecurityWSSENamespaceUrl);
+            foreach (XmlNode SecurityXmlNode in SecurityXmlNodeList)
+            {
+                XmlAttribute actorXmlAttribute = xmlDocument.CreateAttribute("actor", SoapHelper.Soap11Namespace);
+                actorXmlAttribute.Value = factory.SenderActor;
+
+                SecurityXmlNode.Attributes.Append(actorXmlAttribute);
+            }
 
             #region логирование
 
-            try
-            {
-                if (LoggerInstance != null)
+            if (LoggerInstance != null)
+                try
                 {
+
                     if (CorrelationObject == null)
                     {
                         CorrelationObject = new Correlation();
@@ -410,7 +429,7 @@ namespace Cav.Soap
                     }
 
                     StringBuilder sb = new StringBuilder();
-                    using (var xw = XmlWriter.Create(sb, new XmlWriterSettings() { OmitXmlDeclaration = true }))
+                    using (var xw = XmlWriter.Create(sb, this.writerSettings))
                         xmlDocument.WriteTo(xw);
 
                     var sp = new SoapPackage(
@@ -423,36 +442,43 @@ namespace Cav.Soap
 
                     ExecLogThreadHelper.WriteLog(LoggerInstance, sp);
                 }
-            }
-            catch
-            {
-                // TODO залогировать исключение
-            }
-            finally
-            {
-                if (CorrelationObject != null && CorrelationObject.Direction == Dir.ServiceDirection)
-                    CorrelationObject = null;
-            }
+                catch
+                {
+                    // TODO залогировать исключение, наверное
+                }
+                finally
+                {
+                    if (CorrelationObject != null && CorrelationObject.Direction == Dir.ServiceDirection)
+                        CorrelationObject = null;
+                }
 
             #endregion
 
-            var buffer2 = memoryStream.GetBuffer();
-            var num = (int)memoryStream.Position;
-            memoryStream.Close();
-            var bufferSize = num + messageOffset;
-            var array = bufferManager.TakeBuffer(bufferSize);
-            Array.Copy(buffer2, 0, array, messageOffset, num);
-            return new ArraySegment<byte>(array, messageOffset, num);
+            using (XmlWriter xwr = XmlWriter.Create(stream, writerSettings))
+                xmlDocument.WriteTo(xwr);
         }
 
-        public override void WriteMessage(Message message, System.IO.Stream stream)
-        {
-            theFactory.InnerFactory.Encoder.WriteMessage(message, stream);
-        }
+        #endregion
 
         public override bool IsContentTypeSupported(string contentType)
         {
-            return base.IsContentTypeSupported(contentType);
+            if (base.IsContentTypeSupported(contentType))
+            {
+                return true;
+            }
+            if (contentType.Length == this.MediaType.Length)
+            {
+                return contentType.Equals(this.MediaType, StringComparison.OrdinalIgnoreCase);
+            }
+            else
+            {
+                if (contentType.StartsWith(this.MediaType, StringComparison.OrdinalIgnoreCase)
+                    && (contentType[this.MediaType.Length] == ';'))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 

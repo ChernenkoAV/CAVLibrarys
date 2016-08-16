@@ -11,6 +11,12 @@ namespace Cav.Soap
     /// </summary>
     public static class SoapHelper
     {
+        #region Константы
+
+        internal const string Soap11Namespace = "http://schemas.xmlsoap.org/soap/envelope/";
+
+        #endregion
+
         ///// <summary>
         ///// Для клиентов, написаных на базе System.Web.Services.Protocols.SoapHttpClientProtocol
         ///// </summary>

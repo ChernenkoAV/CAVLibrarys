@@ -263,4 +263,47 @@ namespace Cav.DigitalSignature
 
 
     }
+
+    /// <summary>
+    /// Константы для упрощения создания Xml подписи по ГОСТ 34.10.
+    /// </summary>
+    public static class CPSignedXml
+    {
+        /// <summary>
+        /// Представляет универсальный код ресурса (URI) метода подписи ГОСТ 34.10-2001 для цифровых подписей XML. Это поле имеет постоянное значение.
+        /// </summary>
+        public const string XmlDsigGost3410Url = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34102001-gostr3411";
+
+        /// <summary>
+        /// Представляет универсальный код ресурса (URI) метода подписи ГОСТ 34.10-2001 для цифровых подписей XML. Это поле имеет постоянное значение.
+        /// </summary>
+        [Obsolete]
+        public const string XmlDsigGost3410UrlObsolete = "http://www.w3.org/2001/04/xmldsig-more#gostr34102001-gostr3411";
+
+        /// <summary>
+        /// Представляет универсальный код ресурса (URI) алгоритма GOST3411HMAC для цифровых подписей XML. Это поле имеет постоянное значение.
+        /// </summary>
+        public const string XmlDsigGost3411HMACUrl = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:hmac-gostr3411";
+
+        /// <summary>
+        /// Представляет универсальный код ресурса (URI) метода хэширования ГОСТ Р 34.11. Это поле имеет постоянное значение.
+        /// </summary>
+        public const string XmlDsigGost3411Url = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr3411";
+
+        /// <summary>
+        /// Представляет универсальный код ресурса (URI) метода хэширования ГОСТ Р 34.11. Это поле имеет постоянное значение.
+        /// </summary>
+        [Obsolete]
+        public const string XmlDsigGost3411UrlObsolete = "http://www.w3.org/2001/04/xmldsig-more#gostr3411";
+
+        /// <summary>
+        /// Пространство имен  для wssecurity-utility
+        /// </summary>
+        public const string WSSecurityWSUNamespaceUrl = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd";
+
+        /// <summary>
+        /// Пространство имен  для wssecurity-secext
+        /// </summary>
+        public const string WSSecurityWSSENamespaceUrl = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd";
+    }
 }

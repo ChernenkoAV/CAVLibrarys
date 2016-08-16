@@ -130,46 +130,6 @@
             <param name="Xml"></param>
             <returns></returns>
         </member>
-        <member name="T:Cav.DigitalSignature.CryptoProRutine.CPSignedXml">
-            <summary>
-            Дополнительная информация для упрощения создания Xml подписи по ГОСТ 34.10.
-            </summary>
-        </member>
-        <member name="F:Cav.DigitalSignature.CryptoProRutine.CPSignedXml.XmlDsigGost3410Url">
-            <summary>
-            Представляет универсальный код ресурса (URI) метода подписи ГОСТ 34.10-2001 для цифровых подписей XML. Это поле имеет постоянное значение.
-            </summary>
-        </member>
-        <member name="F:Cav.DigitalSignature.CryptoProRutine.CPSignedXml.XmlDsigGost3410UrlObsolete">
-            <summary>
-            Представляет универсальный код ресурса (URI) метода подписи ГОСТ 34.10-2001 для цифровых подписей XML. Это поле имеет постоянное значение.
-            </summary>
-        </member>
-        <member name="F:Cav.DigitalSignature.CryptoProRutine.CPSignedXml.XmlDsigGost3411HMACUrl">
-            <summary>
-            Представляет универсальный код ресурса (URI) алгоритма GOST3411HMAC для цифровых подписей XML. Это поле имеет постоянное значение.
-            </summary>
-        </member>
-        <member name="F:Cav.DigitalSignature.CryptoProRutine.CPSignedXml.XmlDsigGost3411Url">
-            <summary>
-            Представляет универсальный код ресурса (URI) метода хэширования ГОСТ Р 34.11. Это поле имеет постоянное значение.
-            </summary>
-        </member>
-        <member name="F:Cav.DigitalSignature.CryptoProRutine.CPSignedXml.XmlDsigGost3411UrlObsolete">
-            <summary>
-            Представляет универсальный код ресурса (URI) метода хэширования ГОСТ Р 34.11. Это поле имеет постоянное значение.
-            </summary>
-        </member>
-        <member name="F:Cav.DigitalSignature.CryptoProRutine.CPSignedXml.WSSecurityWSUNamespaceUrl">
-            <summary>
-            Пространство имен  для wssecurity-utility
-            </summary>
-        </member>
-        <member name="F:Cav.DigitalSignature.CryptoProRutine.CPSignedXml.WSSecurityWSSENamespaceUrl">
-            <summary>
-            Пространство имен  для wssecurity-secext
-            </summary>
-        </member>
         <member name="T:Cav.DigitalSignature.CryptoProRutine.SmevSignedXml">
             <summary>
             Класс SmevSignedXml - наследник класса SignedXml с перегруженным GetIdElement для корректной обработки атрибута wsu:Id. 
@@ -256,6 +216,46 @@
         <member name="P:Cav.DigitalSignature.DSGeneric.Certificate">
             <summary>
             Сертификат (буфер)
+            </summary>
+        </member>
+        <member name="T:Cav.DigitalSignature.CPSignedXml">
+            <summary>
+            Константы для упрощения создания Xml подписи по ГОСТ 34.10.
+            </summary>
+        </member>
+        <member name="F:Cav.DigitalSignature.CPSignedXml.XmlDsigGost3410Url">
+            <summary>
+            Представляет универсальный код ресурса (URI) метода подписи ГОСТ 34.10-2001 для цифровых подписей XML. Это поле имеет постоянное значение.
+            </summary>
+        </member>
+        <member name="F:Cav.DigitalSignature.CPSignedXml.XmlDsigGost3410UrlObsolete">
+            <summary>
+            Представляет универсальный код ресурса (URI) метода подписи ГОСТ 34.10-2001 для цифровых подписей XML. Это поле имеет постоянное значение.
+            </summary>
+        </member>
+        <member name="F:Cav.DigitalSignature.CPSignedXml.XmlDsigGost3411HMACUrl">
+            <summary>
+            Представляет универсальный код ресурса (URI) алгоритма GOST3411HMAC для цифровых подписей XML. Это поле имеет постоянное значение.
+            </summary>
+        </member>
+        <member name="F:Cav.DigitalSignature.CPSignedXml.XmlDsigGost3411Url">
+            <summary>
+            Представляет универсальный код ресурса (URI) метода хэширования ГОСТ Р 34.11. Это поле имеет постоянное значение.
+            </summary>
+        </member>
+        <member name="F:Cav.DigitalSignature.CPSignedXml.XmlDsigGost3411UrlObsolete">
+            <summary>
+            Представляет универсальный код ресурса (URI) метода хэширования ГОСТ Р 34.11. Это поле имеет постоянное значение.
+            </summary>
+        </member>
+        <member name="F:Cav.DigitalSignature.CPSignedXml.WSSecurityWSUNamespaceUrl">
+            <summary>
+            Пространство имен  для wssecurity-utility
+            </summary>
+        </member>
+        <member name="F:Cav.DigitalSignature.CPSignedXml.WSSecurityWSSENamespaceUrl">
+            <summary>
+            Пространство имен  для wssecurity-secext
             </summary>
         </member>
         <member name="T:Cav.WinService.Manager">
@@ -957,13 +957,6 @@
             <summary>
             Хелпер для работы с сервисами/клиентами веб-служб
             </summary>
-        </member>
-        <member name="M:Cav.Soap.SoapHelper.ToStr(Cav.Soap.DirectionMessage)">
-            <summary>
-            Приведение к строке для записи в БД. А то там вообще не понятно
-            </summary>
-            <param name="dm"></param>
-            <returns></returns>
         </member>
         <member name="M:Cav.Soap.SoapHelper.CreateClient``1(System.String,System.ServiceModel.Security.SecurityAlgorithmSuite,System.Security.Cryptography.X509Certificates.X509Certificate2,System.Security.Cryptography.X509Certificates.X509Certificate2,System.Type,Cav.Soap.ISoapPackageLog,System.Boolean,System.String,System.String,System.String,System.Nullable{System.TimeSpan},System.Boolean)">
             <summary>

@@ -18,20 +18,6 @@ namespace Cav
     /// </summary>
     public static partial class DomainContext
     {
-
-        #region Новый TransactionScope
-
-        /// <summary>
-        /// Новый TransactionScope. Что бы не референсить на System.Transaction
-        /// </summary>
-        /// <returns></returns>
-        public static TransactionScope NewTransactionScope()
-        { 
-            return new TransactionScope();
-        }
-                
-        #endregion
-
         #region Для запуска программы в одном экземпляре (На базе поиска процесса)
 
         [DllImport("User32.dll")]
@@ -87,94 +73,131 @@ namespace Cav
         private static String defaultNameConnection = "DefaultNameConnectionForConnectionCollectionOnDomainContext";
 
         /// <summary>
-        /// Коллекция строк соединения с SQL Server
+        /// Коллекция настроек соединения с БД
         /// </summary>
-        private static Dictionary<String, DbConnectionStringBuilder> dcsb = new Dictionary<string, DbConnectionStringBuilder>();
+        private static Dictionary<String, SettingConnection> dcsb = new Dictionary<string, SettingConnection>();
+        private struct SettingConnection
+        {
+            public String ConnectionString { get; set; }
+            public Type ConnectionType { get; set; }
+        }
 
         /// <summary>
-        /// Инициализация подключения к БД.
+        /// Инициализация подключения к БД SqlServer.
         /// </summary>
-        /// <param name="Server"></param>
-        /// <param name="DBName"></param>
-        /// <param name="Login"></param>
-        /// <param name="Pass"></param>
-        /// <param name="IntegratedSecurity">IntegratedSecurity</param>
+        /// <param name="server"></param>
+        /// <param name="dbName"></param>
+        /// <param name="login"></param>
+        /// <param name="pass"></param>
+        /// <param name="integratedSecurity">IntegratedSecurity</param>
         /// <param name="MARS">MultipleActiveResultSets</param>
-        /// <param name="ApplicationName">Наименование приожения</param>
-        /// <param name="ConnectionName">има подключения для коллекции</param>
+        /// <param name="applicationName">Наименование приожения</param>
+        /// <param name="connectionName">има подключения для коллекции</param>
+        /// <param name="pooling">Добавлять подключение в пул</param>
         /// <returns>Сформированная строка соединения</returns>
         public static string InitConnection(
-            String Server,
-            String DBName,
-            String Login = null,
-            String Pass = null,
-            Boolean IntegratedSecurity = false,
+            String server,
+            String dbName,
+            String login = null,
+            String pass = null,
+            Boolean integratedSecurity = false,
             Boolean MARS = false,
-            String ApplicationName = null,
-            String ConnectionName = null)
+            String applicationName = null,
+            String connectionName = null,
+            Boolean pooling = false)
         {
             var scsb = new SqlConnectionStringBuilder();
-            scsb.DataSource = Server;
-            scsb.InitialCatalog = DBName;
-            scsb.IntegratedSecurity = IntegratedSecurity;
+            scsb.DataSource = server;
+            scsb.InitialCatalog = dbName;
+            scsb.IntegratedSecurity = integratedSecurity;
             scsb.MultipleActiveResultSets = MARS;
+            scsb["LANGUAGE"] = "Russian";
+            scsb.ConnectTimeout = 5;
+            scsb.Pooling = pooling;
 
-            if (!Login.IsNullOrWhiteSpace())
-                scsb.UserID = Login;
-            if (!Pass.IsNullOrWhiteSpace())
-                scsb.Password = Pass;
-            if (!ApplicationName.IsNullOrWhiteSpace())
-                scsb.ApplicationName = ApplicationName;
+            if (!login.IsNullOrWhiteSpace())
+                scsb.UserID = login;
+            if (!pass.IsNullOrWhiteSpace())
+                scsb.Password = pass;
+            if (!applicationName.IsNullOrWhiteSpace())
+                scsb.ApplicationName = applicationName;
 
-            if (ConnectionName.IsNullOrWhiteSpace())
-                ConnectionName = defaultNameConnection;
+            if (connectionName.IsNullOrWhiteSpace())
+                connectionName = defaultNameConnection;
 
             InitConnection(
-                ConnectionString: scsb.ToString(),
-                ConnectionName: ConnectionName);
+                connectionString: scsb.ToString(),
+                connectionName: connectionName);
 
             return scsb.ToString();
         }
 
         /// <summary>
-        /// Настройка подключения к БД. Проверка соединения.
+        /// Настройка подключения к БД SQl Server. Проверка соединения.
         /// </summary>
-        /// <param name="ConnectionString">Строка подключения</param>
-        /// <param name="ConnectionName">има подключения для коллекции</param>
+        /// <param name="connectionString">Строка подключения</param>
+        /// <param name="pooling">Добавлять подключение в пул</param>
+        /// <param name="connectionName">Имя подключения для коллекции</param>
         public static void InitConnection(
-            String ConnectionString,
-            String ConnectionName = null)
+            String connectionString,
+            Boolean pooling = false,
+            String connectionName = null)
         {
-            if (ConnectionName.IsNullOrWhiteSpace())
-                ConnectionName = defaultNameConnection;
+            if (connectionName.IsNullOrWhiteSpace())
+                connectionName = defaultNameConnection;
 
-            SqlConnectionStringBuilder scsb = new SqlConnectionStringBuilder(ConnectionString);
+            SqlConnectionStringBuilder scsb = new SqlConnectionStringBuilder(connectionString);
             scsb["LANGUAGE"] = "Russian";
             scsb.ConnectTimeout = 5;
-            scsb.Pooling = false;
-            using (var connection = new SqlConnection(scsb.ToString()))
-                connection.Open();
+            scsb.Pooling = pooling;
 
-            if (dcsb.ContainsKey(ConnectionName))
-                dcsb[ConnectionName] = scsb;
+            InitConnection<SqlConnection>(connectionString, connectionName);
+        }
+
+        /// <summary>
+        /// Инициализация нового соединения с БД указанного типа. Проверка соединения с сервером.
+        /// </summary>
+        /// <typeparam name="TConnection">Тип - наследник DbConnection</typeparam>
+        /// <param name="connectionString">Строка соединения</param>
+        /// <param name="connectionName">Имя подключения</param>
+        public static void InitConnection<TConnection>(
+            String connectionString,
+            String connectionName = null)
+            where TConnection : DbConnection
+        {
+            if (connectionName.IsNullOrWhiteSpace())
+                connectionName = defaultNameConnection;
+
+            using (DbConnection conn = (DbConnection)Activator.CreateInstance(typeof(TConnection), connectionString))
+                conn.Open();
+
+            var setCon = new SettingConnection()
+                {
+                    ConnectionString = connectionString,
+                    ConnectionType = typeof(TConnection)
+                };
+
+            if (dcsb.ContainsKey(connectionName))
+                dcsb[connectionName] = setCon;
             else
-                dcsb.Add(ConnectionName, scsb);
+                dcsb.Add(connectionName, setCon);
         }
 
         /// <summary>
         /// Получение экземпляра открытого соединения с БД
         /// </summary>
-        /// <param name="ConnectionName">Имя соединения в коллекции</param>
+        /// <param name="connectionName">Имя соединения в коллекции</param>
         /// <returns></returns>
-        public static SqlConnection Connection(String ConnectionName = null)
+        public static DbConnection Connection(String connectionName = null)
         {
-            if (ConnectionName.IsNullOrWhiteSpace())
-                ConnectionName = defaultNameConnection;
+            if (connectionName.IsNullOrWhiteSpace())
+                connectionName = defaultNameConnection;
 
-            if (!dcsb.ContainsKey(ConnectionName))
+            if (!dcsb.ContainsKey(connectionName))
                 throw new Exception("Соединение с БД не настроено");
 
-            var connection = new SqlConnection(dcsb[ConnectionName].ToString());
+            var setCon = dcsb[connectionName];
+            var connection = (DbConnection)Activator.CreateInstance(setCon.ConnectionType, setCon.ConnectionString);
             connection.Open();
             return connection;
         }
@@ -327,7 +350,7 @@ namespace Cav
         }
 
         /// <summary>
-        /// Логин, под которым прилогинены к БД
+        /// Логин, под которым прилогинены к БД. Работает только для Sql Server.
         /// </summary>
         /// <param name="ConnectionName">Имя соедиения</param>
         public static String UserLogin(String ConnectionName = null)
@@ -338,7 +361,12 @@ namespace Cav
             if (!dcsb.ContainsKey(ConnectionName))
                 throw new Exception("Не настроено соединение с БД");
 
-            return ((SqlConnectionStringBuilder)dcsb[ConnectionName]).UserID;
+            var setCom = dcsb[ConnectionName];
+            if (setCom.ConnectionType != typeof(SqlConnection))
+                return null;
+            var sqlConBuild = new SqlConnectionStringBuilder(setCom.ConnectionString);
+
+            return sqlConBuild.UserID;
         }
 
         #endregion

@@ -304,12 +304,6 @@
             Домен приложения.
             </summary>
         </member>
-        <member name="M:Cav.DomainContext.NewTransactionScope">
-            <summary>
-            Новый TransactionScope. Что бы не референсить на System.Transaction
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:Cav.DomainContext.FindStartedProgram(System.Boolean)">
             <summary>
             Поиск процесса запущенного приложения
@@ -319,40 +313,50 @@
         </member>
         <member name="F:Cav.DomainContext.dcsb">
             <summary>
-            Коллекция строк соединения с SQL Server
+            Коллекция настроек соединения с БД
             </summary>
         </member>
-        <member name="M:Cav.DomainContext.InitConnection(System.String,System.String,System.String,System.String,System.Boolean,System.Boolean,System.String,System.String)">
+        <member name="M:Cav.DomainContext.InitConnection(System.String,System.String,System.String,System.String,System.Boolean,System.Boolean,System.String,System.String,System.Boolean)">
             <summary>
-            Инициализация подключения к БД.
+            Инициализация подключения к БД SqlServer.
             </summary>
-            <param name="Server"></param>
-            <param name="DBName"></param>
-            <param name="Login"></param>
-            <param name="Pass"></param>
-            <param name="IntegratedSecurity">IntegratedSecurity</param>
+            <param name="server"></param>
+            <param name="dbName"></param>
+            <param name="login"></param>
+            <param name="pass"></param>
+            <param name="integratedSecurity">IntegratedSecurity</param>
             <param name="MARS">MultipleActiveResultSets</param>
-            <param name="ApplicationName">Наименование приожения</param>
-            <param name="ConnectionName">има подключения для коллекции</param>
+            <param name="applicationName">Наименование приожения</param>
+            <param name="connectionName">има подключения для коллекции</param>
+            <param name="pooling">Добавлять подключение в пул</param>
             <returns>Сформированная строка соединения</returns>
         </member>
-        <member name="M:Cav.DomainContext.InitConnection(System.String,System.String)">
+        <member name="M:Cav.DomainContext.InitConnection(System.String,System.Boolean,System.String)">
             <summary>
-            Настройка подключения к БД. Проверка соединения.
+            Настройка подключения к БД SQl Server. Проверка соединения.
             </summary>
-            <param name="ConnectionString">Строка подключения</param>
-            <param name="ConnectionName">има подключения для коллекции</param>
+            <param name="connectionString">Строка подключения</param>
+            <param name="pooling">Добавлять подключение в пул</param>
+            <param name="connectionName">Имя подключения для коллекции</param>
+        </member>
+        <member name="M:Cav.DomainContext.InitConnection``1(System.String,System.String)">
+            <summary>
+            Инициализация нового соединения с БД указанного типа. Проверка соединения с сервером.
+            </summary>
+            <typeparam name="TConnection">Тип - наследник DbConnection</typeparam>
+            <param name="connectionString">Строка соединения</param>
+            <param name="connectionName">Имя подключения</param>
         </member>
         <member name="M:Cav.DomainContext.Connection(System.String)">
             <summary>
             Получение экземпляра открытого соединения с БД
             </summary>
-            <param name="ConnectionName">Имя соединения в коллекции</param>
+            <param name="connectionName">Имя соединения в коллекции</param>
             <returns></returns>
         </member>
         <member name="M:Cav.DomainContext.UserLogin(System.String)">
             <summary>
-            Логин, под которым прилогинены к БД
+            Логин, под которым прилогинены к БД. Работает только для Sql Server.
             </summary>
             <param name="ConnectionName">Имя соедиения</param>
         </member>

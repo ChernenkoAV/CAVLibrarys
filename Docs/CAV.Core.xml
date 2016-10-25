@@ -32,7 +32,7 @@
         </member>
         <member name="M:Cav.BaseClases.DBAdapterBase.tuneCommand(System.Data.Common.DbCommand)">
             <summary>
-            Настройка комманды перед использованием
+            Настройка команды перед использованием
             </summary>
             <param name="comm"></param>
             <returns></returns>
@@ -124,19 +124,19 @@
             <summary>
             Выполняет запрос и возвращает первый столбец первой строки результирующего набора, возвращаемого запросом. Все другие столбцы и строки игнорируются.
             </summary>
-            <param name="cmd">Комманда</param>
-            <returns>Результат выполнения комманды</returns>
+            <param name="cmd">команда</param>
+            <returns>Результат выполнения команды</returns>
         </member>
         <member name="M:Cav.DataAcces.DataAccesBase.ExecuteReader(System.Data.Common.DbCommand)">
             <summary>
-            Выполнене комманды с возвратом DbDataReader. После обработки данных необходимо выполнить DisposeConnection(DbCommand cmd)
+            Выполнене команды с возвратом DbDataReader. После обработки данных необходимо выполнить DisposeConnection(DbCommand cmd)
             </summary>
-            <param name="cmd">Комманда</param>
+            <param name="cmd">команда</param>
             <returns>Ридер</returns>
         </member>
         <member name="M:Cav.DataAcces.DataAccesBase.ExecuteNonQuery(System.Data.Common.DbCommand)">
             <summary>
-            Выполнение комманды без возврата данных
+            Выполнение команды без возврата данных
             </summary>
             <param name="cmd">команда</param>
             <returns>Количество затронутых строк</returns>
@@ -204,7 +204,7 @@
         </member>
         <member name="M:Cav.DataAcces.DataAccesBase`2.ConfigCommand(Cav.DataAcces.DataAccesBase{`0,`1}.AdapterConfig)">
             <summary>
-            Конфигурация адаптера комманды
+            Конфигурация адаптера команды
             </summary>
             <param name="config">Объект с настройками адаптера</param>
         </member>
@@ -213,12 +213,37 @@
             Класс инкапсуляции настроек адаптера
             </summary>
         </member>
-        <member name="T:Cav.DataAcces.DataAccesBase`2.DataAccesCommandType">
+        <member name="M:Cav.DataAcces.DataAccesBase`2.AdapterConfig.#ctor">
             <summary>
-            Тип комманды в адаптере
+            Класс инкапсуляции настроек адаптера
             </summary>
         </member>
-        <member name="T:Cav.DataAcces.DataAccesBase`2.AdapterActionType">
+        <member name="P:Cav.DataAcces.DataAccesBase`2.AdapterConfig.TextCommand">
+            <summary>
+            Текст команды
+            </summary>
+        </member>
+        <member name="P:Cav.DataAcces.DataAccesBase`2.AdapterConfig.TimeoutCommand">
+            <summary>
+            Таймаут команды. ПО умолчанию - 15
+            </summary>
+        </member>
+        <member name="P:Cav.DataAcces.DataAccesBase`2.AdapterConfig.TypeCommand">
+            <summary>
+            Тип команды
+            </summary>
+        </member>
+        <member name="P:Cav.DataAcces.DataAccesBase`2.AdapterConfig.ActionType">
+            <summary>
+            Тип действия команды
+            </summary>
+        </member>
+        <member name="T:Cav.DataAcces.DataAccesBase`2.DataAccesCommandType">
+            <summary>
+            Тип команды в адаптере
+            </summary>
+        </member>
+        <member name="T:Cav.DataAcces.DataAccesBase`2.CommandActionType">
             <summary>
             Тип действия адаптера
             </summary>
@@ -244,7 +269,7 @@
             </summary>
             <param name="deleteParams"></param>
         </member>
-        <member name="M:Cav.DataAcces.DataAccesBase`4.MapDelteParam(System.Linq.Expressions.Expression{System.Func{`3,System.Object}},System.String)">
+        <member name="M:Cav.DataAcces.DataAccesBase`4.MapDeleteParam(System.Linq.Expressions.Expression{System.Func{`3,System.Object}},System.String)">
             <summary>
             Сопоставление объекта параметров удаления и параметров адаптера удаления
             </summary>

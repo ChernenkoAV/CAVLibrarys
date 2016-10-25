@@ -40,8 +40,8 @@ namespace Cav.DataAcces
         /// <summary>
         /// Выполняет запрос и возвращает первый столбец первой строки результирующего набора, возвращаемого запросом. Все другие столбцы и строки игнорируются.
         /// </summary>
-        /// <param name="cmd">Комманда</param>
-        /// <returns>Результат выполнения комманды</returns>
+        /// <param name="cmd">команда</param>
+        /// <returns>Результат выполнения команды</returns>
         protected Object ExecuteScalar(DbCommand cmd)
         {
             try
@@ -60,13 +60,13 @@ namespace Cav.DataAcces
                 DisposeConnection(cmd);
             }
 
-            throw new ApplicationException("При обработке исключения выполнения комманды дальнейшее выполнение невозможно.");
+            throw new ApplicationException("При обработке исключения выполнения команды дальнейшее выполнение невозможно.");
         }
 
         /// <summary>
-        /// Выполнене комманды с возвратом DbDataReader. После обработки данных необходимо выполнить DisposeConnection(DbCommand cmd)
+        /// Выполнене команды с возвратом DbDataReader. После обработки данных необходимо выполнить DisposeConnection(DbCommand cmd)
         /// </summary>
-        /// <param name="cmd">Комманда</param>
+        /// <param name="cmd">команда</param>
         /// <returns>Ридер</returns>
         protected DbDataReader ExecuteReader(DbCommand cmd)
         {
@@ -82,11 +82,11 @@ namespace Cav.DataAcces
                     throw;
             }
 
-            throw new ApplicationException("При обработке исключения выполнения комманды дальнейшее выполнение невозможно.");
+            throw new ApplicationException("При обработке исключения выполнения команды дальнейшее выполнение невозможно.");
         }
 
         /// <summary>
-        /// Выполнение комманды без возврата данных
+        /// Выполнение команды без возврата данных
         /// </summary>
         /// <param name="cmd">команда</param>
         /// <returns>Количество затронутых строк</returns>
@@ -108,7 +108,7 @@ namespace Cav.DataAcces
                 DisposeConnection(cmd);
             }
 
-            throw new ApplicationException("При обработке исключения выполнения комманды дальнейшее выполнение невозможно.");
+            throw new ApplicationException("При обработке исключения выполнения команды дальнейшее выполнение невозможно.");
         }
 
         /// <summary>

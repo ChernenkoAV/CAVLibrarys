@@ -28,7 +28,7 @@ namespace Cav.DataAcces
         {
             this.Configured();
 
-            DbCommand execCom = AddParamToCommand(AdapterActionType.Insert, insertExpression, newObj);
+            DbCommand execCom = AddParamToCommand(CommandActionType.Insert, insertExpression, newObj);
             using (var rdr = ExecuteReader(execCom))
                 while (rdr.Read())
                     foreach (var ff in insertPropKeyFieldMap)
@@ -48,7 +48,7 @@ namespace Cav.DataAcces
         /// <param name="paramName"></param>
         protected void MapInsertParam(Expression<Func<Trow, Object>> property, String paramName)
         {
-            MapParam(AdapterActionType.Insert, property, paramName);
+            MapParam(CommandActionType.Insert, property, paramName);
 
             var paramExp = property.Parameters[0];
 
@@ -99,7 +99,7 @@ namespace Cav.DataAcces
         {
             this.Configured();
 
-            DbCommand execCom = AddParamToCommand(AdapterActionType.Delete, deleteParams);
+            DbCommand execCom = AddParamToCommand(CommandActionType.Delete, deleteParams);
             ExecuteNonQuery(execCom);
         }
 
@@ -108,9 +108,9 @@ namespace Cav.DataAcces
         /// </summary>
         /// <param name="property"></param>
         /// <param name="paramName"></param>
-        protected void MapDelteParam(Expression<Func<TdeleteParams, Object>> property, String paramName)
+        protected void MapDeleteParam(Expression<Func<TdeleteParams, Object>> property, String paramName)
         {
-            MapParam(AdapterActionType.Delete, property, paramName);
+            MapParam(CommandActionType.Delete, property, paramName);
         }
 
         #endregion
@@ -125,7 +125,7 @@ namespace Cav.DataAcces
         {
             this.Configured();
 
-            DbCommand execCom = AddParamToCommand(AdapterActionType.Update, updateParams);
+            DbCommand execCom = AddParamToCommand(CommandActionType.Update, updateParams);
             ExecuteNonQuery(execCom);
         }
 
@@ -136,7 +136,7 @@ namespace Cav.DataAcces
         /// <param name="paramName"></param>
         protected void MapUpdateParam(Expression<Func<TupdateParams, Object>> property, String paramName)
         {
-            MapParam(AdapterActionType.Update, property, paramName);
+            MapParam(CommandActionType.Update, property, paramName);
         }
 
         #endregion

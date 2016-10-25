@@ -29,7 +29,7 @@ namespace Cav.DataAcces
             this.Configured();
             List<THeritorType> res = new List<THeritorType>();
 
-            DbCommand ExecCom = AddParamToCommand(AdapterActionType.Select, selectParams);
+            DbCommand ExecCom = AddParamToCommand(CommandActionType.Select, selectParams);
             using (var rdr = ExecuteReader(ExecCom))
                 while (rdr.Read())
                 {
@@ -45,11 +45,11 @@ namespace Cav.DataAcces
             return res.ToArray();
         }
 
-        internal DbCommand AddParamToCommand(AdapterActionType actionType, Expression paramsExpr, Trow obj = null)
+        internal DbCommand AddParamToCommand(CommandActionType actionType, Expression paramsExpr, Trow obj = null)
         {
             DbCommand command = null;
             if (!comands.TryGetValue(actionType, out command))
-                throw new NotImplementedException("Комманда для " + actionType.ToString() + " не настроена");
+                throw new NotImplementedException("команда для " + actionType.ToString() + " не настроена");
 
             command.Parameters.Clear();
             String key = actionType.ToString();
@@ -177,10 +177,10 @@ namespace Cav.DataAcces
         /// <param name="paramName"></param>
         protected void MapSelectParam(Expression<Func<TselectParams, Object>> property, String paramName)
         {
-            MapParam(AdapterActionType.Select, property, paramName);
+            MapParam(CommandActionType.Select, property, paramName);
         }
 
-        internal void MapParam(AdapterActionType actionType, Expression property, String paramName)
+        internal void MapParam(CommandActionType actionType, Expression property, String paramName)
         {
             if (paramName.IsNullOrWhiteSpace())
                 throw new ArgumentNullException("Имя параметра не может быть пустым, состоять из пробелов или быть null");
@@ -201,7 +201,7 @@ namespace Cav.DataAcces
         }
 
         /// <summary>
-        /// Конфигурация адаптера комманды
+        /// Конфигурация адаптера команды
         /// </summary>
         /// <param name="config">Объект с настройками адаптера</param>
         protected void ConfigCommand(AdapterConfig config)
@@ -209,7 +209,7 @@ namespace Cav.DataAcces
             if (comands.ContainsKey(config.ActionType))
                 throw new ArgumentException("В адаптере уже определена сомманда с типом " + config.ActionType.ToString());
             if (config.TextCommand.IsNullOrWhiteSpace())
-                throw new ArgumentNullException("Текст комманды не может быть пустым");
+                throw new ArgumentNullException("Текст команды не может быть пустым");
 
             var cmmnd = this.CreateCommandObject();
             cmmnd.CommandText = config.TextCommand;
@@ -233,18 +233,33 @@ namespace Cav.DataAcces
         /// </summary>
         protected sealed class AdapterConfig
         {
+            /// <summary>
+            /// Класс инкапсуляции настроек адаптера
+            /// </summary>
             public AdapterConfig()
             {
                 TimeoutCommand = 15;
             }
+            /// <summary>
+            /// Текст команды
+            /// </summary>
             public String TextCommand { get; set; }
+            /// <summary>
+            /// Таймаут команды. ПО умолчанию - 15
+            /// </summary>
             public int TimeoutCommand { get; set; }
+            /// <summary>
+            /// Тип команды
+            /// </summary>
             public DataAccesCommandType TypeCommand { get; set; }
-            public AdapterActionType ActionType { get; set; }
+            /// <summary>
+            /// Тип действия команды
+            /// </summary>
+            public CommandActionType ActionType { get; set; }
         }
 
         /// <summary>
-        /// Тип комманды в адаптере
+        /// Тип команды в адаптере
         /// </summary>
         protected enum DataAccesCommandType
         {
@@ -255,7 +270,7 @@ namespace Cav.DataAcces
         /// <summary>
         /// Тип действия адаптера
         /// </summary>
-        public enum AdapterActionType
+        public enum CommandActionType
         {
             Select,
             Insert,
@@ -265,7 +280,7 @@ namespace Cav.DataAcces
 
         private Dictionary<String, Action<Trow, DbDataReader>> selectPropFieldMap = new Dictionary<string, Action<Trow, DbDataReader>>();
         private Dictionary<String, DbParameter> commandParams = new Dictionary<string, DbParameter>();
-        private Dictionary<AdapterActionType, DbCommand> comands = new Dictionary<AdapterActionType, DbCommand>();
+        private Dictionary<CommandActionType, DbCommand> comands = new Dictionary<CommandActionType, DbCommand>();
     }
 
     /// <summary>

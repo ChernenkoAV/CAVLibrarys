@@ -60,7 +60,7 @@ namespace Cav.BaseClases
         }      
 
         /// <summary>
-        /// Настройка комманды перед использованием
+        /// Настройка команды перед использованием
         /// </summary>
         /// <param name="comm"></param>
         /// <returns></returns>
@@ -72,7 +72,7 @@ namespace Cav.BaseClases
         }
 
 
-        #region Выполнение комманд
+        #region Выполнение команд
 
         /// <summary>
         /// Выполнение команды с открытием соединения с БД

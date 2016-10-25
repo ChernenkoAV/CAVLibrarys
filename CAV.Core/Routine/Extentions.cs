@@ -356,10 +356,24 @@ namespace Cav
             return res;
         }
 
+        /// <summary>
+        /// Удаление множественных пробелов до одного. Например: было "     ", станет " ". 
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static String ReplaceDoubleSpace(this String str)
+        {
+            if (str.IsNullOrWhiteSpace())
+                return null;
+            while (str.Contains("  "))
+                str = str.Replace("  ", " ");
+            return str;
+        }
+
         #endregion
 
         /// <summary>
-        /// Развертывание текста исключения
+        /// Развертывание текста исключения + обработка SqlException
         /// </summary>
         /// <param name="ex"></param>
         /// <returns></returns>

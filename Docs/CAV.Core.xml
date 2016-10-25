@@ -109,6 +109,196 @@
             Компонент находится в режиме дизайнера
             </summary>
         </member>
+        <member name="T:Cav.DataAcces.DataAccesBase">
+            <summary>
+            Базовый клас для доступа к функционалу, реализованному в БД. Например, вызову хранимых процедур, возвращающих скалярное значение
+            </summary>
+        </member>
+        <member name="M:Cav.DataAcces.DataAccesBase.CreateCommandObject">
+            <summary>
+            Получение объекта DbCommand при наличии настроенного соединения с БД
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Cav.DataAcces.DataAccesBase.ExecuteScalar(System.Data.Common.DbCommand)">
+            <summary>
+            Выполняет запрос и возвращает первый столбец первой строки результирующего набора, возвращаемого запросом. Все другие столбцы и строки игнорируются.
+            </summary>
+            <param name="cmd">Комманда</param>
+            <returns>Результат выполнения комманды</returns>
+        </member>
+        <member name="M:Cav.DataAcces.DataAccesBase.ExecuteReader(System.Data.Common.DbCommand)">
+            <summary>
+            Выполнене комманды с возвратом DbDataReader. После обработки данных необходимо выполнить DisposeConnection(DbCommand cmd)
+            </summary>
+            <param name="cmd">Комманда</param>
+            <returns>Ридер</returns>
+        </member>
+        <member name="M:Cav.DataAcces.DataAccesBase.ExecuteNonQuery(System.Data.Common.DbCommand)">
+            <summary>
+            Выполнение комманды без возврата данных
+            </summary>
+            <param name="cmd">команда</param>
+            <returns>Количество затронутых строк</returns>
+        </member>
+        <member name="M:Cav.DataAcces.DataAccesBase.DisposeConnection(System.Data.Common.DbCommand)">
+            <summary>
+            Освобождение соедиения с БД
+            </summary>
+            <param name="cmd"></param>
+        </member>
+        <member name="P:Cav.DataAcces.DataAccesBase.ExceptionHandlingExecuteCommand">
+            <summary>
+            Обработчик исключения пры запуске DbCommand. Должен генерировать новое исключение (Для обертки "страшных" сиключений в "нестрашные")
+            </summary>
+        </member>
+        <member name="T:Cav.DataAcces.DataAccesBase`4">
+            <summary>
+            Базовый класс адаптера получения и изменения данных в БД.
+            </summary>
+            <typeparam name="Trow">Класс, на который производится отражение данных из БД</typeparam>
+            <typeparam name="TselectParams">Клас, типизирующий параметры адаптера на выборку</typeparam>
+            <typeparam name="TupdateParams">Клас, типизирующий параметры адаптера на изменение</typeparam>
+            <typeparam name="TdeleteParams">Клас, типизирующий параметры адаптера на удаление</typeparam>
+        </member>
+        <member name="T:Cav.DataAcces.DataAccesBase`2">
+            <summary>
+            Базовый клас для адаптера на получение данных
+            </summary>
+            <typeparam name="Trow">Класс, на который производится отражение данных из БД</typeparam>
+            <typeparam name="TselectParams">Клас, типизирующий параметры адаптера на выборку</typeparam>
+        </member>
+        <member name="M:Cav.DataAcces.DataAccesBase`2.Get``1(System.Linq.Expressions.Expression{System.Action{`1}})">
+            <summary>
+            Получение данных из БД с записью в класс Trow, либо в его наследники
+            </summary>
+            <typeparam name="THeritorType">Указание типа для оторажения данных. Должен быть Trow или его наследником </typeparam>
+            <param name="selectParams">Выражение на основе типа парамеров адаптера на выборку. Если null, то всем параметров присваивается DbNull</param>
+            <returns>Коллекция объектов типа THeritorType</returns>
+        </member>
+        <member name="M:Cav.DataAcces.DataAccesBase`2.Get(System.Linq.Expressions.Expression{System.Action{`1}})">
+            <summary>
+            Получение данных из БД с записью в класс Trow
+            </summary>
+            <param name="selectParams">Выражение на основе типа парамеров адаптера на выборку. Если null, то всем параметров присваивается DbNull</param>
+            <returns>Коллекция объектов типа Trow</returns>
+        </member>
+        <member name="M:Cav.DataAcces.DataAccesBase`2.ConfigAcces">
+            <summary>
+            В производном классе - конфигурция адаптера. 
+            </summary>
+        </member>
+        <member name="M:Cav.DataAcces.DataAccesBase`2.MapSelectField(System.Linq.Expressions.Expression{System.Func{`0,System.Object}},System.String)">
+            <summary>
+            Сопоставление свойства класса отражения с полем результирующего набора данных
+            </summary>
+            <param name="property"></param>
+            <param name="fieldName"></param>
+        </member>
+        <member name="M:Cav.DataAcces.DataAccesBase`2.MapSelectParam(System.Linq.Expressions.Expression{System.Func{`1,System.Object}},System.String)">
+            <summary>
+            Сопоставление свойств класса параметров адаптера с параметрами скрипта выборки
+            </summary>
+            <param name="property"></param>
+            <param name="paramName"></param>
+        </member>
+        <member name="M:Cav.DataAcces.DataAccesBase`2.ConfigCommand(Cav.DataAcces.DataAccesBase{`0,`1}.AdapterConfig)">
+            <summary>
+            Конфигурация адаптера комманды
+            </summary>
+            <param name="config">Объект с настройками адаптера</param>
+        </member>
+        <member name="T:Cav.DataAcces.DataAccesBase`2.AdapterConfig">
+            <summary>
+            Класс инкапсуляции настроек адаптера
+            </summary>
+        </member>
+        <member name="T:Cav.DataAcces.DataAccesBase`2.DataAccesCommandType">
+            <summary>
+            Тип комманды в адаптере
+            </summary>
+        </member>
+        <member name="T:Cav.DataAcces.DataAccesBase`2.AdapterActionType">
+            <summary>
+            Тип действия адаптера
+            </summary>
+        </member>
+        <!-- Некорректный комментарий в формате XML для члена "M:Cav.DataAcces.DataAccesBase`4.Add(`0)" проигнорирован -->
+        <member name="M:Cav.DataAcces.DataAccesBase`4.MapInsertParam(System.Linq.Expressions.Expression{System.Func{`0,System.Object}},System.String)">
+            <summary>
+            Сопоставление свойства объекта отражения и имени параметра адаптера
+            </summary>
+            <param name="property"></param>
+            <param name="paramName"></param>
+        </member>
+        <member name="M:Cav.DataAcces.DataAccesBase`4.MapInsertKeyParam(System.Linq.Expressions.Expression{System.Func{`0,System.Object}},System.String)">
+            <summary>
+            Сопоставление полей объекта отражения данных и возврата ключей послк операции вставки данных
+            </summary>
+            <param name="property"></param>
+            <param name="fieldName"></param>
+        </member>
+        <member name="M:Cav.DataAcces.DataAccesBase`4.Delete(System.Linq.Expressions.Expression{System.Action{`3}})">
+            <summary>
+            Удаление по предикату 
+            </summary>
+            <param name="deleteParams"></param>
+        </member>
+        <member name="M:Cav.DataAcces.DataAccesBase`4.MapDelteParam(System.Linq.Expressions.Expression{System.Func{`3,System.Object}},System.String)">
+            <summary>
+            Сопоставление объекта параметров удаления и параметров адаптера удаления
+            </summary>
+            <param name="property"></param>
+            <param name="paramName"></param>
+        </member>
+        <member name="M:Cav.DataAcces.DataAccesBase`4.Update(System.Linq.Expressions.Expression{System.Action{`2}})">
+            <summary>
+            Обновление данных
+            </summary>
+            <param name="updateParams"></param>
+        </member>
+        <member name="M:Cav.DataAcces.DataAccesBase`4.MapUpdateParam(System.Linq.Expressions.Expression{System.Func{`2,System.Object}},System.String)">
+            <summary>
+            Сопоставление свойств класса параметров обновления и параметров адаптера
+            </summary>
+            <param name="property"></param>
+            <param name="paramName"></param>
+        </member>
+        <member name="T:Cav.DataAcces.AdapterParametrs">
+            <summary>
+            Базовый клас для параметров адаптеров
+            </summary>
+        </member>
+        <member name="T:Cav.DbTransactionScope">
+            <summary>
+            "Груповая" транзакция. Обертка для вызовов в БД. Только для одного DbConnection
+            </summary>
+        </member>
+        <member name="M:Cav.DbTransactionScope.#ctor">
+            <summary>
+            Создание нового экземпляра обертки транзации
+            </summary>
+        </member>
+        <member name="M:Cav.DbTransactionScope.Complete">
+            <summary>
+            Пометить, что транзакцию можно закомитеть
+            </summary>
+        </member>
+        <member name="T:Cav.HeplerDataAcces">
+            <summary>
+            Вспомогательные методы для адаптеров слоя доступа к данным
+            </summary>
+        </member>
+        <member name="M:Cav.HeplerDataAcces.SetParam``1(``0,System.Linq.Expressions.Expression{System.Func{``0,System.Object}},System.Object)">
+            <summary>
+            Установить значение свойства параметра
+            </summary>
+            <typeparam name="T">Класс параметров адаптера</typeparam>
+            <param name="instParam">"Ссылка" на экземпляр</param>
+            <param name="setProp">Свойство, которое необходимо настроить</param>
+            <param name="value">Значения свойства</param>
+            <returns></returns>
+        </member>
         <member name="T:Cav.DigitalSignature.CryptoProRutine">
             <summary>
             Реализация ЭЦП по нашим гостам по ЭЦП средствами КриптоПро
@@ -257,6 +447,54 @@
             <summary>
             Пространство имен  для wssecurity-secext
             </summary>
+        </member>
+        <member name="T:Cav.PredicateBuilder">
+            <summary>  
+            Построитель предикатов Expression. Скопипастил с интернетов.
+            </summary>  
+        </member>
+        <member name="M:Cav.PredicateBuilder.True``1">
+            <summary>  
+            Creates a predicate that evaluates to true.  
+            </summary>  
+        </member>
+        <member name="M:Cav.PredicateBuilder.False``1">
+            <summary>  
+            Creates a predicate that evaluates to false.  
+            </summary>  
+        </member>
+        <member name="M:Cav.PredicateBuilder.Create``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}})">
+            <summary>  
+            Creates a predicate expression from the specified lambda expression.  
+            </summary>  
+        </member>
+        <member name="M:Cav.PredicateBuilder.And``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}})">
+            <summary>  
+            Combines the first predicate with the second using the logical "and".  
+            </summary>  
+        </member>
+        <member name="M:Cav.PredicateBuilder.Or``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}})">
+            <summary>  
+            Combines the first predicate with the second using the logical "or".  
+            </summary>  
+        </member>
+        <member name="M:Cav.PredicateBuilder.Not``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}})">
+            <summary>  
+            Negates the predicate.  
+            </summary>  
+        </member>
+        <member name="M:Cav.PredicateBuilder.Compose``1(System.Linq.Expressions.Expression{``0},System.Linq.Expressions.Expression{``0},System.Func{System.Linq.Expressions.Expression,System.Linq.Expressions.Expression,System.Linq.Expressions.Expression})">
+            <summary>  
+            Combines the first expression with the second using the specified merge function.  
+            </summary>  
+        </member>
+        <member name="M:Cav.ParameterRebinder.ReplaceParameters(System.Linq.Expressions.LambdaExpression,System.Linq.Expressions.LambdaExpression)">
+            <summary>
+            Перезапись параметров из выражения from в выражение to
+            </summary>
+            <param name="from"></param>
+            <param name="to"></param>
+            <returns></returns>
         </member>
         <member name="T:Cav.WinService.Manager">
             <summary>Менеджер управления виндовыми службами</summary>
@@ -589,9 +827,16 @@
             <param name="FullMatch">Искать полное совпадение</param>
             <returns></returns>
         </member>
+        <member name="M:Cav.Extentions.ReplaceDoubleSpace(System.String)">
+            <summary>
+            Удаление множественных пробелов до одного. Например: было "     ", станет " ". 
+            </summary>
+            <param name="str"></param>
+            <returns></returns>
+        </member>
         <member name="M:Cav.Extentions.Expand(System.Exception)">
             <summary>
-            Развертывание текста исключения
+            Развертывание текста исключения + обработка SqlException
             </summary>
             <param name="ex"></param>
             <returns></returns>

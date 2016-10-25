@@ -1,0 +1,145 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data.Common;
+using System.Linq.Expressions;
+
+namespace Cav.DataAcces
+{
+    /// <summary>
+    /// Базовый класс адаптера получения и изменения данных в БД.
+    /// </summary>
+    /// <typeparam name="Trow">Класс, на который производится отражение данных из БД</typeparam>
+    /// <typeparam name="TselectParams">Клас, типизирующий параметры адаптера на выборку</typeparam>
+    /// <typeparam name="TupdateParams">Клас, типизирующий параметры адаптера на изменение</typeparam>
+    /// <typeparam name="TdeleteParams">Клас, типизирующий параметры адаптера на удаление</typeparam>
+    public class DataAccesBase<Trow, TselectParams,  TupdateParams, TdeleteParams> : DataAccesBase<Trow, TselectParams>
+        where Trow : class
+        where TselectParams : AdapterParametrs
+        where TupdateParams : AdapterParametrs
+        where TdeleteParams : AdapterParametrs
+    {
+        #region Add
+
+        /// <summary>
+        ////Добавить объект в БД
+        /// </summary>
+        /// <param name="newObj">Экземпляр объекта, который необходимо добавит в БД</param>
+        public void Add(Trow newObj)
+        {
+            this.Configured();
+
+            DbCommand execCom = AddParamToCommand(AdapterActionType.Insert, insertExpression, newObj);
+            using (var rdr = ExecuteReader(execCom))
+                while (rdr.Read())
+                    foreach (var ff in insertPropKeyFieldMap)
+                        ff.Value(newObj, rdr);
+
+            DisposeConnection(execCom);
+        }
+        
+
+        private Dictionary<String, Action<Trow, DbDataReader>> insertPropKeyFieldMap = new Dictionary<string, Action<Trow, DbDataReader>>();
+        private LambdaExpression insertExpression = null;
+
+        /// <summary>
+        /// Сопоставление свойства объекта отражения и имени параметра адаптера
+        /// </summary>
+        /// <param name="property"></param>
+        /// <param name="paramName"></param>
+        protected void MapInsertParam(Expression<Func<Trow, Object>> property, String paramName)
+        {
+            MapParam(AdapterActionType.Insert, property, paramName);
+
+            var paramExp = property.Parameters[0];
+
+            Expression insadeCall = null;
+
+            if (insertExpression != null)
+                insadeCall = ParameterRebinder.ReplaceParameters(property, insertExpression);
+            
+
+            Expression metodCall =
+                    Expression.Call(
+                        typeof(HeplerDataAcces),
+                        "ForParceParams",
+                        new Type[] { typeof(Trow) },
+                        insadeCall ?? paramExp,
+                        Expression.Quote(property),
+                        Expression.Quote(property));
+
+            insertExpression = Expression.Lambda<Action<Trow>>(
+                metodCall,
+                paramExp);
+        }
+
+        /// <summary>
+        /// Сопоставление полей объекта отражения данных и возврата ключей послк операции вставки данных
+        /// </summary>
+        /// <param name="property"></param>
+        /// <param name="fieldName"></param>
+        protected void MapInsertKeyParam(Expression<Func<Trow, Object>> property, String fieldName)
+        {
+            if (fieldName.IsNullOrWhiteSpace())
+                throw new ArgumentNullException("Не указано имя поля для сопоставления");
+            if (property == null)
+                throw new ArgumentNullException("Не указано свойство для сопоставления");
+
+            MapSelectFieldInDictionary(insertPropKeyFieldMap, property, fieldName);
+        }
+
+        #endregion
+
+        #region Delete
+
+        /// <summary>
+        /// Удаление по предикату 
+        /// </summary>
+        /// <param name="deleteParams"></param>
+        public void Delete(Expression<Action<TdeleteParams>> deleteParams)
+        {
+            this.Configured();
+
+            DbCommand execCom = AddParamToCommand(AdapterActionType.Delete, deleteParams);
+            ExecuteNonQuery(execCom);
+        }
+
+        /// <summary>
+        /// Сопоставление объекта параметров удаления и параметров адаптера удаления
+        /// </summary>
+        /// <param name="property"></param>
+        /// <param name="paramName"></param>
+        protected void MapDelteParam(Expression<Func<TdeleteParams, Object>> property, String paramName)
+        {
+            MapParam(AdapterActionType.Delete, property, paramName);
+        }
+
+        #endregion
+
+        #region Update
+
+        /// <summary>
+        /// Обновление данных
+        /// </summary>
+        /// <param name="updateParams"></param>
+        public void Update(Expression<Action<TupdateParams>> updateParams)
+        {
+            this.Configured();
+
+            DbCommand execCom = AddParamToCommand(AdapterActionType.Update, updateParams);
+            ExecuteNonQuery(execCom);
+        }
+
+        /// <summary>
+        /// Сопоставление свойств класса параметров обновления и параметров адаптера
+        /// </summary>
+        /// <param name="property"></param>
+        /// <param name="paramName"></param>
+        protected void MapUpdateParam(Expression<Func<TupdateParams, Object>> property, String paramName)
+        {
+            MapParam(AdapterActionType.Update, property, paramName);
+        }
+
+        #endregion
+
+    }
+}

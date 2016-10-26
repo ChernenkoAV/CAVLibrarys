@@ -521,6 +521,18 @@
             <param name="to"></param>
             <returns></returns>
         </member>
+        <member name="T:Cav.Routine.ProductionCalendar">
+            <summary>
+            Получение производственного календаря
+            </summary>
+        </member>
+        <member name="M:Cav.Routine.ProductionCalendar.GetAllHolidays(System.Int32)">
+            <summary>
+            Получение всех нерабочих дней за указанный год. Данные берутся с сайта xmlcalendar.ru. Календарь без региональных праздников, без коротких дней.
+            </summary>
+            <param name="year">Год, за который необходимо получить данные</param>
+            <returns>Нерабочие дни </returns>
+        </member>
         <member name="T:Cav.WinService.Manager">
             <summary>Менеджер управления виндовыми службами</summary>
         </member>

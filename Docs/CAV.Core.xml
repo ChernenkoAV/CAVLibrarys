@@ -243,12 +243,47 @@
             Тип команды в адаптере
             </summary>
         </member>
+        <member name="F:Cav.DataAcces.DataAccesBase`2.DataAccesCommandType.Text">
+            <summary>
+            Текстовая строка
+            </summary>
+        </member>
+        <member name="F:Cav.DataAcces.DataAccesBase`2.DataAccesCommandType.StoredProcedure">
+            <summary>
+            Хранимая процедура
+            </summary>
+        </member>
         <member name="T:Cav.DataAcces.DataAccesBase`2.CommandActionType">
             <summary>
             Тип действия адаптера
             </summary>
         </member>
-        <!-- Некорректный комментарий в формате XML для члена "M:Cav.DataAcces.DataAccesBase`4.Add(`0)" проигнорирован -->
+        <member name="F:Cav.DataAcces.DataAccesBase`2.CommandActionType.Select">
+            <summary>
+            Выборка
+            </summary>
+        </member>
+        <member name="F:Cav.DataAcces.DataAccesBase`2.CommandActionType.Insert">
+            <summary>
+            Вставка
+            </summary>
+        </member>
+        <member name="F:Cav.DataAcces.DataAccesBase`2.CommandActionType.Update">
+            <summary>
+            Обновление
+            </summary>
+        </member>
+        <member name="F:Cav.DataAcces.DataAccesBase`2.CommandActionType.Delete">
+            <summary>
+            Удаление
+            </summary>
+        </member>
+        <member name="M:Cav.DataAcces.DataAccesBase`4.Add(`0)">
+            <summary>
+            Добавить объект в БД
+            </summary>
+            <param name="newObj">Экземпляр объекта, который необходимо добавит в БД</param>
+        </member>
         <member name="M:Cav.DataAcces.DataAccesBase`4.MapInsertParam(System.Linq.Expressions.Expression{System.Func{`0,System.Object}},System.String)">
             <summary>
             Сопоставление свойства объекта отражения и имени параметра адаптера
@@ -523,7 +558,12 @@
         </member>
         <member name="T:Cav.Routine.ProductionCalendar">
             <summary>
-            Получение производственного календаря
+            Получение производственного календаря. Данные берутся из http://xmlcalendar.ru
+            </summary>
+        </member>
+        <member name="M:Cav.Routine.ProductionCalendar.#ctor">
+            <summary>
+            
             </summary>
         </member>
         <member name="M:Cav.Routine.ProductionCalendar.GetAllHolidays(System.Int32)">
@@ -532,6 +572,121 @@
             </summary>
             <param name="year">Год, за который необходимо получить данные</param>
             <returns>Нерабочие дни </returns>
+        </member>
+        <member name="P:Cav.Routine.ProductionCalendar.Year">
+            <summary>
+            для сериализации
+            </summary>
+        </member>
+        <member name="P:Cav.Routine.ProductionCalendar.Holidays">
+            <summary>
+            для сериализации
+            </summary>
+        </member>
+        <member name="P:Cav.Routine.ProductionCalendar.Days">
+            <summary>
+            для сериализации
+            </summary>
+        </member>
+        <member name="T:Cav.Routine.ProductionCalendar.HoliDay">
+            <summary>
+            для сериализации
+            </summary>
+        </member>
+        <member name="P:Cav.Routine.ProductionCalendar.HoliDay.ID">
+            <summary>
+            для сериализации
+            </summary>
+        </member>
+        <member name="P:Cav.Routine.ProductionCalendar.HoliDay.Title">
+            <summary>
+            для сериализации
+            </summary>
+        </member>
+        <member name="T:Cav.Routine.ProductionCalendar.Day">
+            <summary>
+            для сериализации
+            </summary>
+        </member>
+        <member name="P:Cav.Routine.ProductionCalendar.Day.DayMonth">
+            <summary>
+            для сериализации
+            </summary>
+        </member>
+        <member name="P:Cav.Routine.ProductionCalendar.Day.Kind">
+            <summary>
+            для сериализации
+            </summary>
+        </member>
+        <member name="P:Cav.Routine.ProductionCalendar.Day.HoliID">
+            <summary>
+            для сериализации
+            </summary>
+        </member>
+        <member name="P:Cav.Routine.ProductionCalendar.Day.Date">
+            <summary>
+            для сериализации
+            </summary>
+        </member>
+        <member name="T:Cav.Routine.ProductionCalendar.TypeHoliDay">
+            <summary>
+            для сериализации
+            </summary>
+        </member>
+        <member name="F:Cav.Routine.ProductionCalendar.TypeHoliDay.Undifane">
+            <summary>
+            для сериализации
+            </summary>
+        </member>
+        <member name="F:Cav.Routine.ProductionCalendar.TypeHoliDay.Fiesta">
+            <summary>
+            для сериализации
+            </summary>
+        </member>
+        <member name="F:Cav.Routine.ProductionCalendar.TypeHoliDay.ShortDay">
+            <summary>
+            для сериализации
+            </summary>
+        </member>
+        <member name="F:Cav.Routine.ProductionCalendar.TypeHoliDay.WorkDay">
+            <summary>
+            для сериализации
+            </summary>
+        </member>
+        <member name="T:Cav.Routine.ProductionCalendar.HolidayKind">
+            <summary>
+            Тип выходного(нерабочего дня)
+            </summary>
+        </member>
+        <member name="F:Cav.Routine.ProductionCalendar.HolidayKind.Fiesta">
+            <summary>
+            Праздник
+            </summary>
+        </member>
+        <member name="F:Cav.Routine.ProductionCalendar.HolidayKind.Weekend">
+            <summary>
+            Конец недели (суббота воскресение)
+            </summary>
+        </member>
+        <member name="T:Cav.Routine.ProductionCalendar.Holiday">
+            <summary>
+            Нерабочий день
+            </summary>
+        </member>
+        <member name="P:Cav.Routine.ProductionCalendar.Holiday.Date">
+            <summary>
+            Дата
+            </summary>
+        </member>
+        <member name="P:Cav.Routine.ProductionCalendar.Holiday.Kind">
+            <summary>
+            Тип
+            </summary>
+        </member>
+        <member name="P:Cav.Routine.ProductionCalendar.Holiday.Note">
+            <summary>
+            Описание
+            </summary>
         </member>
         <member name="T:Cav.WinService.Manager">
             <summary>Менеджер управления виндовыми службами</summary>
@@ -892,13 +1047,14 @@
             <param name="sourse"></param>
             <returns></returns>
         </member>
-        <member name="M:Cav.Extentions.JoinValuesToString``1(System.Collections.Generic.IEnumerable{``0},System.String)">
+        <member name="M:Cav.Extentions.JoinValuesToString``1(System.Collections.Generic.IEnumerable{``0},System.String,System.Boolean)">
             <summary>
             Соеденяет значения в коллекции с заданым разделителем
             </summary>
             <typeparam name="T">Тип идентификатора</typeparam>
             <param name="values">Значения</param>
             <param name="separator">Разделитель</param>
+            <param name="Distinct">Только уникальные значения</param>
             <returns>Значения разделенные разделителем</returns>
         </member>
         <member name="M:Cav.Extentions.MakeIDsList``1(System.Collections.Generic.IEnumerable{``0},System.String)">

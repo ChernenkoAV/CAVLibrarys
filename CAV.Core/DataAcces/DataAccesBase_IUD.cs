@@ -21,7 +21,7 @@ namespace Cav.DataAcces
         #region Add
 
         /// <summary>
-        ////Добавить объект в БД
+        /// Добавить объект в БД
         /// </summary>
         /// <param name="newObj">Экземпляр объекта, который необходимо добавит в БД</param>
         public void Add(Trow newObj)

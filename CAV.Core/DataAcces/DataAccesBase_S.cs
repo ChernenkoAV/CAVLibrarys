@@ -263,7 +263,13 @@ namespace Cav.DataAcces
         /// </summary>
         protected enum DataAccesCommandType
         {
+            /// <summary>
+            /// Текстовая строка
+            /// </summary>
             Text,
+            /// <summary>
+            /// Хранимая процедура
+            /// </summary>
             StoredProcedure
         }
 
@@ -272,9 +278,21 @@ namespace Cav.DataAcces
         /// </summary>
         public enum CommandActionType
         {
+            /// <summary>
+            /// Выборка
+            /// </summary>
             Select,
+            /// <summary>
+            /// Вставка
+            /// </summary>
             Insert,
+            /// <summary>
+            /// Обновление
+            /// </summary>
             Update,
+            /// <summary>
+            /// Удаление
+            /// </summary>
             Delete
         }
 

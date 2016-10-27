@@ -442,8 +442,9 @@ namespace Cav
         /// <typeparam name="T">Тип идентификатора</typeparam>
         /// <param name="values">Значения</param>
         /// <param name="separator">Разделитель</param>
+        /// <param name="Distinct">Только уникальные значения</param>
         /// <returns>Значения разделенные разделителем</returns>
-        public static string JoinValuesToString<T>(this IEnumerable<T> values, string separator = ",")
+        public static string JoinValuesToString<T>(this IEnumerable<T> values, string separator = ",", Boolean Distinct = true)
         {
             if (values == null)
                 return null;
@@ -451,7 +452,11 @@ namespace Cav
             if (values.Count() == 0)
                 return null;
 
-            return string.Join(separator, values.Distinct().Select(x => x.ToString()).ToArray());
+            var vals = values;
+            if (Distinct)
+                vals = values.Distinct();
+
+            return string.Join(separator, vals.Select(x => x.ToString()).ToArray());
         }
 
         /// <summary>

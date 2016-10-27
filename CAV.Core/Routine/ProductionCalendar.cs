@@ -9,68 +9,136 @@ using System.Xml.Serialization;
 namespace Cav.Routine
 {
     /// <summary>
-    /// Получение производственного календаря
+    /// Получение производственного календаря. Данные берутся из http://xmlcalendar.ru
     /// </summary>
     [XmlRoot("calendar")]
     public class ProductionCalendar
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public ProductionCalendar()
         {
             Holidays = new List<HoliDay>();
         }
+        /// <summary>
+        /// для сериализации
+        /// </summary>
         public class HoliDay
         {
+            /// <summary>
+            /// для сериализации
+            /// </summary>
             [XmlAttribute("id")]
             public int ID { get; set; }
+            /// <summary>
+            /// для сериализации
+            /// </summary>
             [XmlAttribute("title")]
             public String Title { get; set; }
         }
-
+        /// <summary>
+        /// для сериализации
+        /// </summary>
         public class Day
         {
+            /// <summary>
+            /// для сериализации
+            /// </summary>
             [XmlAttribute("d")]
             public String DayMonth { get; set; }
-            [XmlAttribute("t")]
+            /// <summary>
+            /// для сериализации
+            /// </summary>
+            [XmlAttribute("t")]            
             public TypeHoliDay Kind { get; set; }
-            [XmlAttribute("h")]
+            /// <summary>
+            /// для сериализации
+            /// </summary>
+            [XmlAttribute("h")]            
             public int HoliID { get; set; }
-
+            /// <summary>
+            /// для сериализации
+            /// </summary>
             [XmlIgnore]
             public DateTime Date { get; set; }
         }
 
+        /// <summary>
+        /// для сериализации
+        /// </summary>
         public enum TypeHoliDay
         {
+            /// <summary>
+            /// для сериализации
+            /// </summary>
             [XmlEnum("0")]
             Undifane = 0,
+            /// <summary>
+            /// для сериализации
+            /// </summary>
             [XmlEnum("1")]
             Fiesta = 1,
+            /// <summary>
+            /// для сериализации
+            /// </summary>
             [XmlEnum("2")]
             ShortDay = 2,
+            /// <summary>
+            /// для сериализации
+            /// </summary>
             [XmlEnum("3")]
             WorkDay = 3
         }
-
+        /// <summary>
+        /// для сериализации
+        /// </summary>
         [XmlAttribute("year")]
         public int Year { get; set; }
-
+        /// <summary>
+        /// для сериализации
+        /// </summary>
         [XmlArray("holidays")]
         [XmlArrayItem("holiday")]
         public List<HoliDay> Holidays { get; set; }
+        /// <summary>
+        /// для сериализации
+        /// </summary>
         [XmlArray("days")]
         [XmlArrayItem("day")]
         public List<Day> Days { get; set; }
 
+        /// <summary>
+        /// Тип выходного(нерабочего дня)
+        /// </summary>
         public enum HolidayKind
         {
+            /// <summary>
+            /// Праздник
+            /// </summary>
             Fiesta,
+            /// <summary>
+            /// Конец недели (суббота воскресение)
+            /// </summary>
             Weekend
         }
 
+        /// <summary>
+        /// Нерабочий день
+        /// </summary>
         public struct Holiday
         {
+            /// <summary>
+            /// Дата
+            /// </summary>
             public DateTime Date { get; set; }
+            /// <summary>
+            /// Тип
+            /// </summary>
             public HolidayKind Kind { get; set; }
+            /// <summary>
+            /// Описание
+            /// </summary>
             public String Note { get; set; }
         }
 

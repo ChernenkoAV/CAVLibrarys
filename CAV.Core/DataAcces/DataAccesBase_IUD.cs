@@ -14,9 +14,9 @@ namespace Cav.DataAcces
     /// <typeparam name="TdeleteParams">Клас, типизирующий параметры адаптера на удаление</typeparam>
     public class DataAccesBase<Trow, TselectParams,  TupdateParams, TdeleteParams> : DataAccesBase<Trow, TselectParams>
         where Trow : class
-        where TselectParams : AdapterParametrs
-        where TupdateParams : AdapterParametrs
-        where TdeleteParams : AdapterParametrs
+        where TselectParams : IAdapterParametrs
+        where TupdateParams : IAdapterParametrs
+        where TdeleteParams : IAdapterParametrs
     {
         #region Add
 

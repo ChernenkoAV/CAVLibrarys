@@ -58,7 +58,7 @@ namespace Cav
         /// <param name="setProp">Свойство, которое необходимо настроить</param>
         /// <param name="value">Значения свойства</param>
         /// <returns></returns>
-        public static T SetParam<T>(this T instParam, Expression<Func<T, Object>> setProp, Object value) where T : AdapterParametrs
+        public static T SetParam<T>(this T instParam, Expression<Func<T, Object>> setProp, Object value) where T : IAdapterParametrs
         {
             return instParam;
         }

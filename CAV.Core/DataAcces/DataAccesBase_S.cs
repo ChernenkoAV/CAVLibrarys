@@ -14,7 +14,7 @@ namespace Cav.DataAcces
     /// <typeparam name="TselectParams">Клас, типизирующий параметры адаптера на выборку</typeparam>
     public class DataAccesBase<Trow, TselectParams> : DataAccesBase
         where Trow : class
-        where TselectParams : AdapterParametrs
+        where TselectParams : IAdapterParametrs
     {
         /// <summary>
         /// Получение данных из БД с записью в класс Trow, либо в его наследники
@@ -302,7 +302,7 @@ namespace Cav.DataAcces
     }
 
     /// <summary>
-    /// Базовый клас для параметров адаптеров
+    /// Интерфейс для параметров адаптеров
     /// </summary>
-    public class AdapterParametrs { }
+    public interface IAdapterParametrs { }
 }

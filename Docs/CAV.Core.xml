@@ -324,9 +324,9 @@
             <param name="property"></param>
             <param name="paramName"></param>
         </member>
-        <member name="T:Cav.DataAcces.AdapterParametrs">
+        <member name="T:Cav.DataAcces.IAdapterParametrs">
             <summary>
-            Базовый клас для параметров адаптеров
+            Интерфейс для параметров адаптеров
             </summary>
         </member>
         <member name="T:Cav.DbTransactionScope">

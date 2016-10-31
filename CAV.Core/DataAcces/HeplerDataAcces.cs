@@ -66,27 +66,18 @@ namespace Cav
         private static object FromField(Type returnType, DataRow dbRow, String fieldName)
         {
             if (!dbRow.Table.Columns.Contains(fieldName))
-                return GetDefault(returnType);
+                return returnType.GetDefault();
 
             Object val = dbRow[fieldName];
 
             if (val is DBNull)
-                return GetDefault(returnType);
+                return returnType.GetDefault();
 
             Type nullableType = Nullable.GetUnderlyingType(returnType);
-            if ((returnType.IsEnum || (nullableType != null && nullableType.IsEnum)) && val.GetType() == typeof(short))
-                return (int)(short)val;
+            if ((returnType.IsEnum || (nullableType != null && nullableType.IsEnum)))
+                return Enum.ToObject(nullableType ?? returnType, val);
 
             return val;
-        }
-
-        private static object GetDefault(Type type)
-        {
-            if (type.IsValueType)
-            {
-                return Activator.CreateInstance(type);
-            }
-            return null;
-        }
+        }        
     }
 }

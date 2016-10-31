@@ -620,5 +620,18 @@ namespace Cav
                 cT.Add(item);
         }
 
+        /// <summary>
+        /// Получение значения по умолчанию для типа
+        /// </summary>
+        /// <param name="type">Тип, для которого необходимо получить значение</param>
+        /// <returns>Значение по уполчанию</returns>
+        public static object GetDefault(this Type type)
+        {
+            if (type.IsValueType)
+            {
+                return Activator.CreateInstance(type);
+            }
+            return null;
+        }
     }
 }

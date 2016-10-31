@@ -1158,6 +1158,13 @@
             <param name="cT">Collection</param>
             <param name="collection">Коллекция для вставки</param>
         </member>
+        <member name="M:Cav.Extentions.GetDefault(System.Type)">
+            <summary>
+            Получение значения по умолчанию для типа
+            </summary>
+            <param name="type">Тип, для которого необходимо получить значение</param>
+            <returns>Значение по уполчанию</returns>
+        </member>
         <member name="T:Cav.ProgramSettins.Area">
             <summary>
             Область сохранения настрек

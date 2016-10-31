@@ -195,12 +195,13 @@
             <param name="property"></param>
             <param name="fieldName"></param>
         </member>
-        <member name="M:Cav.DataAcces.DataAccesBase`2.MapSelectParam(System.Linq.Expressions.Expression{System.Func{`1,System.Object}},System.String)">
+        <member name="M:Cav.DataAcces.DataAccesBase`2.MapSelectParam(System.Linq.Expressions.Expression{System.Func{`1,System.Object}},System.String,System.Nullable{System.Data.DbType})">
             <summary>
             Сопоставление свойств класса параметров адаптера с параметрами скрипта выборки
             </summary>
-            <param name="property"></param>
-            <param name="paramName"></param>
+            <param name="property">Свойство</param>
+            <param name="paramName">Имя параметра</param>
+            <param name="typeParam">Тип параметра в БД</param>
         </member>
         <member name="M:Cav.DataAcces.DataAccesBase`2.ConfigCommand(Cav.DataAcces.DataAccesBase{`0,`1}.AdapterConfig)">
             <summary>
@@ -284,12 +285,13 @@
             </summary>
             <param name="newObj">Экземпляр объекта, который необходимо добавит в БД</param>
         </member>
-        <member name="M:Cav.DataAcces.DataAccesBase`4.MapInsertParam(System.Linq.Expressions.Expression{System.Func{`0,System.Object}},System.String)">
+        <member name="M:Cav.DataAcces.DataAccesBase`4.MapInsertParam(System.Linq.Expressions.Expression{System.Func{`0,System.Object}},System.String,System.Nullable{System.Data.DbType})">
             <summary>
             Сопоставление свойства объекта отражения и имени параметра адаптера
             </summary>
-            <param name="property"></param>
-            <param name="paramName"></param>
+            <param name="property">Свойство</param>
+            <param name="paramName">Имя параметра</param>
+            <param name="typeParam">Тип параметра в БД</param>
         </member>
         <member name="M:Cav.DataAcces.DataAccesBase`4.MapInsertKeyParam(System.Linq.Expressions.Expression{System.Func{`0,System.Object}},System.String)">
             <summary>
@@ -304,12 +306,13 @@
             </summary>
             <param name="deleteParams"></param>
         </member>
-        <member name="M:Cav.DataAcces.DataAccesBase`4.MapDeleteParam(System.Linq.Expressions.Expression{System.Func{`3,System.Object}},System.String)">
+        <member name="M:Cav.DataAcces.DataAccesBase`4.MapDeleteParam(System.Linq.Expressions.Expression{System.Func{`3,System.Object}},System.String,System.Nullable{System.Data.DbType})">
             <summary>
             Сопоставление объекта параметров удаления и параметров адаптера удаления
             </summary>
-            <param name="property"></param>
-            <param name="paramName"></param>
+            <param name="property">Свойство</param>
+            <param name="paramName">Имя параметра</param>
+            <param name="typeParam">Тип параметра в БД</param>
         </member>
         <member name="M:Cav.DataAcces.DataAccesBase`4.Update(System.Linq.Expressions.Expression{System.Action{`2}})">
             <summary>
@@ -317,12 +320,13 @@
             </summary>
             <param name="updateParams"></param>
         </member>
-        <member name="M:Cav.DataAcces.DataAccesBase`4.MapUpdateParam(System.Linq.Expressions.Expression{System.Func{`2,System.Object}},System.String)">
+        <member name="M:Cav.DataAcces.DataAccesBase`4.MapUpdateParam(System.Linq.Expressions.Expression{System.Func{`2,System.Object}},System.String,System.Nullable{System.Data.DbType})">
             <summary>
             Сопоставление свойств класса параметров обновления и параметров адаптера
             </summary>
-            <param name="property"></param>
-            <param name="paramName"></param>
+            <param name="property">Свойство</param>
+            <param name="paramName">Имя параметра</param>
+            <param name="typeParam">Тип параметра в БД</param>
         </member>
         <member name="T:Cav.DataAcces.IAdapterParametrs">
             <summary>

@@ -173,14 +173,15 @@ namespace Cav.DataAcces
         /// <summary>
         /// Сопоставление свойств класса параметров адаптера с параметрами скрипта выборки
         /// </summary>
-        /// <param name="property"></param>
-        /// <param name="paramName"></param>
-        protected void MapSelectParam(Expression<Func<TselectParams, Object>> property, String paramName)
+        /// <param name="property">Свойство</param>
+        /// <param name="paramName">Имя параметра</param>
+        /// <param name="typeParam">Тип параметра в БД</param>
+        protected void MapSelectParam(Expression<Func<TselectParams, Object>> property, String paramName, DbType? typeParam = null)
         {
-            MapParam(CommandActionType.Select, property, paramName);
+            MapParam(CommandActionType.Select, property, paramName, typeParam);
         }
 
-        internal void MapParam(CommandActionType actionType, Expression property, String paramName)
+        internal void MapParam(CommandActionType actionType, Expression property, String paramName, DbType? typeParam = null)
         {
             if (paramName.IsNullOrWhiteSpace())
                 throw new ArgumentNullException("Имя параметра не может быть пустым, состоять из пробелов или быть null");
@@ -196,7 +197,10 @@ namespace Cav.DataAcces
 
             var dbparam = this.CreateCommandObject().CreateParameter();
             dbparam.ParameterName = paramName;
-            dbparam.DbType = HeplerDataAcces.TypeMapDbType(proprow.Type);
+            if (typeParam.HasValue)
+                dbparam.DbType = typeParam.Value;
+            else
+                dbparam.DbType = HeplerDataAcces.TypeMapDbType(proprow.Type);
             commandParams.Add(key, dbparam);
         }
 

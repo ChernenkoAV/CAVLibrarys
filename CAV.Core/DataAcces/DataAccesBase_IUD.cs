@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Linq.Expressions;
 
@@ -44,11 +45,12 @@ namespace Cav.DataAcces
         /// <summary>
         /// Сопоставление свойства объекта отражения и имени параметра адаптера
         /// </summary>
-        /// <param name="property"></param>
-        /// <param name="paramName"></param>
-        protected void MapInsertParam(Expression<Func<Trow, Object>> property, String paramName)
-        {
-            MapParam(CommandActionType.Insert, property, paramName);
+        /// <param name="property">Свойство</param>
+        /// <param name="paramName">Имя параметра</param>
+        /// <param name="typeParam">Тип параметра в БД</param>
+        protected void MapInsertParam(Expression<Func<Trow, Object>> property, String paramName, DbType? typeParam = null)
+        {         
+            MapParam(CommandActionType.Insert, property, paramName, typeParam);
 
             var paramExp = property.Parameters[0];
 
@@ -106,11 +108,12 @@ namespace Cav.DataAcces
         /// <summary>
         /// Сопоставление объекта параметров удаления и параметров адаптера удаления
         /// </summary>
-        /// <param name="property"></param>
-        /// <param name="paramName"></param>
-        protected void MapDeleteParam(Expression<Func<TdeleteParams, Object>> property, String paramName)
+        /// <param name="property">Свойство</param>
+        /// <param name="paramName">Имя параметра</param>
+        /// <param name="typeParam">Тип параметра в БД</param>
+        protected void MapDeleteParam(Expression<Func<TdeleteParams, Object>> property, String paramName, DbType? typeParam = null)        
         {
-            MapParam(CommandActionType.Delete, property, paramName);
+            MapParam(CommandActionType.Delete, property, paramName, typeParam);
         }
 
         #endregion
@@ -132,11 +135,12 @@ namespace Cav.DataAcces
         /// <summary>
         /// Сопоставление свойств класса параметров обновления и параметров адаптера
         /// </summary>
-        /// <param name="property"></param>
-        /// <param name="paramName"></param>
-        protected void MapUpdateParam(Expression<Func<TupdateParams, Object>> property, String paramName)
+        /// <param name="property">Свойство</param>
+        /// <param name="paramName">Имя параметра</param>
+        /// <param name="typeParam">Тип параметра в БД</param>
+        protected void MapUpdateParam(Expression<Func<TupdateParams, Object>> property, String paramName, DbType? typeParam = null)        
         {
-            MapParam(CommandActionType.Update, property, paramName);
+            MapParam(CommandActionType.Update, property, paramName, typeParam);
         }
 
         #endregion

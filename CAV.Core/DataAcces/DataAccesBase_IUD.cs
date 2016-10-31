@@ -34,8 +34,6 @@ namespace Cav.DataAcces
             foreach (DataRow dbrow in resExec.Rows)
                 foreach (var ff in insertPropKeyFieldMap)
                     ff.Value(newObj, dbrow);
-
-            DisposeConnection(execCom);
         }
 
 

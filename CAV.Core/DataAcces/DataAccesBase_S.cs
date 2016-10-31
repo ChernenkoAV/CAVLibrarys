@@ -40,8 +40,6 @@ namespace Cav.DataAcces
                 res.Add(row);
             }
 
-            DisposeConnection(ExecCom);
-
             return res.ToArray();
         }
 

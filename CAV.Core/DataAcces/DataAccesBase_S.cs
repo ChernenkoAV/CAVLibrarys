@@ -30,15 +30,15 @@ namespace Cav.DataAcces
             List<THeritorType> res = new List<THeritorType>();
 
             DbCommand ExecCom = AddParamToCommand(CommandActionType.Select, selectParams);
-            using (var rdr = ExecuteReader(ExecCom))
-                while (rdr.Read())
-                {
-                    THeritorType row = (THeritorType)Activator.CreateInstance(typeof(THeritorType));
-                    Trow prow = (Trow)row;
-                    foreach (var ff in selectPropFieldMap)
-                        ff.Value(prow, rdr);
-                    res.Add(row);
-                }
+            var resExe = FillTable(ExecCom);
+            foreach (DataRow dbRow in resExe.Rows)
+            {
+                THeritorType row = (THeritorType)Activator.CreateInstance(typeof(THeritorType));
+                Trow prow = (Trow)row;
+                foreach (var ff in selectPropFieldMap)
+                    ff.Value(prow, dbRow);
+                res.Add(row);
+            }
 
             DisposeConnection(ExecCom);
 
@@ -141,7 +141,7 @@ namespace Cav.DataAcces
             MapSelectFieldInDictionary(selectPropFieldMap, property, fieldName);
         }
 
-        internal void MapSelectFieldInDictionary(Dictionary<String, Action<Trow, DbDataReader>> d, Expression<Func<Trow, Object>> property, String fieldName)
+        internal void MapSelectFieldInDictionary(Dictionary<String, Action<Trow, DataRow>> d, Expression<Func<Trow, Object>> property, String fieldName)
         {
             var proprow = property.Body;
             if (proprow.NodeType == ExpressionType.Convert)
@@ -153,7 +153,7 @@ namespace Cav.DataAcces
                 throw new ArgumentException("Для свойства " + paramName + " уже определна связка");
 
             var p_rowObg = property.Parameters.First();
-            var p_adapter = Expression.Parameter(typeof(DbDataReader));
+            var p_dbRow = Expression.Parameter(typeof(DataRow));
 
             Type typeProperty = proprow.Type;
 
@@ -161,11 +161,11 @@ namespace Cav.DataAcces
                 Expression.Call(
                     typeof(HeplerDataAcces).GetMethod("FromField", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static),
                     Expression.Constant(typeProperty, typeof(Type)),
-                    p_adapter,
+                    p_dbRow,
                     Expression.Constant(fieldName, fieldName.GetType()));
             var assi = Expression.Assign(proprow, Expression.Convert(fromfield, typeProperty));
 
-            Expression<Action<Trow, DbDataReader>> readfomfield = Expression.Lambda<Action<Trow, DbDataReader>>(assi, p_rowObg, p_adapter);
+            Expression<Action<Trow, DataRow>> readfomfield = Expression.Lambda<Action<Trow, DataRow>>(assi, p_rowObg, p_dbRow);
 
             d.Add(paramName, readfomfield.Compile());
         }
@@ -300,7 +300,7 @@ namespace Cav.DataAcces
             Delete
         }
 
-        private Dictionary<String, Action<Trow, DbDataReader>> selectPropFieldMap = new Dictionary<string, Action<Trow, DbDataReader>>();
+        private Dictionary<String, Action<Trow, DataRow>> selectPropFieldMap = new Dictionary<string, Action<Trow, DataRow>>();
         private Dictionary<String, DbParameter> commandParams = new Dictionary<string, DbParameter>();
         private Dictionary<CommandActionType, DbCommand> comands = new Dictionary<CommandActionType, DbCommand>();
     }

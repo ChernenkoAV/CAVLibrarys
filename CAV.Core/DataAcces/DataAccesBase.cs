@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Data.Common;
 
 namespace Cav.DataAcces
@@ -95,6 +96,57 @@ namespace Cav.DataAcces
             try
             {
                 return tuneCommand(cmd).ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                if (ExceptionHandlingExecuteCommand != null)
+                    ExceptionHandlingExecuteCommand(ex);
+                else
+                    throw;
+            }
+            finally
+            {
+                DisposeConnection(cmd);
+            }
+
+            throw new ApplicationException("При обработке исключения выполнения команды дальнейшее выполнение невозможно.");
+        }
+
+        /// <summary>
+        /// Имя провайдера БД. Необходимо для получения фабрики, что в свою очередь, необходимо для <see cref="DataAccesBase.FillTable(System.Data.Common.DbCommand)"/>.
+        /// Только для .NET 4.0
+        /// </summary>
+        protected String ProviderInvariantName { get; set; }
+
+
+
+        /// <summary>
+        /// Получение результата в DataTable
+        /// </summary>
+        /// <param name="cmd">Команда на выполенение. Присваевается в SelectCommand DbDataAdapter`а</param>
+        /// <returns>Результат работы команды</returns>
+        protected DataTable FillTable(DbCommand cmd)
+        {
+            try
+            {
+                var res = new DataTable();
+                var commd = tuneCommand(cmd);
+                DbProviderFactory factory = null;
+
+#if NET40
+                factory = DbProviderFactories.GetFactory(this.ProviderInvariantName);
+                if (factory == null)
+                    throw new InvalidOperationException("Не удалось получить фабрику работы с БД");
+#else
+                factory = DbProviderFactories.GetFactory(commd.Connection);
+#endif
+
+                using (var adapter = factory.CreateDataAdapter())
+                {
+                    adapter.SelectCommand = commd;
+                    adapter.Fill(res);
+                }
+                return res;
             }
             catch (Exception ex)
             {

@@ -141,6 +141,13 @@
             <param name="cmd">команда</param>
             <returns>Количество затронутых строк</returns>
         </member>
+        <member name="M:Cav.DataAcces.DataAccesBase.FillTable(System.Data.Common.DbCommand)">
+            <summary>
+            Получение результата в DataTable
+            </summary>
+            <param name="cmd">Команда на выполенение. Присваевается в SelectCommand DbDataAdapter`а</param>
+            <returns>Результат работы команды</returns>
+        </member>
         <member name="M:Cav.DataAcces.DataAccesBase.DisposeConnection(System.Data.Common.DbCommand)">
             <summary>
             Освобождение соедиения с БД
@@ -150,6 +157,12 @@
         <member name="P:Cav.DataAcces.DataAccesBase.ExceptionHandlingExecuteCommand">
             <summary>
             Обработчик исключения пры запуске DbCommand. Должен генерировать новое исключение (Для обертки "страшных" сиключений в "нестрашные")
+            </summary>
+        </member>
+        <member name="P:Cav.DataAcces.DataAccesBase.ProviderInvariantName">
+            <summary>
+            Имя провайдера БД. Необходимо для получения фабрики, что в свою очередь, необходимо для <see cref="M:Cav.DataAcces.DataAccesBase.FillTable(System.Data.Common.DbCommand)"/>.
+            Только для .NET 4.0
             </summary>
         </member>
         <member name="T:Cav.DataAcces.DataAccesBase`4">

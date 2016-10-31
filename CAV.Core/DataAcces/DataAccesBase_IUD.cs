@@ -13,7 +13,7 @@ namespace Cav.DataAcces
     /// <typeparam name="TselectParams">Клас, типизирующий параметры адаптера на выборку</typeparam>
     /// <typeparam name="TupdateParams">Клас, типизирующий параметры адаптера на изменение</typeparam>
     /// <typeparam name="TdeleteParams">Клас, типизирующий параметры адаптера на удаление</typeparam>
-    public class DataAccesBase<Trow, TselectParams,  TupdateParams, TdeleteParams> : DataAccesBase<Trow, TselectParams>
+    public class DataAccesBase<Trow, TselectParams, TupdateParams, TdeleteParams> : DataAccesBase<Trow, TselectParams>
         where Trow : class
         where TselectParams : IAdapterParametrs
         where TupdateParams : IAdapterParametrs
@@ -30,16 +30,16 @@ namespace Cav.DataAcces
             this.Configured();
 
             DbCommand execCom = AddParamToCommand(CommandActionType.Insert, insertExpression, newObj);
-            using (var rdr = ExecuteReader(execCom))
-                while (rdr.Read())
-                    foreach (var ff in insertPropKeyFieldMap)
-                        ff.Value(newObj, rdr);
+            var resExec = FillTable(execCom);
+            foreach (DataRow dbrow in resExec.Rows)
+                foreach (var ff in insertPropKeyFieldMap)
+                    ff.Value(newObj, dbrow);
 
             DisposeConnection(execCom);
         }
-        
 
-        private Dictionary<String, Action<Trow, DbDataReader>> insertPropKeyFieldMap = new Dictionary<string, Action<Trow, DbDataReader>>();
+
+        private Dictionary<String, Action<Trow, DataRow>> insertPropKeyFieldMap = new Dictionary<string, Action<Trow, DataRow>>();
         private LambdaExpression insertExpression = null;
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace Cav.DataAcces
         /// <param name="paramName">Имя параметра</param>
         /// <param name="typeParam">Тип параметра в БД</param>
         protected void MapInsertParam(Expression<Func<Trow, Object>> property, String paramName, DbType? typeParam = null)
-        {         
+        {
             MapParam(CommandActionType.Insert, property, paramName, typeParam);
 
             var paramExp = property.Parameters[0];
@@ -58,7 +58,7 @@ namespace Cav.DataAcces
 
             if (insertExpression != null)
                 insadeCall = ParameterRebinder.ReplaceParameters(property, insertExpression);
-            
+
 
             Expression metodCall =
                     Expression.Call(
@@ -111,7 +111,7 @@ namespace Cav.DataAcces
         /// <param name="property">Свойство</param>
         /// <param name="paramName">Имя параметра</param>
         /// <param name="typeParam">Тип параметра в БД</param>
-        protected void MapDeleteParam(Expression<Func<TdeleteParams, Object>> property, String paramName, DbType? typeParam = null)        
+        protected void MapDeleteParam(Expression<Func<TdeleteParams, Object>> property, String paramName, DbType? typeParam = null)
         {
             MapParam(CommandActionType.Delete, property, paramName, typeParam);
         }
@@ -138,7 +138,7 @@ namespace Cav.DataAcces
         /// <param name="property">Свойство</param>
         /// <param name="paramName">Имя параметра</param>
         /// <param name="typeParam">Тип параметра в БД</param>
-        protected void MapUpdateParam(Expression<Func<TupdateParams, Object>> property, String paramName, DbType? typeParam = null)        
+        protected void MapUpdateParam(Expression<Func<TupdateParams, Object>> property, String paramName, DbType? typeParam = null)
         {
             MapParam(CommandActionType.Update, property, paramName, typeParam);
         }

@@ -63,19 +63,12 @@ namespace Cav
             return instParam;
         }
 
-        private static object FromField(Type returnType, DbDataReader selreader, String fieldName)
+        private static object FromField(Type returnType, DataRow dbRow, String fieldName)
         {
-            bool fieldExist = false;
-            for (int i = 0; i < selreader.FieldCount; i++)
-                if (selreader.GetName(i) == fieldName)
-                {
-                    fieldExist = true;
-                    break;
-                }
-
-            if (!fieldExist)
+            if (!dbRow.Table.Columns.Contains(fieldName))
                 return GetDefault(returnType);
-            Object val = selreader[fieldName];
+
+            Object val = dbRow[fieldName];
 
             if (val is DBNull)
                 return GetDefault(returnType);

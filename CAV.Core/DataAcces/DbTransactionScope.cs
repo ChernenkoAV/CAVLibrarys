@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Common;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cav
 {
@@ -64,6 +60,7 @@ namespace Cav
                 Transaction.Rollback();
                 Transaction.Dispose();
                 Transaction = null;
+                rootTran = null;
                 conn.Close();
                 conn.Dispose();
             }
@@ -77,10 +74,11 @@ namespace Cav
                 Transaction.Commit();
                 Transaction.Dispose();
                 Transaction = null;
+                rootTran = null;
                 conn.Close();
                 conn.Dispose();
-
             }
+
         }
 
         #endregion

@@ -24,6 +24,11 @@
             Имя соединения для использования адаптером
             </summary>
         </member>
+        <member name="P:Cav.BaseClases.DBAdapterBase.Connection">
+            <summary>
+            Получение открытого соединения с БД 
+            </summary>
+        </member>
         <member name="M:Cav.BaseClases.DBAdapterBase.CloseConnection">
             <summary>
             Закрытие соединения. Обязательно вызывать в конце выполнения методов работы с БД
@@ -99,11 +104,6 @@
             </summary>
             <param name="disposing"></param>
         </member>
-        <member name="P:Cav.BaseClases.DBAdapterBase.Connection">
-            <summary>
-            Получение открытого соединения с БД 
-            </summary>
-        </member>
         <member name="P:Cav.BaseClases.DBAdapterBase.IsDesignMode">
             <summary>
             Компонент находится в режиме дизайнера
@@ -112,6 +112,11 @@
         <member name="T:Cav.DataAcces.DataAccesBase">
             <summary>
             Базовый клас для доступа к функционалу, реализованному в БД. Например, вызову хранимых процедур, возвращающих скалярное значение
+            </summary>
+        </member>
+        <member name="P:Cav.DataAcces.DataAccesBase.ExceptionHandlingExecuteCommand">
+            <summary>
+            Обработчик исключения пры запуске DbCommand. Должен генерировать новое исключение (Для обертки "страшных" сиключений в "нестрашные")
             </summary>
         </member>
         <member name="M:Cav.DataAcces.DataAccesBase.CreateCommandObject">
@@ -141,6 +146,12 @@
             <param name="cmd">команда</param>
             <returns>Количество затронутых строк</returns>
         </member>
+        <member name="P:Cav.DataAcces.DataAccesBase.ProviderInvariantName">
+            <summary>
+            Имя провайдера БД. Необходимо для получения фабрики, что в свою очередь, необходимо для <see cref="M:Cav.DataAcces.DataAccesBase.FillTable(System.Data.Common.DbCommand)"/>.
+            Только для .NET 4.0
+            </summary>
+        </member>
         <member name="M:Cav.DataAcces.DataAccesBase.FillTable(System.Data.Common.DbCommand)">
             <summary>
             Получение результата в DataTable
@@ -154,17 +165,6 @@
             </summary>
             <param name="cmd"></param>
         </member>
-        <member name="P:Cav.DataAcces.DataAccesBase.ExceptionHandlingExecuteCommand">
-            <summary>
-            Обработчик исключения пры запуске DbCommand. Должен генерировать новое исключение (Для обертки "страшных" сиключений в "нестрашные")
-            </summary>
-        </member>
-        <member name="P:Cav.DataAcces.DataAccesBase.ProviderInvariantName">
-            <summary>
-            Имя провайдера БД. Необходимо для получения фабрики, что в свою очередь, необходимо для <see cref="M:Cav.DataAcces.DataAccesBase.FillTable(System.Data.Common.DbCommand)"/>.
-            Только для .NET 4.0
-            </summary>
-        </member>
         <member name="T:Cav.DataAcces.DataAccesBase`4">
             <summary>
             Базовый класс адаптера получения и изменения данных в БД.
@@ -173,6 +173,55 @@
             <typeparam name="TselectParams">Клас, типизирующий параметры адаптера на выборку</typeparam>
             <typeparam name="TupdateParams">Клас, типизирующий параметры адаптера на изменение</typeparam>
             <typeparam name="TdeleteParams">Клас, типизирующий параметры адаптера на удаление</typeparam>
+        </member>
+        <member name="M:Cav.DataAcces.DataAccesBase`4.Add(`0)">
+            <summary>
+            Добавить объект в БД
+            </summary>
+            <param name="newObj">Экземпляр объекта, который необходимо добавит в БД</param>
+        </member>
+        <member name="M:Cav.DataAcces.DataAccesBase`4.MapInsertParam(System.Linq.Expressions.Expression{System.Func{`0,System.Object}},System.String,System.Nullable{System.Data.DbType})">
+            <summary>
+            Сопоставление свойства объекта отражения и имени параметра адаптера
+            </summary>
+            <param name="property">Свойство</param>
+            <param name="paramName">Имя параметра</param>
+            <param name="typeParam">Тип параметра в БД</param>
+        </member>
+        <member name="M:Cav.DataAcces.DataAccesBase`4.MapInsertKeyParam(System.Linq.Expressions.Expression{System.Func{`0,System.Object}},System.String)">
+            <summary>
+            Сопоставление полей объекта отражения данных и возврата ключей послк операции вставки данных
+            </summary>
+            <param name="property"></param>
+            <param name="fieldName"></param>
+        </member>
+        <member name="M:Cav.DataAcces.DataAccesBase`4.Delete(System.Linq.Expressions.Expression{System.Action{`3}})">
+            <summary>
+            Удаление по предикату 
+            </summary>
+            <param name="deleteParams"></param>
+        </member>
+        <member name="M:Cav.DataAcces.DataAccesBase`4.MapDeleteParam(System.Linq.Expressions.Expression{System.Func{`3,System.Object}},System.String,System.Nullable{System.Data.DbType})">
+            <summary>
+            Сопоставление объекта параметров удаления и параметров адаптера удаления
+            </summary>
+            <param name="property">Свойство</param>
+            <param name="paramName">Имя параметра</param>
+            <param name="typeParam">Тип параметра в БД</param>
+        </member>
+        <member name="M:Cav.DataAcces.DataAccesBase`4.Update(System.Linq.Expressions.Expression{System.Action{`2}})">
+            <summary>
+            Обновление данных
+            </summary>
+            <param name="updateParams"></param>
+        </member>
+        <member name="M:Cav.DataAcces.DataAccesBase`4.MapUpdateParam(System.Linq.Expressions.Expression{System.Func{`2,System.Object}},System.String,System.Nullable{System.Data.DbType})">
+            <summary>
+            Сопоставление свойств класса параметров обновления и параметров адаптера
+            </summary>
+            <param name="property">Свойство</param>
+            <param name="paramName">Имя параметра</param>
+            <param name="typeParam">Тип параметра в БД</param>
         </member>
         <member name="T:Cav.DataAcces.DataAccesBase`2">
             <summary>
@@ -292,55 +341,6 @@
             Удаление
             </summary>
         </member>
-        <member name="M:Cav.DataAcces.DataAccesBase`4.Add(`0)">
-            <summary>
-            Добавить объект в БД
-            </summary>
-            <param name="newObj">Экземпляр объекта, который необходимо добавит в БД</param>
-        </member>
-        <member name="M:Cav.DataAcces.DataAccesBase`4.MapInsertParam(System.Linq.Expressions.Expression{System.Func{`0,System.Object}},System.String,System.Nullable{System.Data.DbType})">
-            <summary>
-            Сопоставление свойства объекта отражения и имени параметра адаптера
-            </summary>
-            <param name="property">Свойство</param>
-            <param name="paramName">Имя параметра</param>
-            <param name="typeParam">Тип параметра в БД</param>
-        </member>
-        <member name="M:Cav.DataAcces.DataAccesBase`4.MapInsertKeyParam(System.Linq.Expressions.Expression{System.Func{`0,System.Object}},System.String)">
-            <summary>
-            Сопоставление полей объекта отражения данных и возврата ключей послк операции вставки данных
-            </summary>
-            <param name="property"></param>
-            <param name="fieldName"></param>
-        </member>
-        <member name="M:Cav.DataAcces.DataAccesBase`4.Delete(System.Linq.Expressions.Expression{System.Action{`3}})">
-            <summary>
-            Удаление по предикату 
-            </summary>
-            <param name="deleteParams"></param>
-        </member>
-        <member name="M:Cav.DataAcces.DataAccesBase`4.MapDeleteParam(System.Linq.Expressions.Expression{System.Func{`3,System.Object}},System.String,System.Nullable{System.Data.DbType})">
-            <summary>
-            Сопоставление объекта параметров удаления и параметров адаптера удаления
-            </summary>
-            <param name="property">Свойство</param>
-            <param name="paramName">Имя параметра</param>
-            <param name="typeParam">Тип параметра в БД</param>
-        </member>
-        <member name="M:Cav.DataAcces.DataAccesBase`4.Update(System.Linq.Expressions.Expression{System.Action{`2}})">
-            <summary>
-            Обновление данных
-            </summary>
-            <param name="updateParams"></param>
-        </member>
-        <member name="M:Cav.DataAcces.DataAccesBase`4.MapUpdateParam(System.Linq.Expressions.Expression{System.Func{`2,System.Object}},System.String,System.Nullable{System.Data.DbType})">
-            <summary>
-            Сопоставление свойств класса параметров обновления и параметров адаптера
-            </summary>
-            <param name="property">Свойство</param>
-            <param name="paramName">Имя параметра</param>
-            <param name="typeParam">Тип параметра в БД</param>
-        </member>
         <member name="T:Cav.DataAcces.IAdapterParametrs">
             <summary>
             Интерфейс для параметров адаптеров
@@ -390,13 +390,6 @@
             <param name="ReferenceUri">Референс в подписи</param>
             <returns>Подпись</returns>
         </member>
-        <member name="M:Cav.DigitalSignature.CryptoProRutine.ViewDSigSMEV(System.String)">
-            <summary>
-            Визуализация ЭЦП в XML
-            </summary>
-            <param name="Xml"></param>
-            <returns></returns>
-        </member>
         <member name="T:Cav.DigitalSignature.CryptoProRutine.SmevSignedXml">
             <summary>
             Класс SmevSignedXml - наследник класса SignedXml с перегруженным GetIdElement для корректной обработки атрибута wsu:Id. 
@@ -414,6 +407,13 @@
             </summary>
             <param name="document"></param>
             <param name="idValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cav.DigitalSignature.CryptoProRutine.ViewDSigSMEV(System.String)">
+            <summary>
+            Визуализация ЭЦП в XML
+            </summary>
+            <param name="Xml"></param>
             <returns></returns>
         </member>
         <member name="T:Cav.DigitalSignature.DSGeneric">
@@ -447,6 +447,16 @@
             <param name="FileSignBASE64">Путь к файлу для записи результата подписания(кодирование в Base64) (null - запись в файл не производится) </param>
             <returns>Результат подписания</returns>
         </member>
+        <member name="P:Cav.DigitalSignature.DSGeneric.CertificateCollection">
+            <summary>
+            Коллекция сертификатов (буфер)
+            </summary>
+        </member>
+        <member name="P:Cav.DigitalSignature.DSGeneric.Certificate">
+            <summary>
+            Сертификат (буфер)
+            </summary>
+        </member>
         <member name="M:Cav.DigitalSignature.DSGeneric.VerifiXML(System.String)">
             <summary>
             Проверка всех подписей в Xml. Если хоть одна не верна - false, если их нет - true
@@ -474,16 +484,6 @@
             </summary>
             <param name="ct"></param>
             <returns></returns>
-        </member>
-        <member name="P:Cav.DigitalSignature.DSGeneric.CertificateCollection">
-            <summary>
-            Коллекция сертификатов (буфер)
-            </summary>
-        </member>
-        <member name="P:Cav.DigitalSignature.DSGeneric.Certificate">
-            <summary>
-            Сертификат (буфер)
-            </summary>
         </member>
         <member name="T:Cav.DigitalSignature.CPSignedXml">
             <summary>
@@ -583,28 +583,6 @@
             
             </summary>
         </member>
-        <member name="M:Cav.Routine.ProductionCalendar.GetAllHolidays(System.Int32)">
-            <summary>
-            Получение всех нерабочих дней за указанный год. Данные берутся с сайта xmlcalendar.ru. Календарь без региональных праздников, без коротких дней.
-            </summary>
-            <param name="year">Год, за который необходимо получить данные</param>
-            <returns>Нерабочие дни </returns>
-        </member>
-        <member name="P:Cav.Routine.ProductionCalendar.Year">
-            <summary>
-            для сериализации
-            </summary>
-        </member>
-        <member name="P:Cav.Routine.ProductionCalendar.Holidays">
-            <summary>
-            для сериализации
-            </summary>
-        </member>
-        <member name="P:Cav.Routine.ProductionCalendar.Days">
-            <summary>
-            для сериализации
-            </summary>
-        </member>
         <member name="T:Cav.Routine.ProductionCalendar.HoliDay">
             <summary>
             для сериализации
@@ -670,6 +648,21 @@
             для сериализации
             </summary>
         </member>
+        <member name="P:Cav.Routine.ProductionCalendar.Year">
+            <summary>
+            для сериализации
+            </summary>
+        </member>
+        <member name="P:Cav.Routine.ProductionCalendar.Holidays">
+            <summary>
+            для сериализации
+            </summary>
+        </member>
+        <member name="P:Cav.Routine.ProductionCalendar.Days">
+            <summary>
+            для сериализации
+            </summary>
+        </member>
         <member name="T:Cav.Routine.ProductionCalendar.HolidayKind">
             <summary>
             Тип выходного(нерабочего дня)
@@ -704,6 +697,13 @@
             <summary>
             Описание
             </summary>
+        </member>
+        <member name="M:Cav.Routine.ProductionCalendar.GetAllHolidays(System.Int32)">
+            <summary>
+            Получение всех нерабочих дней за указанный год. Данные берутся с сайта xmlcalendar.ru. Календарь без региональных праздников, без коротких дней.
+            </summary>
+            <param name="year">Год, за который необходимо получить данные</param>
+            <returns>Нерабочие дни </returns>
         </member>
         <member name="T:Cav.WinService.Manager">
             <summary>Менеджер управления виндовыми службами</summary>
@@ -801,12 +801,6 @@
             <param name="connectionName">Имя соединения в коллекции</param>
             <returns></returns>
         </member>
-        <member name="M:Cav.DomainContext.UserLogin(System.String)">
-            <summary>
-            Логин, под которым прилогинены к БД. Работает только для Sql Server.
-            </summary>
-            <param name="ConnectionName">Имя соедиения</param>
-        </member>
         <member name="P:Cav.DomainContext.NamesConnectionOnCollection">
             <summary>
             Имена соединений, присутствующие в коллекции
@@ -848,6 +842,12 @@
             <summary>
             Имя приложения
             </summary>
+        </member>
+        <member name="M:Cav.DomainContext.UserLogin(System.String)">
+            <summary>
+            Логин, под которым прилогинены к БД. Работает только для Sql Server.
+            </summary>
+            <param name="ConnectionName">Имя соедиения</param>
         </member>
         <member name="T:Cav.ErrorCatcher">
             <summary>
@@ -1224,38 +1224,6 @@
             <param name="FileName">Имя файла. Если null = полное имя типа класса, в котором находится свойство, с расширением .prstg. Путь в зависимости от <c>Area</c> свойств</param>
             <returns>созданый экземпляр</returns>
         </member>
-        <member name="M:Cav.ProgramSettins.ProgramSettingsBase.GetValue``1(System.String)">
-            <summary>
-            Получения значения свойства по его имени 
-            </summary>
-            <typeparam name="T">Тип</typeparam>
-            <param name="PropName">Имя свойства</param>
-            <returns></returns>
-        </member>
-        <member name="M:Cav.ProgramSettins.ProgramSettingsBase.SetValue(Cav.ProgramSettins.Area,System.String,System.Object)">
-            <summary>
-            Сохранение значения в экземпляре настроек
-            </summary>
-            <param name="AreaProp">область хранения</param>
-            <param name="PropName">Имя свойства</param>
-            <param name="Value">Значение свойства</param>
-        </member>
-        <member name="M:Cav.ProgramSettins.ProgramSettingsBase.Reload">
-            <summary>
-            Загрузить все настройки заново
-            </summary>
-        </member>
-        <member name="M:Cav.ProgramSettins.ProgramSettingsBase.Save">
-            <summary>
-            Сохранить настройки
-            </summary>
-        </member>
-        <member name="E:Cav.ProgramSettins.ProgramSettingsBase.PropertyChanging">
-            <summary/>
-        </member>
-        <member name="E:Cav.ProgramSettins.ProgramSettingsBase.PropertyChanged">
-            <summary/>
-        </member>
         <member name="T:Cav.ProgramSettins.ProgramSettingsBase.SetItem">
             <summary>
             Элемент настроек
@@ -1290,6 +1258,38 @@
             <summary>
             Значение свойства(типа кэш)
             </summary>
+        </member>
+        <member name="M:Cav.ProgramSettins.ProgramSettingsBase.GetValue``1(System.String)">
+            <summary>
+            Получения значения свойства по его имени 
+            </summary>
+            <typeparam name="T">Тип</typeparam>
+            <param name="PropName">Имя свойства</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cav.ProgramSettins.ProgramSettingsBase.SetValue(Cav.ProgramSettins.Area,System.String,System.Object)">
+            <summary>
+            Сохранение значения в экземпляре настроек
+            </summary>
+            <param name="AreaProp">область хранения</param>
+            <param name="PropName">Имя свойства</param>
+            <param name="Value">Значение свойства</param>
+        </member>
+        <member name="M:Cav.ProgramSettins.ProgramSettingsBase.Reload">
+            <summary>
+            Загрузить все настройки заново
+            </summary>
+        </member>
+        <member name="M:Cav.ProgramSettins.ProgramSettingsBase.Save">
+            <summary>
+            Сохранить настройки
+            </summary>
+        </member>
+        <member name="E:Cav.ProgramSettins.ProgramSettingsBase.PropertyChanging">
+            <summary/>
+        </member>
+        <member name="E:Cav.ProgramSettins.ProgramSettingsBase.PropertyChanged">
+            <summary/>
         </member>
         <member name="T:Cav.Utils">
             <summary>
@@ -1499,12 +1499,6 @@
             Инкапсуляция параметров пакета
             </summary>
         </member>
-        <member name="M:Cav.Soap.SoapPackage.FromToAction">
-            <summary>
-            Сцепление значений From, To и Action
-            </summary>
-            <returns></returns>
-        </member>
         <member name="P:Cav.Soap.SoapPackage.Action">
             <summary>
             Вызываемый метод
@@ -1535,6 +1529,12 @@
             Уникальный ИД для связывания двух пакетов запрос-ответ
             </summary>
         </member>
+        <member name="M:Cav.Soap.SoapPackage.FromToAction">
+            <summary>
+            Сцепление значений From, To и Action
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:Cav.Soap.DirectionMessage">
             <summary>
             Направление сообщения
@@ -1562,14 +1562,14 @@
             </summary>
             <param name="Client">Экземпляр клиента</param>
         </member>
-        <member name="M:Cav.Soap.WrapClient`1.Dispose">
-            <summary>
-            Dispose()
-            </summary>
-        </member>
         <member name="P:Cav.Soap.WrapClient`1.Client">
             <summary>
             Экземпляр клиента
+            </summary>
+        </member>
+        <member name="M:Cav.Soap.WrapClient`1.Dispose">
+            <summary>
+            Dispose()
             </summary>
         </member>
     </members>

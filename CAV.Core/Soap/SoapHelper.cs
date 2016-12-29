@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
 using System.ServiceModel.Description;
@@ -11,6 +12,20 @@ namespace Cav.Soap
     /// </summary>
     public static class SoapHelper
     {
+        /// <summary>
+        /// Добавить обработчик ошибок выполнения методов сервиса
+        /// </summary>
+        /// <param name="servhost">Хост службы</param>
+        /// <param name="errorHandler">Обработчик ошибок</param>
+        public static void AddErrorHandler(this ServiceHostBase servhost, Action<Exception> errorHandler)
+        {
+            if (servhost == null)
+                return;
+            if (servhost.Description.Behaviors.Any(x => x.GetType() == typeof(SoapServiceErrorHandler)))
+                return;
+            servhost.Description.Behaviors.Add(new SoapServiceErrorHandler(errorHandler));
+        }
+
         #region Константы
 
         internal const string Soap11Namespace = "http://schemas.xmlsoap.org/soap/envelope/";

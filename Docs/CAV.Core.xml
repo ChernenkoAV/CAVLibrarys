@@ -1424,6 +1424,13 @@
             Хелпер для работы с сервисами/клиентами веб-служб
             </summary>
         </member>
+        <member name="M:Cav.Soap.SoapHelper.AddErrorHandler(System.ServiceModel.ServiceHostBase,System.Action{System.Exception})">
+            <summary>
+            Добавить обработчик ошибок выполнения методов сервиса
+            </summary>
+            <param name="servhost">Хост службы</param>
+            <param name="errorHandler">Обработчик ошибок</param>
+        </member>
         <member name="M:Cav.Soap.SoapHelper.CreateClient``1(System.String,System.ServiceModel.Security.SecurityAlgorithmSuite,System.Security.Cryptography.X509Certificates.X509Certificate2,System.Security.Cryptography.X509Certificates.X509Certificate2,System.Type,Cav.Soap.ISoapPackageLog,System.Boolean,System.String,System.String,System.String,System.Nullable{System.TimeSpan},System.Boolean)">
             <summary>
             Создание клиента в обертке в котором сообщение подписывается(На базе биндинга для СМЭВ)
@@ -1480,6 +1487,11 @@
         <member name="T:Cav.Soap.SoapLogEndpointBehavior">
             <summary>
             Кастомный обработчик поведения конечной точки. Для добавления испектора
+            </summary>
+        </member>
+        <member name="T:Cav.Soap.SoapServiceErrorHandler">
+            <summary>
+            Подключение обработчика ошибок, произошедших во времы выполнения методов службы (для обработки и логирования)
             </summary>
         </member>
         <member name="T:Cav.Soap.ISoapPackageLog">

@@ -54,7 +54,16 @@ namespace Cav.DataAcces
             foreach (var item in commandParams.Where(x => x.Key.StartsWith(key)))
                 item.Value.Value = DBNull.Value;
             foreach (var param in ParceParams(paramsExpr, obj))
-                commandParams[key + " " + param.Key].Value = param.Value ?? DBNull.Value;
+                try
+                {
+                    commandParams[key + " " + param.Key].Value = param.Value ?? DBNull.Value;
+                }
+                catch (Exception ex)
+                {
+                    if (ex is KeyNotFoundException)
+                        throw new ArgumentOutOfRangeException(String.Format("Для свойства '{0}' не настроено сопоставление в операции {1}", param.Key, key), ex);
+                    throw ex;
+                }
             command.Parameters.AddRange(commandParams.Where(x => x.Key.StartsWith(key)).Select(x => x.Value).ToArray());
             return command;
         }
@@ -191,7 +200,7 @@ namespace Cav.DataAcces
             String propName = (proprow as MemberExpression).Member.Name;
             String key = actionType.ToString() + " " + propName;
             if (commandParams.ContainsKey(key))
-                throw new ArgumentException("Для свойства  " + propName + " уже указано сопостовление");
+                throw new ArgumentException("Для свойства  " + propName + " уже указано сопоставление");
 
             var dbparam = this.CreateCommandObject().CreateParameter();
             dbparam.ParameterName = paramName;

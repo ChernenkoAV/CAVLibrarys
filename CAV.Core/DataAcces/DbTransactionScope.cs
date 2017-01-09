@@ -51,7 +51,10 @@ namespace Cav
             complete = true;
         }
 
-        void IDisposable.Dispose()
+        /// <summary>
+        /// Реализация IDisposable
+        /// </summary>
+        public void Dispose()
         {
 
             if (Transaction != null && !complete)

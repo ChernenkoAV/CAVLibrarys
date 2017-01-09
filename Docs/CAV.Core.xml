@@ -361,6 +361,11 @@
             Пометить, что транзакцию можно закомитеть
             </summary>
         </member>
+        <member name="M:Cav.DbTransactionScope.Dispose">
+            <summary>
+            Реализация IDisposable
+            </summary>
+        </member>
         <member name="T:Cav.HeplerDataAcces">
             <summary>
             Вспомогательные методы для адаптеров слоя доступа к данным

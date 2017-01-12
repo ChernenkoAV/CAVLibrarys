@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Common;
 
 namespace Cav
@@ -11,7 +12,8 @@ namespace Cav
         /// <summary>
         /// Создание нового экземпляра обертки транзации
         /// </summary>
-        public DbTransactionScope()
+        /// <param name="connectionName">Имя соедиенения, для которого назначается транзакция</param>
+        public DbTransactionScope(String connectionName = null)
         {
             if (!DbTransactionScope.rootTran.HasValue)
                 rootTran = currentTran;
@@ -19,27 +21,37 @@ namespace Cav
             if (rootTran != currentTran)
                 return;
 
-            if (Transaction == null)
-                Transaction = DbTransactionScope.Connection.BeginTransaction();
+            if (TransactionGet(connectionName) == null)
+            {
+                transactions.Add(connectionName, DbTransactionScope.Connection(connectionName).BeginTransaction());
+                this.connectionName = connectionName;
+            }
+
         }
 
         private Boolean complete = false;
+        private String connectionName = null;
 
         internal static Guid? rootTran = null;
         private Guid currentTran = Guid.NewGuid();
 
-        internal static DbConnection Connection
+        internal static DbConnection Connection(String connectionName = null)
         {
-            get
-            {
-                if (Transaction != null)
-                    return Transaction.Connection;
-                return DomainContext.Connection();
-            }
+            var tran = TransactionGet(connectionName);
+            if (tran != null)
+                return tran.Connection;
+            return DomainContext.Connection(connectionName);
         }
 
         [ThreadStatic]
-        internal static DbTransaction Transaction = null;
+        private static Dictionary<String, DbTransaction> transactions = new Dictionary<string, DbTransaction>();
+
+        internal static DbTransaction TransactionGet(String connectionName = null)
+        {
+            DbTransaction tran = null;
+            transactions.TryGetValue(connectionName, out tran);
+            return tran;
+        }
 
         #region Члены IDisposable
 
@@ -56,13 +68,14 @@ namespace Cav
         /// </summary>
         public void Dispose()
         {
+            var tran = TransactionGet(connectionName);
 
-            if (Transaction != null && !complete)
+            if (tran != null && !complete)
             {
-                var conn = Transaction.Connection;
-                Transaction.Rollback();
-                Transaction.Dispose();
-                Transaction = null;
+                var conn = tran.Connection;
+                tran.Rollback();
+                tran.Dispose();
+                transactions.Remove(connectionName);
                 rootTran = null;
                 conn.Close();
                 conn.Dispose();
@@ -71,12 +84,12 @@ namespace Cav
             if (rootTran != currentTran)
                 return;
 
-            if (Transaction != null)
+            if (tran != null)
             {
-                var conn = Transaction.Connection;
-                Transaction.Commit();
-                Transaction.Dispose();
-                Transaction = null;
+                var conn = tran.Connection;
+                tran.Commit();
+                tran.Dispose();
+                transactions.Remove(connectionName);
                 rootTran = null;
                 conn.Close();
                 conn.Dispose();

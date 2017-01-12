@@ -119,6 +119,11 @@
             Обработчик исключения пры запуске DbCommand. Должен генерировать новое исключение (Для обертки "страшных" сиключений в "нестрашные")
             </summary>
         </member>
+        <member name="F:Cav.DataAcces.DataAccesBase.ConnectionName">
+            <summary>
+            Имя соединения, с которым будет работать текущий объект
+            </summary>
+        </member>
         <member name="M:Cav.DataAcces.DataAccesBase.CreateCommandObject">
             <summary>
             Получение объекта DbCommand при наличии настроенного соединения с БД
@@ -145,12 +150,6 @@
             </summary>
             <param name="cmd">команда</param>
             <returns>Количество затронутых строк</returns>
-        </member>
-        <member name="P:Cav.DataAcces.DataAccesBase.ProviderInvariantName">
-            <summary>
-            Имя провайдера БД. Необходимо для получения фабрики, что в свою очередь, необходимо для <see cref="M:Cav.DataAcces.DataAccesBase.FillTable(System.Data.Common.DbCommand)"/>.
-            Только для .NET 4.0
-            </summary>
         </member>
         <member name="M:Cav.DataAcces.DataAccesBase.FillTable(System.Data.Common.DbCommand)">
             <summary>
@@ -351,10 +350,11 @@
             "Груповая" транзакция. Обертка для вызовов в БД. Только для одного DbConnection
             </summary>
         </member>
-        <member name="M:Cav.DbTransactionScope.#ctor">
+        <member name="M:Cav.DbTransactionScope.#ctor(System.String)">
             <summary>
             Создание нового экземпляра обертки транзации
             </summary>
+            <param name="connectionName">Имя соедиенения, для которого назначается транзакция</param>
         </member>
         <member name="M:Cav.DbTransactionScope.Complete">
             <summary>

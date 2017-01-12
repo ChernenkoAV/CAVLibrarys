@@ -14,6 +14,10 @@ namespace Cav.DataAcces
         /// </summary>
         public Action<Exception> ExceptionHandlingExecuteCommand { get; set; }
         /// <summary>
+        /// Имя соединения, с которым будет работать текущий объект
+        /// </summary>
+        protected String ConnectionName = null;
+        /// <summary>
         /// Получение объекта DbCommand при наличии настроенного соединения с БД
         /// </summary>
         /// <returns></returns>
@@ -22,7 +26,7 @@ namespace Cav.DataAcces
             DbCommand command = null;
             try
             {
-                command = DbTransactionScope.Connection.CreateCommand();
+                command = DbTransactionScope.Connection(ConnectionName).CreateCommand();
             }
             catch (Exception ex)
             {
@@ -112,14 +116,13 @@ namespace Cav.DataAcces
             throw new ApplicationException("При обработке исключения выполнения команды дальнейшее выполнение невозможно.");
         }
 
+#if NET40
         /// <summary>
         /// Имя провайдера БД. Необходимо для получения фабрики, что в свою очередь, необходимо для <see cref="DataAccesBase.FillTable(System.Data.Common.DbCommand)"/>.
         /// Только для .NET 4.0
         /// </summary>
         protected String ProviderInvariantName { get; set; }
-
-
-
+#endif
         /// <summary>
         /// Получение результата в DataTable
         /// </summary>
@@ -174,14 +177,14 @@ namespace Cav.DataAcces
             cmd.Transaction = null;
             var conn = cmd.Connection;
             cmd.Connection = null;
-            if (DbTransactionScope.Transaction == null)
+            if (DbTransactionScope.TransactionGet(ConnectionName) == null)
                 conn.Dispose();
         }
 
         private DbCommand tuneCommand(DbCommand cmd)
         {
-            cmd.Connection = DbTransactionScope.Connection;
-            cmd.Transaction = DbTransactionScope.Transaction;
+            cmd.Connection = DbTransactionScope.Connection(ConnectionName);
+            cmd.Transaction = DbTransactionScope.TransactionGet(ConnectionName);
             return cmd;
         }
     }

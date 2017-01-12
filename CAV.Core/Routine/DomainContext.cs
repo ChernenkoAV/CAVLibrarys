@@ -9,7 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Transactions;
 
 namespace Cav
 {
@@ -70,7 +69,7 @@ namespace Cav
 
         #region Статический КонекшнСтринг
 
-        private static String defaultNameConnection = "DefaultNameConnectionForConnectionCollectionOnDomainContext";
+        internal static String defaultNameConnection = "DefaultNameConnectionForConnectionCollectionOnDomainContext";
 
         /// <summary>
         /// Коллекция настроек соединения с БД
@@ -172,10 +171,10 @@ namespace Cav
                 conn.Open();
 
             var setCon = new SettingConnection()
-                {
-                    ConnectionString = connectionString,
-                    ConnectionType = typeof(TConnection)
-                };
+            {
+                ConnectionString = connectionString,
+                ConnectionType = typeof(TConnection)
+            };
 
             if (dcsb.ContainsKey(connectionName))
                 dcsb[connectionName] = setCon;

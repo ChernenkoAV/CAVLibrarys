@@ -15,6 +15,8 @@ namespace Cav
         /// <param name="connectionName">Имя соедиенения, для которого назначается транзакция</param>
         public DbTransactionScope(String connectionName = null)
         {
+            if (connectionName.IsNullOrWhiteSpace())
+                connectionName = DomainContext.defaultNameConnection;
             if (!DbTransactionScope.rootTran.HasValue)
                 rootTran = currentTran;
 
@@ -23,20 +25,25 @@ namespace Cav
 
             if (TransactionGet(connectionName) == null)
             {
+                if (transactions == null)
+                    transactions = new Dictionary<string, DbTransaction>();
                 transactions.Add(connectionName, DbTransactionScope.Connection(connectionName).BeginTransaction());
-                this.connectionName = connectionName;
+                this.connName = connectionName;
             }
 
         }
 
         private Boolean complete = false;
-        private String connectionName = null;
+        private String connName = null;
 
         internal static Guid? rootTran = null;
         private Guid currentTran = Guid.NewGuid();
 
         internal static DbConnection Connection(String connectionName = null)
         {
+            if (connectionName.IsNullOrWhiteSpace())
+                connectionName = DomainContext.defaultNameConnection;
+
             var tran = TransactionGet(connectionName);
             if (tran != null)
                 return tran.Connection;
@@ -44,11 +51,16 @@ namespace Cav
         }
 
         [ThreadStatic]
-        private static Dictionary<String, DbTransaction> transactions = new Dictionary<string, DbTransaction>();
-
+        private static Dictionary<String, DbTransaction> transactions;
         internal static DbTransaction TransactionGet(String connectionName = null)
         {
+            if (connectionName.IsNullOrWhiteSpace())
+                connectionName = DomainContext.defaultNameConnection;
+
             DbTransaction tran = null;
+            if (transactions == null)
+                transactions = new Dictionary<string, DbTransaction>();
+
             transactions.TryGetValue(connectionName, out tran);
             return tran;
         }
@@ -68,14 +80,18 @@ namespace Cav
         /// </summary>
         public void Dispose()
         {
-            var tran = TransactionGet(connectionName);
+            if (connName.IsNullOrWhiteSpace())
+                connName = DomainContext.defaultNameConnection;
+
+            var tran = TransactionGet(connName);
 
             if (tran != null && !complete)
             {
                 var conn = tran.Connection;
                 tran.Rollback();
                 tran.Dispose();
-                transactions.Remove(connectionName);
+                //transactions.TryRemove(connName, out tran);
+                transactions.Remove(connName);
                 rootTran = null;
                 conn.Close();
                 conn.Dispose();
@@ -84,12 +100,14 @@ namespace Cav
             if (rootTran != currentTran)
                 return;
 
+            tran = TransactionGet(connName);
             if (tran != null)
             {
                 var conn = tran.Connection;
                 tran.Commit();
                 tran.Dispose();
-                transactions.Remove(connectionName);
+                //transactions.TryRemove(connName, out tran);
+                transactions.Remove(connName);
                 rootTran = null;
                 conn.Close();
                 conn.Dispose();

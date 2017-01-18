@@ -116,8 +116,8 @@
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceModel.Activation" />
     <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
-    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -126,6 +126,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseClases\BusinessLogicBase.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="BaseClases\DBAdapterBase.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="DataAcces\DataAccesBase.cs" />

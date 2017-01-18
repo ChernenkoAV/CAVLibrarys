@@ -9,7 +9,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Web.Script.Serialization;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
@@ -24,31 +23,6 @@ namespace Cav
     public static class Extentions
     {
         #region Сериализация-десериализация, трансформация, валидация XML
-
-        /// <summary>
-        /// Сериализатор JSON
-        /// </summary>
-        /// <param name="o"></param>
-        /// <returns></returns>
-        public static String JSONSerialize(this object o)
-        {
-            if (o == null)
-                return null;
-            return (new JavaScriptSerializer()).Serialize(o);
-        }
-
-        /// <summary>
-        /// Десеариализатор JSON
-        /// </summary>
-        /// <typeparam name="T">Результирующий тип</typeparam>
-        /// <param name="str">Исходная строка</param>
-        /// <returns>Объект, либо default(T), если строка IsNullOrWhiteSpace</returns>
-        public static T JSONDeserialize<T>(this String str)
-        {
-            if (str.IsNullOrWhiteSpace())
-                return default(T);
-            return (new JavaScriptSerializer()).Deserialize<T>(str);
-        }
 
         /// <summary>
         /// Сериализатор XML
@@ -658,6 +632,6 @@ namespace Cav
                 return Activator.CreateInstance(type);
             }
             return null;
-        }        
+        }
     }
 }

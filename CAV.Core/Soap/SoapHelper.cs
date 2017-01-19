@@ -19,6 +19,8 @@ namespace Cav.Soap
         /// <param name="errorHandler">Обработчик ошибок</param>
         public static void AddErrorHandler(this ServiceHostBase servhost, Action<Exception> errorHandler)
         {
+            if (errorHandler == null)
+                return;
             if (servhost == null)
                 return;
             if (servhost.Description.Behaviors.Any(x => x.GetType() == typeof(SoapServiceErrorHandler)))

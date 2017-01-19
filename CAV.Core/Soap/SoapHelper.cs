@@ -20,25 +20,45 @@ namespace Cav.Soap
         public static void AddErrorHandler(this ServiceHostBase servhost, Action<Exception> errorHandler)
         {
             if (errorHandler == null)
-                return;
+                throw new ArgumentNullException("Parametr 'errorHandler' is null");
             if (servhost == null)
-                return;
+                throw new ArgumentNullException("Parametr 'servhost' is null");
             if (servhost.Description.Behaviors.Any(x => x.GetType() == typeof(ServiceErrorHandler)))
                 return;
             servhost.Description.Behaviors.Add(new ServiceErrorHandler(errorHandler));
         }
 
-        //public static void AddOperationInspector<T>(this T client) where T : class, ICommunicationObject, IDisposable
-        //{
+        /// <summary>
+        /// Добавление обработчиков "инспектора параметров".
+        /// </summary>
+        /// <param name="communicationObject">Экземпляр объекта комуникации</param>
+        /// <param name="beforeCall">Функтор. Выполняется снхронно. Принимает входные параметры вызываемого метода. Должен вернуть объект кореляции между вызовами BeforeCall и AfterCall (correlationState) </param>
+        /// <param name="afterCall">Делегат обработки, вызываемый после отработки метода сервиса. Принимает имя метода и объект кореляции (correlationState)</param>
+        public static void AddOperationInspector<T>(
+            this T communicationObject,
+            Func<object[], object> beforeCall,
+            Action<string, object> afterCall)
+            where T : class, ICommunicationObject, IDisposable
+        {
+            if (communicationObject == null)
+                throw new ArgumentNullException("Parametr 'communicationObject' is null");
+            if (beforeCall == null & afterCall == null)
+                throw new ArgumentNullException("Parametrs 'beforeCall' and 'afterCall' is null ");
 
-        //}
+            var psi = new SoapParameterInspector(beforeCall, afterCall);
 
-        //public static void AddOperationInspector(this ServiceHostBase servhost)
-        //{
-
-        //}
-
-
+            if ((communicationObject as ServiceHostBase) != null)
+            {
+                var servhost = (communicationObject as ServiceHostBase);
+                foreach (var ep in servhost.Description.Endpoints)
+                    ep.Behaviors.Add(psi);
+            }
+            else
+            {
+                ServiceEndpoint ep = (ServiceEndpoint)communicationObject.GetType().GetProperty("Endpoint").GetValue(communicationObject, null);
+                ep.Behaviors.Add(psi);
+            }
+        }
 
         #region Константы
 
@@ -182,8 +202,11 @@ namespace Cav.Soap
                 }
                 catch { } // ну, не судьба
 
-            ServiceEndpoint se = (ServiceEndpoint)client.GetType().GetProperty("Endpoint").GetValue(client, null);
-            se.Behaviors.Add(new SoapLogEndpointBehavior(logger));
+            if (logger != null)
+            {
+                ServiceEndpoint se = (ServiceEndpoint)client.GetType().GetProperty("Endpoint").GetValue(client, null);
+                se.Behaviors.Add(new SoapLogEndpointBehavior(logger));
+            }
 
             return new WrapClient<T>(client);
         }

@@ -384,7 +384,7 @@ namespace Cav
                 ? String.Empty
                 : (ex is SqlException
                     ? "SqlException №:" + ((SqlException)ex).Number + " " + ex.Message
-                    : "Message: " + ex.Message + Environment.NewLine + "StackTrace: " + ex.StackTrace) +
+                    : "Message: " + ex.Message + (ex.StackTrace.IsNullOrWhiteSpace() ? String.Empty : Environment.NewLine + "StackTrace: " + ex.StackTrace)) +
                   Environment.NewLine +
                   ex.InnerException.Expand();
         }

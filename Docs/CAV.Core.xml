@@ -1318,6 +1318,11 @@
             <summary>   Флаг первого запуска приложения ClickOnce </summary>
             <returns>true - ели приложение ClickOnce и выполняется впервые. в остальных случаях - false </returns>
         </member>
+        <member name="T:Cav.Soap.ServiceErrorHandler">
+            <summary>
+            Подключение обработчика ошибок, произошедших во времы выполнения методов службы (для обработки и логирования)
+            </summary>
+        </member>
         <member name="T:Cav.Soap.SmevBinding">
             <summary>
             Инкапсуляция настроек биндинга для СМЭВ
@@ -1436,7 +1441,15 @@
             <param name="servhost">Хост службы</param>
             <param name="errorHandler">Обработчик ошибок</param>
         </member>
-        <member name="M:Cav.Soap.SoapHelper.CreateClient``1(System.String,System.ServiceModel.Security.SecurityAlgorithmSuite,System.Security.Cryptography.X509Certificates.X509Certificate2,System.Security.Cryptography.X509Certificates.X509Certificate2,System.Type,Cav.Soap.ISoapPackageLog,System.Boolean,System.String,System.String,System.String,System.Nullable{System.TimeSpan},System.Boolean)">
+        <member name="M:Cav.Soap.SoapHelper.AddOperationInspector``1(``0,System.Func{System.Object[],System.Object},System.Action{System.String,System.Object})">
+            <summary>
+            Добавление обработчиков "инспектора параметров".
+            </summary>
+            <param name="communicationObject">Экземпляр объекта комуникации</param>
+            <param name="beforeCall">Функтор. Выполняется снхронно. Принимает входные параметры вызываемого метода. Должен вернуть объект кореляции между вызовами BeforeCall и AfterCall (correlationState) </param>
+            <param name="afterCall">Делегат обработки, вызываемый после отработки метода сервиса. Принимает имя метода и объект кореляции (correlationState)</param>
+        </member>
+        <member name="M:Cav.Soap.SoapHelper.CreateSmevClient``1(System.String,System.ServiceModel.Security.SecurityAlgorithmSuite,System.Security.Cryptography.X509Certificates.X509Certificate2,System.Security.Cryptography.X509Certificates.X509Certificate2,System.Type,Cav.Soap.ISoapPackageLog,System.Boolean,System.String,System.String,System.String,System.Nullable{System.TimeSpan},System.Boolean)">
             <summary>
             Создание клиента в обертке в котором сообщение подписывается(На базе биндинга для СМЭВ)
             </summary>
@@ -1455,7 +1468,7 @@
             <param name="AllowInsecureTransport">Можно ли отправлять сообщения в смешанном режиме безопасности</param>
             <returns>Обертка с клиентом</returns>
         </member>
-        <member name="M:Cav.Soap.SoapHelper.CreateClient``1(System.String,System.String,System.Type,Cav.Soap.ISoapPackageLog)">
+        <member name="M:Cav.Soap.SoapHelper.CreateBasicClient``1(System.String,System.String,System.Type,Cav.Soap.ISoapPackageLog,System.Nullable{System.TimeSpan})">
             <summary>
             Создание клиента в обертке. На базе BasicHttpBinding. 
             Если клиент реализует ISoapPackageLog, то его экземпляр используется для логгирования.
@@ -1465,9 +1478,10 @@
             <param name="Proxy">Прокси для клиента</param>
             <param name="LoggerType">Тип логгера</param>
             <param name="LoggerInstanse">Экземпляр логгера</param>
+            <param name="SendTimeout">Таймаут посыла сообщения</param>
             <returns></returns>
         </member>
-        <member name="M:Cav.Soap.SoapHelper.CloseClient``1(System.ServiceModel.ClientBase{``0})">
+        <member name="M:Cav.Soap.SoapHelper.CloseClient``1(``0)">
             <summary>
             Корректное закрытие клиента
             </summary>
@@ -1492,11 +1506,6 @@
         <member name="T:Cav.Soap.SoapLogEndpointBehavior">
             <summary>
             Кастомный обработчик поведения конечной точки. Для добавления испектора
-            </summary>
-        </member>
-        <member name="T:Cav.Soap.SoapServiceErrorHandler">
-            <summary>
-            Подключение обработчика ошибок, произошедших во времы выполнения методов службы (для обработки и логирования)
             </summary>
         </member>
         <member name="T:Cav.Soap.ISoapPackageLog">

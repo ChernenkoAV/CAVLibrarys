@@ -23,10 +23,22 @@ namespace Cav.Soap
                 return;
             if (servhost == null)
                 return;
-            if (servhost.Description.Behaviors.Any(x => x.GetType() == typeof(SoapServiceErrorHandler)))
+            if (servhost.Description.Behaviors.Any(x => x.GetType() == typeof(ServiceErrorHandler)))
                 return;
-            servhost.Description.Behaviors.Add(new SoapServiceErrorHandler(errorHandler));
+            servhost.Description.Behaviors.Add(new ServiceErrorHandler(errorHandler));
         }
+
+        //public static void AddOperationInspector<T>(this T client) where T : class, ICommunicationObject, IDisposable
+        //{
+
+        //}
+
+        //public static void AddOperationInspector(this ServiceHostBase servhost)
+        //{
+
+        //}
+
+
 
         #region Константы
 
@@ -59,7 +71,7 @@ namespace Cav.Soap
         /// <param name="SendTimeout">Таймаут работы клиента</param>
         /// <param name="AllowInsecureTransport">Можно ли отправлять сообщения в смешанном режиме безопасности</param>
         /// <returns>Обертка с клиентом</returns>
-        public static WrapClient<T> CreateClient<T>(
+        public static WrapClient<T> CreateSmevClient<T>(
             String Uri,
             SecurityAlgorithmSuite AlgorithmSuite,
             X509Certificate2 ClientSert,
@@ -72,7 +84,7 @@ namespace Cav.Soap
             String Proxy = null,
             TimeSpan? SendTimeout = null,
             Boolean AllowInsecureTransport = false)
-            where T : ICommunicationObject, IDisposable
+            where T : class, ICommunicationObject, IDisposable
         {
 
             if (ServerSert == null)
@@ -136,21 +148,28 @@ namespace Cav.Soap
         /// <param name="Proxy">Прокси для клиента</param>
         /// <param name="LoggerType">Тип логгера</param>
         /// <param name="LoggerInstanse">Экземпляр логгера</param>
+        /// <param name="SendTimeout">Таймаут посыла сообщения</param>
         /// <returns></returns>
-        public static WrapClient<T> CreateClient<T>(
+        public static WrapClient<T> CreateBasicClient<T>(
             String Uri,
             String Proxy = null,
             Type LoggerType = null,
-            ISoapPackageLog LoggerInstanse = null)
-            where T : ICommunicationObject, IDisposable
+            ISoapPackageLog LoggerInstanse = null,
+            TimeSpan? SendTimeout = null)
+            where T : class, ICommunicationObject, IDisposable
         {
             var ea = new EndpointAddress(Uri);
+
             var binding = new BasicHttpBinding() { MaxReceivedMessageSize = int.MaxValue };
             if (!Proxy.IsNullOrWhiteSpace())
             {
                 binding.ProxyAddress = new Uri(Proxy);
                 binding.UseDefaultWebProxy = false;
             }
+
+            if (SendTimeout.HasValue)
+                binding.SendTimeout = SendTimeout.Value;
+
             T client = (T)Activator.CreateInstance(typeof(T), binding, ea);
 
             ISoapPackageLog logger = LoggerInstanse;
@@ -174,7 +193,7 @@ namespace Cav.Soap
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="client"></param>
-        public static void CloseClient<T>(this ClientBase<T> client) where T : class
+        public static void CloseClient<T>(this T client) where T : class, ICommunicationObject, IDisposable
         {
             if (client == null)
                 return;

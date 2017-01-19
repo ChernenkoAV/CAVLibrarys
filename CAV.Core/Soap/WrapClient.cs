@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.ServiceModel;
-using System.Text;
 
 namespace Cav.Soap
 {
@@ -10,8 +7,8 @@ namespace Cav.Soap
     /// Обертка для клиентов на базе ICommunicationObject для корректного закрытия канала.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class WrapClient<T> : IDisposable 
-        where T : ICommunicationObject, IDisposable
+    public class WrapClient<T> : IDisposable
+        where T : class, ICommunicationObject, IDisposable
     {
         /// <summary>
         /// Создание обертки на базе клиента
@@ -36,16 +33,7 @@ namespace Cav.Soap
         /// </summary>
         public void Dispose()
         {
-            if (client.State == CommunicationState.Faulted)
-            {
-                client.Abort();
-            }
-            else if (client.State != CommunicationState.Closed)
-            {
-                client.Close();
-            }
-
-            client.Dispose();
+            client.CloseClient();
         }
 
         #endregion

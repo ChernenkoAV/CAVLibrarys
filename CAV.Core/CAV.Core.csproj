@@ -148,6 +148,7 @@
     <Compile Include="Routine\ProgramSettingsBase.cs" />
     <Compile Include="Routine\Utils.cs" />
     <Compile Include="Soap\ServiceErrorHandler.cs" />
+    <Compile Include="Soap\ServiceInstanceProvider.cs" />
     <Compile Include="Soap\ServiceParameterInspector.cs" />
     <Compile Include="Soap\SmevClientBinding.cs" />
     <Compile Include="Soap\SoapHelper.cs" />

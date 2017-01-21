@@ -3,6 +3,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
 using System.ServiceModel.Description;
+using System.ServiceModel.Dispatcher;
 using System.ServiceModel.Security;
 
 namespace Cav.Soap
@@ -58,6 +59,20 @@ namespace Cav.Soap
                 ServiceEndpoint ep = (ServiceEndpoint)communicationObject.GetType().GetProperty("Endpoint").GetValue(communicationObject, null);
                 ep.Behaviors.Add(psi);
             }
+        }
+
+        /// <summary>
+        /// Добавление к службе провайдера экземпляров обектов обработчика службы
+        /// </summary>
+        /// <param name="servHost">Хост службы</param>
+        /// <param name="instanceProvider">Экземпляр провайдера</param>
+        public static void AddInstanceProvader(this ServiceHostBase servHost, IInstanceProvider instanceProvider)
+        {
+            if (servHost == null)
+                throw new ArgumentNullException("Parametr 'servHost' is null");
+            if (instanceProvider == null)
+                throw new ArgumentNullException("Parametr 'instanceProvider' is null");
+            servHost.Description.Behaviors.Add(new ServiceInstanceProvider(instanceProvider));
         }
 
         #region Константы

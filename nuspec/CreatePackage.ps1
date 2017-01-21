@@ -34,7 +34,6 @@ Build $ProjectPath $Net461
 $NuspecFiles = [System.IO.Path]::GetDirectoryName($MyInvocation.MyCommand.Definition)
 $SolutionPath = [System.IO.Path]::GetDirectoryName($NuspecFiles)
 $BuildPath = [System.IO.Path]::Combine($SolutionPath, '_Build')
-$DocsPath = [System.IO.Path]::Combine($SolutionPath, 'Docs')
 $NugetTarget = [System.IO.Path]::Combine($BuildPath, 'nuget')
 $NuGetPath = [System.IO.Path]::Combine($SolutionPath, '.nuget')
 
@@ -80,8 +79,5 @@ if (Test-Path "$BuildPath\$Net461")
 {
 	Remove-Item "$BuildPath\$Net461" -Recurse -Force
 }
-
-# Копируем файл документации
-Copy-Item -Path "$BuildPath\$ProjectName.xml" -Destination "$DocsPath\$ProjectName.xml" -Force
 
 Write-Host ------ Сборка пакета NuGet для проекта $ProjectName $VersionFile успешно завершена

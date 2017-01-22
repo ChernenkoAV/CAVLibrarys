@@ -83,7 +83,7 @@ namespace Cav.WinService
         }
 
         /// <summary>Запуск приложения с администраторскими правами</summary>        
-        /// <param name="FileName">Файл приложенияч для запуска</param>
+        /// <param name="FileName">Файл приложения для запуска</param>
         /// <param name="Arguments">аргументы приложения</param>
         /// <returns>The Process.</returns>
         public static Process RunAsAdmin(String FileName, String Arguments = null)

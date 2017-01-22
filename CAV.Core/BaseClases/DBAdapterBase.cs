@@ -12,6 +12,7 @@ namespace Cav.BaseClases
     /// <summary>
     /// Базовый класс для создания адаптеров к БД
     /// </summary>
+    [Obsolete("Скоро будет удалено. Используйте DataAccesBase и его наследников")]
     public class DBAdapterBase : Component
     {
         /// <summary>
@@ -57,7 +58,7 @@ namespace Cav.BaseClases
                 // коннекшен уже задиспозен
             }
             connection = null;
-        }      
+        }
 
         /// <summary>
         /// Настройка команды перед использованием
@@ -67,7 +68,7 @@ namespace Cav.BaseClases
         private DbCommand tuneCommand(DbCommand comm)
         {
             comm.CommandTimeout = 0;
-            comm.Connection = this.Connection;            
+            comm.Connection = this.Connection;
             return comm;
         }
 

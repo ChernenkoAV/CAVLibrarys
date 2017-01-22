@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.Common;
+using System.Threading.Tasks;
 
 namespace Cav.DataAcces
 {
@@ -10,9 +11,76 @@ namespace Cav.DataAcces
     public class DataAccesBase
     {
         /// <summary>
-        /// Обработчик исключения пры запуске DbCommand. Должен генерировать новое исключение (Для обертки "страшных" сиключений в "нестрашные")
+        /// Обработчик исключения пры запуске <see cref="DbCommand"/>. Должен генерировать новое исключение (Для обертки "страшных" сиключений в "нестрашные")
         /// </summary>
         public Action<Exception> ExceptionHandlingExecuteCommand { get; set; }
+
+        /// <summary>
+        /// Метод, выполняемый перед выполнением <see cref="DbCommand"/>. Возвращаемое значение - объект кореляции вызовов (с <see cref="DataAccesBase.MonitorCommandAfterExecute"/>)
+        /// </summary>
+        /// <remarks>Метод выполняется обернутым в try cath.</remarks>
+        public Func<Object> MonitorCommandBeforeExecute { get; set; }
+        /// <summary>
+        /// Метод, выполняемый после выполнения <see cref="DbCommand"/>.
+        /// <see cref="String"/> - текст команды,
+        /// <see cref="Object"/> - объект кореляции, возвращяемый из <see cref="DataAccesBase.MonitorCommandBeforeExecute"/> (либо null, если <see cref="DataAccesBase.MonitorCommandBeforeExecute"/> == null),
+        /// <see cref="DbParameter"/>[] - копия параметров, с которыми отработала команда <see cref="DbCommand"/>.
+        /// </summary>
+        /// <remarks>Метод выполняется в отдельном потоке, обернутый в try cath.</remarks>
+        public Action<String, Object, DbParameter[]> MonitorCommandAfterExecute { get; set; }
+
+        private Object monitorHelperBefore()
+        {
+            if (MonitorCommandBeforeExecute != null)
+                try
+                {
+                    return MonitorCommandBeforeExecute.Invoke();
+                }
+                catch { }
+
+            return null;
+        }
+        private void monitorHelperAfter(DbCommand command, object objColrn)
+        {
+            // обнуляем ссылочку, что б объет не висел в памяти зазря
+            providerFactory = null;
+
+            if (MonitorCommandAfterExecute == null)
+                return;
+
+            var cmndText = command.CommandText;
+            DbParameter[] dbParm = new DbParameter[command.Parameters.Count];
+            if (command.Parameters.Count > 0)
+                command.Parameters.CopyTo(dbParm, 0);
+            (new Task(mcaftexex, Tuple.Create(MonitorCommandAfterExecute, cmndText, objColrn, dbParm))).Start();
+
+        }
+        private static void mcaftexex(object o)
+        {
+            try
+            {
+                Tuple<Action<String, Object, DbParameter[]>, String, object, DbParameter[]> p = (Tuple<Action<String, Object, DbParameter[]>, String, object, DbParameter[]>)o;
+                p.Item1(p.Item2, p.Item3, p.Item4);
+            }
+            catch { }
+        }
+
+        internal DbProviderFactory providerFactory = null;
+
+        internal DbProviderFactory DbProviderFactoryGet()
+        {
+            if (providerFactory != null)
+                return providerFactory;
+#if NET40
+            providerFactory = DbProviderFactories.GetFactory(this.ProviderInvariantName);
+            if (providerFactory == null)
+                throw new InvalidOperationException("Не удалось получить фабрику работы с БД");
+#else
+            providerFactory = DbProviderFactories.GetFactory(DbTransactionScope.Connection(ConnectionName));
+#endif
+            return providerFactory;
+        }
+
         /// <summary>
         /// Имя соединения, с которым будет работать текущий объект
         /// </summary>
@@ -26,7 +94,7 @@ namespace Cav.DataAcces
             DbCommand command = null;
             try
             {
-                command = DbTransactionScope.Connection(ConnectionName).CreateCommand();
+                command = DbProviderFactoryGet().CreateCommand();
             }
             catch (Exception ex)
             {
@@ -51,7 +119,13 @@ namespace Cav.DataAcces
         {
             try
             {
-                return tuneCommand(cmd).ExecuteScalar();
+                Object correlationObject = monitorHelperBefore();
+
+                Object res = tuneCommand(cmd).ExecuteScalar();
+
+                monitorHelperAfter(cmd, correlationObject);
+
+                return res;
             }
             catch (Exception ex)
             {
@@ -69,7 +143,7 @@ namespace Cav.DataAcces
         }
 
         /// <summary>
-        /// Выполнене команды с возвратом DbDataReader. После обработки данных необходимо выполнить DisposeConnection(DbCommand cmd)
+        /// Выполнене команды с возвратом DbDataReader. После обработки данных необходимо выполнить <see cref="DataAccesBase.DisposeConnection(DbCommand)"/>
         /// </summary>
         /// <param name="cmd">команда</param>
         /// <returns>Ридер</returns>
@@ -77,7 +151,13 @@ namespace Cav.DataAcces
         {
             try
             {
-                return tuneCommand(cmd).ExecuteReader();
+                Object correlationObject = monitorHelperBefore();
+
+                DbDataReader res = tuneCommand(cmd).ExecuteReader();
+
+                monitorHelperAfter(cmd, correlationObject);
+
+                return res;
             }
             catch (Exception ex)
             {
@@ -99,7 +179,13 @@ namespace Cav.DataAcces
         {
             try
             {
-                return tuneCommand(cmd).ExecuteNonQuery();
+                Object correlationObject = monitorHelperBefore();
+
+                int res = tuneCommand(cmd).ExecuteNonQuery();
+
+                monitorHelperAfter(cmd, correlationObject);
+
+                return res;
             }
             catch (Exception ex)
             {
@@ -133,22 +219,20 @@ namespace Cav.DataAcces
             try
             {
                 var res = new DataTable();
-                var commd = tuneCommand(cmd);
-                DbProviderFactory factory = null;
+                tuneCommand(cmd);
 
-#if NET40
-                factory = DbProviderFactories.GetFactory(this.ProviderInvariantName);
-                if (factory == null)
-                    throw new InvalidOperationException("Не удалось получить фабрику работы с БД");
-#else
-                factory = DbProviderFactories.GetFactory(commd.Connection);
-#endif
-
-                using (var adapter = factory.CreateDataAdapter())
+                using (var adapter = DbProviderFactoryGet().CreateDataAdapter())
                 {
-                    adapter.SelectCommand = commd;
+                    adapter.SelectCommand = cmd;
+
+                    Object correlationObject = monitorHelperBefore();
+
                     adapter.Fill(res);
+
+                    monitorHelperAfter(cmd, correlationObject);
+
                 }
+
                 return res;
             }
             catch (Exception ex)

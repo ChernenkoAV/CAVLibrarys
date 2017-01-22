@@ -202,7 +202,7 @@ namespace Cav.DataAcces
             if (commandParams.ContainsKey(key))
                 throw new ArgumentException("Для свойства  " + propName + " уже указано сопоставление");
 
-            var dbparam = this.CreateCommandObject().CreateParameter();
+            var dbparam = this.DbProviderFactoryGet().CreateParameter();
             dbparam.ParameterName = paramName;
             if (typeParam.HasValue)
                 dbparam.DbType = typeParam.Value;
@@ -256,7 +256,7 @@ namespace Cav.DataAcces
             /// </summary>
             public String TextCommand { get; set; }
             /// <summary>
-            /// Таймаут команды. ПО умолчанию - 15
+            /// Таймаут команды. По умолчанию - 15
             /// </summary>
             public int TimeoutCommand { get; set; }
             /// <summary>

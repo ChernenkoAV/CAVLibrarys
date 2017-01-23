@@ -66,7 +66,7 @@ namespace Cav.Soap
         /// </summary>
         /// <param name="servHost">Хост службы</param>
         /// <param name="instanceProvider">Экземпляр провайдера</param>
-        public static void AddInstanceProvader(this ServiceHostBase servHost, IInstanceProvider instanceProvider)
+        public static void AddInstanceProvider(this ServiceHostBase servHost, IInstanceProvider instanceProvider)
         {
             if (servHost == null)
                 throw new ArgumentNullException("Parametr 'servHost' is null");

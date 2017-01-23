@@ -76,7 +76,17 @@ namespace Cav.DataAcces
             if (providerFactory == null)
                 throw new InvalidOperationException("Не удалось получить фабрику работы с БД");
 #else
-            providerFactory = DbProviderFactories.GetFactory(DbTransactionScope.Connection(ConnectionName));
+
+            var tran = DbTransactionScope.TransactionGet(ConnectionName);
+            if (tran != null)
+                providerFactory = DbProviderFactories.GetFactory(tran.Connection);
+
+            if (providerFactory == null)
+            {
+                var con = DbTransactionScope.Connection(ConnectionName);
+                providerFactory = DbProviderFactories.GetFactory(con);
+                con.Dispose();
+            }
 #endif
             return providerFactory;
         }
@@ -91,23 +101,7 @@ namespace Cav.DataAcces
         /// <returns></returns>
         protected DbCommand CreateCommandObject()
         {
-            DbCommand command = null;
-            try
-            {
-                command = DbProviderFactoryGet().CreateCommand();
-            }
-            catch (Exception ex)
-            {
-                if (ExceptionHandlingExecuteCommand != null)
-                    ExceptionHandlingExecuteCommand(ex);
-                else
-                    throw;
-            }
-            finally
-            {
-                DisposeConnection(command);
-            }
-            return command;
+            return DbProviderFactoryGet().CreateCommand();
         }
 
         /// <summary>
@@ -262,7 +256,8 @@ namespace Cav.DataAcces
             var conn = cmd.Connection;
             cmd.Connection = null;
             if (DbTransactionScope.TransactionGet(ConnectionName) == null)
-                conn.Dispose();
+                if (conn != null)
+                    conn.Dispose();
         }
 
         private DbCommand tuneCommand(DbCommand cmd)

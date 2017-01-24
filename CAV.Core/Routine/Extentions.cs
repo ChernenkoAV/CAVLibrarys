@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -372,6 +374,7 @@ namespace Cav
 
         #endregion
 
+        #region Развертывание текста исключения
         /// <summary>
         /// Развертывание текста исключения + обработка SqlException
         /// </summary>
@@ -388,6 +391,8 @@ namespace Cav
                   Environment.NewLine +
                   ex.InnerException.Expand();
         }
+
+        #endregion
 
         #region GZip
 
@@ -609,6 +614,8 @@ namespace Cav
 
         #endregion
 
+        #region AddRange для коллекций
+
         /// <summary>
         /// AddRange для коллекций, в которых этого расширения(метода) нет
         /// </summary>
@@ -619,6 +626,8 @@ namespace Cav
             foreach (var item in collection)
                 cT.Add(item);
         }
+
+        #endregion
 
         /// <summary>
         /// Получение значения по умолчанию для типа
@@ -632,6 +641,40 @@ namespace Cav
                 return Activator.CreateInstance(type);
             }
             return null;
+        }
+
+        /// <summary>
+        /// Получение значений <see cref="DescriptionAttribute"/> элементов перечесления
+        /// </summary>
+        /// <param name="value">Значение злемента перечесления</param>
+        /// <returns>Содержимое <see cref="DescriptionAttribute"/>, либо, если атрибут отсутствует - ToString() элемента</returns>
+        public static string GetEnumDescription(this Enum value)
+        {
+            FieldInfo fi = value.GetType().GetField(value.ToString());
+
+            DescriptionAttribute[] attributes =
+                (DescriptionAttribute[])fi.GetCustomAttributes(
+                typeof(DescriptionAttribute),
+                false);
+
+            if (attributes != null &&
+                attributes.Length > 0)
+                return attributes[0].Description;
+            else
+                return value.ToString();
+        }
+
+        /// <summary>
+        /// Получение коллекции значений из <see cref="Enum"/>, помеченного атрибутом  <see cref="FlagsAttribute"/>
+        /// </summary>
+        /// <remarks>В коллекцию не возвращается элемент со значением <see cref="int"/> = 0.</remarks>
+        /// <param name="flag"></param>
+        /// <returns></returns>
+        public static IEnumerable<Enum> FlagToList(this Enum flag)
+        {
+            return Enum.GetValues(flag.GetType())
+                                 .Cast<Enum>()
+                                 .Where(m => Convert.ToUInt64(m) != 0L && flag.HasFlag(m));
         }
     }
 }

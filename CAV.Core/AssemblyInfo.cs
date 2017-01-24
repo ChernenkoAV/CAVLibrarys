@@ -6,11 +6,11 @@ using System.Resources;
 // набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
 [assembly: AssemblyTitle("Cav.Core")]
-[assembly: AssemblyDescription("Ядерная сборка + утилиты, облегчающие рутинные оперции")]
+[assembly: AssemblyDescription("Набор утилит, облегчающих рутинные оперции")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ChernenkoAV")]
 [assembly: AssemblyProduct("Cav.Core")]
-[assembly: AssemblyCopyright("Copyright ©  2016")]
+[assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("ChernenkoAV")]
 [assembly: AssemblyCulture("")]
 

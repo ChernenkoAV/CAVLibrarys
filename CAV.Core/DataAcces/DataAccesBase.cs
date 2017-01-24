@@ -83,9 +83,14 @@ namespace Cav.DataAcces
 
             if (providerFactory == null)
             {
-                var con = DbTransactionScope.Connection(ConnectionName);
-                providerFactory = DbProviderFactories.GetFactory(con);
-                con.Dispose();
+                var conn = DbTransactionScope.Connection(ConnectionName);
+                providerFactory = DbProviderFactories.GetFactory(conn);
+                if (DbTransactionScope.TransactionGet(ConnectionName) == null)
+                    if (conn != null)
+                    {
+                        conn.Close();
+                        conn.Dispose();
+                    }
             }
 #endif
             return providerFactory;
@@ -213,18 +218,16 @@ namespace Cav.DataAcces
             try
             {
                 var res = new DataTable();
-                tuneCommand(cmd);
 
                 using (var adapter = DbProviderFactoryGet().CreateDataAdapter())
                 {
-                    adapter.SelectCommand = cmd;
+                    adapter.SelectCommand = tuneCommand(cmd);
 
                     Object correlationObject = monitorHelperBefore();
 
                     adapter.Fill(res);
 
                     monitorHelperAfter(cmd, correlationObject);
-
                 }
 
                 return res;
@@ -257,7 +260,10 @@ namespace Cav.DataAcces
             cmd.Connection = null;
             if (DbTransactionScope.TransactionGet(ConnectionName) == null)
                 if (conn != null)
+                {
+                    conn.Close();
                     conn.Dispose();
+                }
         }
 
         private DbCommand tuneCommand(DbCommand cmd)

@@ -87,10 +87,12 @@ namespace Cav.DataAcces
                 providerFactory = DbProviderFactories.GetFactory(conn);
                 if (DbTransactionScope.TransactionGet(ConnectionName) == null)
                     if (conn != null)
-                    {
-                        conn.Close();
-                        try { conn.Dispose(); } catch { }
-                    }
+                        try
+                        {
+                            conn.Close();
+                            conn.Dispose();
+                        }
+                        catch { }
             }
 #endif
             return providerFactory;
@@ -258,10 +260,13 @@ namespace Cav.DataAcces
             cmd.Transaction = null;
             if (DbTransactionScope.TransactionGet(ConnectionName) == null)
                 if (cmd.Connection != null)
-                {
-                    cmd.Connection.Close();
-                    try { cmd.Connection.Dispose(); } catch { }
-                }
+                    try
+                    {
+                        cmd.Connection.Close();
+                        cmd.Connection.Dispose();
+                    }
+                    catch { }
+
 
             cmd.Connection = null;
         }

@@ -117,12 +117,16 @@ namespace Cav.DataAcces
         }
 
         bool flagConfigured = false;
+        private Object lockObj = new object();
         internal void Configured()
         {
-            if (flagConfigured)
-                return;
-            this.ConfigAcces();
-            flagConfigured = true;
+            lock (lockObj)
+            {
+                if (flagConfigured)
+                    return;
+                this.ConfigAcces();
+                flagConfigured = true;
+            }
         }
 
         /// <summary>

@@ -89,7 +89,7 @@ namespace Cav.DataAcces
                     if (conn != null)
                     {
                         conn.Close();
-                        conn.Dispose();
+                        try { conn.Dispose(); } catch { }
                     }
             }
 #endif
@@ -256,14 +256,14 @@ namespace Cav.DataAcces
             if (cmd == null)
                 return;
             cmd.Transaction = null;
-            var conn = cmd.Connection;
-            cmd.Connection = null;
             if (DbTransactionScope.TransactionGet(ConnectionName) == null)
-                if (conn != null)
+                if (cmd.Connection != null)
                 {
-                    conn.Close();
-                    conn.Dispose();
+                    cmd.Connection.Close();
+                    try { cmd.Connection.Dispose(); } catch { }
                 }
+
+            cmd.Connection = null;
         }
 
         private DbCommand tuneCommand(DbCommand cmd)

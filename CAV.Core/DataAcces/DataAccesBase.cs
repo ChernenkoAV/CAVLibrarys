@@ -269,6 +269,11 @@ namespace Cav.DataAcces
 
 
             cmd.Connection = null;
+            try
+            {
+                cmd.Dispose();
+            }
+            catch { }
         }
 
         private DbCommand tuneCommand(DbCommand cmd)

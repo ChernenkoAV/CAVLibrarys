@@ -45,26 +45,37 @@ namespace Cav.DataAcces
 
         internal DbCommand AddParamToCommand(CommandActionType actionType, Expression paramsExpr, Trow obj = null)
         {
-            DbCommand command = null;
-            if (!comands.TryGetValue(actionType, out command))
-                throw new NotImplementedException("команда для " + actionType.ToString() + " не настроена");
+            AdapterConfig config = null;
+            if (!comands.TryGetValue(actionType, out config))
+                throw new NotImplementedException("Команда для " + actionType.ToString() + " не настроена");
 
-            command.Parameters.Clear();
+            DbCommand command = CreateCommand(config);
+
             String key = actionType.ToString();
+
+            var paramValues = ParceParams(paramsExpr, obj);
+
             foreach (var item in commandParams.Where(x => x.Key.StartsWith(key)))
-                item.Value.Value = DBNull.Value;
-            foreach (var param in ParceParams(paramsExpr, obj))
-                try
-                {
-                    commandParams[key + " " + param.Key].Value = param.Value ?? DBNull.Value;
-                }
-                catch (Exception ex)
-                {
-                    if (ex is KeyNotFoundException)
-                        throw new ArgumentOutOfRangeException(String.Format("Для свойства '{0}' не настроено сопоставление в операции {1}", param.Key, key), ex);
-                    throw ex;
-                }
-            command.Parameters.AddRange(commandParams.Where(x => x.Key.StartsWith(key)).Select(x => x.Value).ToArray());
+            {
+                var prmCmd = CreateParametr(item.Value);
+                Object val = null;
+                String paramValKey = item.Key.Replace(key + " ", String.Empty);
+
+                if (paramValues.TryGetValue(paramValKey, out val))
+                    paramValues.Remove(paramValKey);
+
+                if (val != null)
+                    prmCmd.Value = val;
+
+                command.Parameters.Add(prmCmd);
+            }
+
+            if (paramValues.Count > 0)
+            {
+                var lost = paramValues.First();
+                throw new ArgumentException(String.Format("Для свойства '{0}' не настроено сопоставление в операции {1}", lost.Key, key));
+            }
+
             return command;
         }
 
@@ -206,13 +217,15 @@ namespace Cav.DataAcces
             if (commandParams.ContainsKey(key))
                 throw new ArgumentException("Для свойства  " + propName + " уже указано сопоставление");
 
-            var dbparam = this.DbProviderFactoryGet().CreateParameter();
-            dbparam.ParameterName = paramName;
+            DbParamSetting param = new DbParamSetting();
+            param.ParamName = paramName;
+
             if (typeParam.HasValue)
-                dbparam.DbType = typeParam.Value;
+                param.ParamType = typeParam.Value;
             else
-                dbparam.DbType = HeplerDataAcces.TypeMapDbType(proprow.Type);
-            commandParams.Add(key, dbparam);
+                param.ParamType = HeplerDataAcces.TypeMapDbType(proprow.Type);
+
+            commandParams.Add(key, param);
         }
 
         /// <summary>
@@ -226,6 +239,11 @@ namespace Cav.DataAcces
             if (config.TextCommand.IsNullOrWhiteSpace())
                 throw new ArgumentNullException("Текст команды не может быть пустым");
 
+            comands.Add(config.ActionType, config);
+        }
+
+        private DbCommand CreateCommand(AdapterConfig config)
+        {
             var cmmnd = this.CreateCommandObject();
             cmmnd.CommandText = config.TextCommand;
             cmmnd.CommandTimeout = config.TimeoutCommand;
@@ -240,7 +258,16 @@ namespace Cav.DataAcces
                     break;
             }
 
-            comands.Add(config.ActionType, cmmnd);
+            return cmmnd;
+        }
+
+        private DbParameter CreateParametr(DbParamSetting paramSetting)
+        {
+            var res = this.DbProviderFactoryGet().CreateParameter();
+            res.ParameterName = paramSetting.ParamName;
+            res.DbType = paramSetting.ParamType;
+            res.Value = DBNull.Value;
+            return res;
         }
 
         /// <summary>
@@ -312,12 +339,18 @@ namespace Cav.DataAcces
         }
 
         private Dictionary<String, Action<Trow, DataRow>> selectPropFieldMap = new Dictionary<string, Action<Trow, DataRow>>();
-        private Dictionary<String, DbParameter> commandParams = new Dictionary<string, DbParameter>();
-        private Dictionary<CommandActionType, DbCommand> comands = new Dictionary<CommandActionType, DbCommand>();
+        private Dictionary<String, DbParamSetting> commandParams = new Dictionary<string, DbParamSetting>();
+        private Dictionary<CommandActionType, AdapterConfig> comands = new Dictionary<CommandActionType, AdapterConfig>();
     }
 
     /// <summary>
     /// Интерфейс для параметров адаптеров
     /// </summary>
     public interface IAdapterParametrs { }
+
+    internal struct DbParamSetting
+    {
+        public String ParamName { get; set; }
+        public DbType ParamType { get; set; }
+    }
 }

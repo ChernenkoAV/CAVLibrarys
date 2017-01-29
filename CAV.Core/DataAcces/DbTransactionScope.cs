@@ -18,7 +18,8 @@ namespace Cav
             currentTran = Guid.NewGuid();
             if (connectionName.IsNullOrWhiteSpace())
                 connectionName = DomainContext.defaultNameConnection;
-            if (!DbTransactionScope.rootTran.HasValue)
+
+            if (!rootTran.HasValue)
                 rootTran = currentTran;
 
             if (rootTran != currentTran)
@@ -38,7 +39,10 @@ namespace Cav
         private String connName = null;
 
         [ThreadStatic]
-        internal static Guid? rootTran = null;
+        private static Guid? rootTran = null;
+
+        [ThreadStatic]
+        private static Dictionary<String, DbTransaction> transactions;
 
         private readonly Guid currentTran;
 
@@ -53,8 +57,6 @@ namespace Cav
             return DomainContext.Connection(connectionName);
         }
 
-        [ThreadStatic]
-        private static Dictionary<String, DbTransaction> transactions;
         internal static DbTransaction TransactionGet(String connectionName = null)
         {
             if (connectionName.IsNullOrWhiteSpace())

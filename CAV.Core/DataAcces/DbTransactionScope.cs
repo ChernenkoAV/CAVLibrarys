@@ -15,6 +15,7 @@ namespace Cav
         /// <param name="connectionName">Имя соедиенения, для которого назначается транзакция</param>
         public DbTransactionScope(String connectionName = null)
         {
+            currentTran = Guid.NewGuid();
             if (connectionName.IsNullOrWhiteSpace())
                 connectionName = DomainContext.defaultNameConnection;
             if (!DbTransactionScope.rootTran.HasValue)
@@ -36,8 +37,10 @@ namespace Cav
         private Boolean complete = false;
         private String connName = null;
 
+        [ThreadStatic]
         internal static Guid? rootTran = null;
-        private Guid currentTran = Guid.NewGuid();
+
+        private readonly Guid currentTran;
 
         internal static DbConnection Connection(String connectionName = null)
         {

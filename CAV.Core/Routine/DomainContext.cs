@@ -142,6 +142,9 @@ namespace Cav
             Boolean pooling = false,
             String connectionName = null)
         {
+            if (connectionString.IsNullOrWhiteSpace())
+                throw new ArgumentNullException("connectionString");
+
             if (connectionName.IsNullOrWhiteSpace())
                 connectionName = defaultNameConnection;
 
@@ -164,6 +167,9 @@ namespace Cav
             String connectionName = null)
             where TConnection : DbConnection
         {
+            if (connectionString.IsNullOrWhiteSpace())
+                throw new ArgumentNullException("connectionString");
+
             if (connectionName.IsNullOrWhiteSpace())
                 connectionName = defaultNameConnection;
 

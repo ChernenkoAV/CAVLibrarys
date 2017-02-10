@@ -186,8 +186,7 @@ namespace Cav.DataAcces
             if (nullableType != null)
                 typeT = nullableType;
 
-            DbType mappedFromT;
-            Boolean isCanMapTypwToDb = HeplerDataAcces.TypeMaps.TryGetValue(typeT, out mappedFromT);
+            Boolean isCanMapTypwToDb = HeplerDataAcces.IsCanMapedDbType(typeT);
             if (!isCanMapTypwToDb && convertProperty == null)
                 throw new ArgumentException($"Для типа {typeT.FullName} свойства {paramName}, связываемого с полем {fieldName}, должен быть указан конвертор");
 
@@ -245,8 +244,8 @@ namespace Cav.DataAcces
                 throw new ArgumentNullException("property. Выражение для свойства не может быть null");
 
             Type typeT = typeof(T);
-            DbType mappedFromT;
-            if (!HeplerDataAcces.TypeMaps.TryGetValue(typeT, out mappedFromT) && convertProperty == null)
+
+            if (!HeplerDataAcces.IsCanMapedDbType(typeT) && convertProperty == null)
                 throw new ArgumentException($"Для типа {typeT.FullName} должен быть указан конвертор");
 
             if (convertProperty != null)

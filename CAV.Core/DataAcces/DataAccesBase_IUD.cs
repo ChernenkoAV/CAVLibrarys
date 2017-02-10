@@ -60,7 +60,6 @@ namespace Cav.DataAcces
             if (insertExpression != null)
                 insadeCall = ParameterRebinder.ReplaceParameters(property, insertExpression);
 
-
             Expression metodCall =
                     Expression.Call(
                         typeof(HeplerDataAcces),

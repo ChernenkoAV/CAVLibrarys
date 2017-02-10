@@ -117,7 +117,7 @@ namespace Cav.DataAcces
             if (obj == null)
                 val = Expression.Lambda<Func<Object>>(valueExp).Compile()();
             else
-                val = ((valueExp as UnaryExpression).Operand as Expression<Func<Trow, Object>>).Compile()(obj);
+                val = ((valueExp as UnaryExpression).Operand as LambdaExpression).Compile().DynamicInvoke(obj);
 
             d.Add(name, val);
         }
@@ -186,7 +186,7 @@ namespace Cav.DataAcces
             if (nullableType != null)
                 typeT = nullableType;
 
-            Boolean isCanMapTypwToDb = HeplerDataAcces.IsCanMapedDbType(typeT);
+            Boolean isCanMapTypwToDb = HeplerDataAcces.IsCanMappedDbType(typeT);
             if (!isCanMapTypwToDb && convertProperty == null)
                 throw new ArgumentException($"Для типа {typeT.FullName} свойства {paramName}, связываемого с полем {fieldName}, должен быть указан конвертор");
 
@@ -197,13 +197,10 @@ namespace Cav.DataAcces
             var p_rowObg = property.Parameters.First();
             var p_dbRow = Expression.Parameter(typeof(DataRow));
 
-            Func<object, object> expConv = null;
+            Delegate expConv = null;
 
             if (convertProperty != null)
-            {
-                var fcfexp = convertProperty.Compile();
-                expConv = x => fcfexp((T)x);
-            }
+                expConv = convertProperty.Compile();
 
             Expression fromfield =
                 Expression.Call(
@@ -211,7 +208,7 @@ namespace Cav.DataAcces
                     Expression.Constant(propBody.Type, typeof(Type)),
                     p_dbRow,
                     Expression.Constant(fieldName, fieldName.GetType()),
-                    Expression.Constant(expConv, typeof(Func<object, object>))
+                    Expression.Constant(expConv, typeof(Delegate))
                     );
 
             Expression assToProp = Expression.Assign(propBody, Expression.Convert(fromfield, propBody.Type));
@@ -245,7 +242,7 @@ namespace Cav.DataAcces
 
             Type typeT = typeof(T);
 
-            if (!HeplerDataAcces.IsCanMapedDbType(typeT) && convertProperty == null)
+            if (!HeplerDataAcces.IsCanMappedDbType(typeT) && convertProperty == null)
                 throw new ArgumentException($"Для типа {typeT.FullName} должен быть указан конвертор");
 
             if (convertProperty != null)

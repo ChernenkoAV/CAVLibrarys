@@ -35,14 +35,29 @@ namespace Cav
 
         private static Dictionary<Type, DbType> typeMaps = new Dictionary<Type, DbType>();
 
-        internal static Boolean IsCanMapedDbType(Type type)
+        /// <summary>
+        /// Возможность сопоставить тип <see cref="Type"/>  с типом <see cref="DbType"/> 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static Boolean IsCanMappedDbType(Type type)
         {
+            var nullable = Nullable.GetUnderlyingType(type);
+            if (nullable != null)
+                type = nullable;
+
             if (type.IsEnum)
                 return true;
             DbType dt;
             return typeMaps.TryGetValue(type, out dt);
         }
-        internal static DbType TypeMapDbType(Type sType)
+
+        /// <summary>
+        /// Получение <see cref="DbType"/> по <see cref="Type"/>
+        /// </summary>
+        /// <param name="sType"></param>
+        /// <returns></returns>
+        public static DbType TypeMapDbType(Type sType)
         {
             Type origanalType = sType;
             Type nullableType = Nullable.GetUnderlyingType(sType);
@@ -55,7 +70,7 @@ namespace Cav
             DbType res;
 
             if (!typeMaps.TryGetValue(sType, out res))
-                throw new ArgumentException($"Не удалось сопоставить тип {origanalType.FullName} с типом для параметра команды");
+                throw new ArgumentException($"Не удалось сопоставить тип {origanalType.FullName} с типом DbType");
 
             return res;
         }
@@ -77,7 +92,7 @@ namespace Cav
             return instParam;
         }
 
-        internal static object FromField(Type returnType, DataRow dbRow, String fieldName, Func<object, object> conv)
+        internal static object FromField(Type returnType, DataRow dbRow, String fieldName, Delegate conv)
         {
             if (!dbRow.Table.Columns.Contains(fieldName))
                 return returnType.GetDefault();
@@ -87,12 +102,16 @@ namespace Cav
             if (val is DBNull)
                 val = returnType.GetDefault();
 
-            returnType = Nullable.GetUnderlyingType(returnType);
-            if (returnType != null && returnType.IsEnum)
-                val = Enum.ToObject(returnType, val);
+            var nullable = Nullable.GetUnderlyingType(returnType);
+
+            if (val != null && (returnType.IsEnum || (nullable != null && nullable.IsEnum)))
+                val = Enum.ToObject(nullable ?? returnType, val);
 
             if (conv != null && val != null)
-                val = conv(val);
+                val = conv.DynamicInvoke(val);
+
+            if (val == null && !HeplerDataAcces.IsCanMappedDbType(nullable ?? returnType))
+                val = Activator.CreateInstance(returnType);
 
             return val;
         }

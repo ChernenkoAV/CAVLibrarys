@@ -13,7 +13,7 @@ namespace Cav
         /// <summary>
         /// Путь с файлом лога.
         /// </summary>
-        private static String logfile = Path.Combine(DomainContext.AppDataUserStorage, "trace " + DateTime.Now.ToString("yyyy-MM-dd") + ".log");
+        private static String logfile = Path.Combine(DomainContext.AppDataCommonStorage, "trace " + DateTime.Now.ToString("yyyy-MM-dd") + ".log");
 
         /// <summary>
         /// Экземпляр лога собылтий Windows. Он же флаг, что подсистема логирования инициализированна
@@ -106,7 +106,7 @@ namespace Cav
 
             String msg = ex.Expand();
             msg = (ex.TargetSite == null ? String.Empty : "TargetSite: " + ex.TargetSite.ToString() + Environment.NewLine) + msg;
-            
+
             if (msg.Length > 30000)
             {
                 Trace.Write(msg);

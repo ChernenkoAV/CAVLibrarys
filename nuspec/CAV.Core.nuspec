@@ -10,9 +10,8 @@
         <projectUrl>https://github.com/ChernenkoAV/CavLibrarys</projectUrl>
         <iconUrl>https://raw.githubusercontent.com/ChernenkoAV/CavLibrarys/master/Cav.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>Ядерная сборка + утилиты, облегчающие рутинные оперции</description>
-        <copyright>Copyright 2016</copyright>
-        <language>ru-RU</language>
+        <description>Набор утилит, облегчающих рутинные оперции</description>
+        <copyright>Copyright 2017</copyright>
         <tags>Cav utils soap смев smev</tags>
         <dependencies> 
             <group targetFramework="net40"></group>

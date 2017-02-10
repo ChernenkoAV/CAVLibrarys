@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Cav.DataAcces
 {
@@ -47,7 +48,7 @@ namespace Cav.DataAcces
         {
             AdapterConfig config = null;
             if (!comands.TryGetValue(actionType, out config))
-                throw new NotImplementedException("Команда для " + actionType.ToString() + " не настроена");
+                throw new NotImplementedException($"Команда для {actionType.ToString()} не настроена");
 
             DbCommand command = CreateCommand(config);
 
@@ -65,7 +66,11 @@ namespace Cav.DataAcces
                     paramValues.Remove(paramValKey);
 
                 if (val != null)
+                {
+                    if (item.Value.ConvetProperty != null)
+                        val = item.Value.ConvetProperty(val);
                     prmCmd.Value = val;
+                }
 
                 command.Parameters.Add(prmCmd);
             }
@@ -106,7 +111,7 @@ namespace Cav.DataAcces
             String name = (paramExp as MemberExpression).Member.Name;
 
             if (d.ContainsKey(name))
-                throw new ArgumentException("Свойство " + name + " описано более одного раза");
+                throw new ArgumentException($"Свойство {name} описано более одного раза");
 
             Object val = null;
             if (obj == null)
@@ -151,43 +156,68 @@ namespace Cav.DataAcces
         /// <summary>
         /// Сопоставление свойства класса отражения с полем результирующего набора данных
         /// </summary>
-        /// <param name="property"></param>
-        /// <param name="fieldName"></param>
-        protected void MapSelectField(Expression<Func<Trow, Object>> property, String fieldName)
+        /// <param name="property">Свойство класса</param>
+        /// <param name="fieldName">Имя поля в результурующем наборе</param>
+        /// <param name="convertProperty">Дополнительная функция преобразования</param>
+        protected void MapSelectField<T>(Expression<Func<Trow, T>> property, String fieldName, Expression<Func<Object, T>> convertProperty = null)
         {
-            if (fieldName.IsNullOrWhiteSpace())
-                throw new ArgumentNullException("Не указано имя поля для сопоставления");
-            if (property == null)
-                throw new ArgumentNullException("Не указано свойство для сопоставления");
-
-            MapSelectFieldInDictionary(selectPropFieldMap, property, fieldName);
+            MapSelectFieldInDictionary(selectPropFieldMap, property, fieldName, convertProperty);
         }
 
-        internal void MapSelectFieldInDictionary(Dictionary<String, Action<Trow, DataRow>> d, Expression<Func<Trow, Object>> property, String fieldName)
+        internal void MapSelectFieldInDictionary<T>(Dictionary<String, Action<Trow, DataRow>> d, Expression<Func<Trow, T>> property, String fieldName, Expression<Func<Object, T>> convertProperty = null)
         {
-            var proprow = property.Body;
-            if (proprow.NodeType == ExpressionType.Convert)
-                proprow = (proprow as UnaryExpression).Operand as MemberExpression;
+            if (fieldName.IsNullOrWhiteSpace())
+                throw new ArgumentNullException("paramName. Имя параметра не может быть пустым, состоять из пробелов или быть null");
 
-            String paramName = (proprow as MemberExpression).Member.Name;
+            if (property == null)
+                throw new ArgumentNullException("property. Выражение для свойства не может быть null");
+
+            var propBody = property.Body;
+            if (propBody.NodeType != ExpressionType.MemberAccess)
+                throw new ArgumentException("В выражении property возможен только доступ к свойству или полю класса");
+
+            String paramName = (propBody as MemberExpression).Member.Name;
 
             if (d.Keys.Contains(paramName))
-                throw new ArgumentException("Для свойства " + paramName + " уже определна связка");
+                throw new ArgumentException($"Для свойства {paramName} уже определна связка");
+
+            Type typeT = typeof(T);
+            var nullableType = Nullable.GetUnderlyingType(typeT);
+            if (nullableType != null)
+                typeT = nullableType;
+
+            DbType mappedFromT;
+            Boolean isCanMapTypwToDb = HeplerDataAcces.TypeMaps.TryGetValue(typeT, out mappedFromT);
+            if (!isCanMapTypwToDb && convertProperty == null)
+                throw new ArgumentException($"Для типа {typeT.FullName} свойства {paramName}, связываемого с полем {fieldName}, должен быть указан конвертор");
+
+            if (!isCanMapTypwToDb && typeT.GetConstructor(new Type[] { }) == null)
+                throw new ArgumentException($"Тип {typeT.FullName} для свойства {paramName} должен иметь открытый конструктор без параметров");
+
 
             var p_rowObg = property.Parameters.First();
             var p_dbRow = Expression.Parameter(typeof(DataRow));
 
-            Type typeProperty = proprow.Type;
+            Func<object, object> expConv = null;
 
-            var fromfield =
+            if (convertProperty != null)
+            {
+                var fcfexp = convertProperty.Compile();
+                expConv = x => fcfexp((T)x);
+            }
+
+            Expression fromfield =
                 Expression.Call(
-                    typeof(HeplerDataAcces).GetMethod("FromField", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static),
-                    Expression.Constant(typeProperty, typeof(Type)),
+                    typeof(HeplerDataAcces).GetMethod(nameof(HeplerDataAcces.FromField), BindingFlags.Static | BindingFlags.NonPublic),
+                    Expression.Constant(propBody.Type, typeof(Type)),
                     p_dbRow,
-                    Expression.Constant(fieldName, fieldName.GetType()));
-            var assi = Expression.Assign(proprow, Expression.Convert(fromfield, typeProperty));
+                    Expression.Constant(fieldName, fieldName.GetType()),
+                    Expression.Constant(expConv, typeof(Func<object, object>))
+                    );
 
-            Expression<Action<Trow, DataRow>> readfomfield = Expression.Lambda<Action<Trow, DataRow>>(assi, p_rowObg, p_dbRow);
+            Expression assToProp = Expression.Assign(propBody, Expression.Convert(fromfield, propBody.Type));
+
+            Expression<Action<Trow, DataRow>> readfomfield = Expression.Lambda<Action<Trow, DataRow>>(assToProp, p_rowObg, p_dbRow);
 
             d.Add(paramName, readfomfield.Compile());
         }
@@ -195,35 +225,61 @@ namespace Cav.DataAcces
         /// <summary>
         /// Сопоставление свойств класса параметров адаптера с параметрами скрипта выборки
         /// </summary>
+        /// <typeparam name="T">Тип свойства</typeparam> 
         /// <param name="property">Свойство</param>
         /// <param name="paramName">Имя параметра</param>
         /// <param name="typeParam">Тип параметра в БД</param>
-        protected void MapSelectParam(Expression<Func<TselectParams, Object>> property, String paramName, DbType? typeParam = null)
+        protected void MapSelectParam<T>(Expression<Func<TselectParams, T>> property, String paramName, DbType? typeParam = null)
         {
-            MapParam(CommandActionType.Select, property, paramName, typeParam);
+            MapParam<T>(CommandActionType.Select, property, paramName, typeParam);
         }
 
-        internal void MapParam(CommandActionType actionType, Expression property, String paramName, DbType? typeParam = null)
+        internal void MapParam<T>(CommandActionType actionType, Expression property, String paramName, DbType? typeParam = null, Expression convertProperty = null)
         {
+            DbType? paramType = typeParam;
+
             if (paramName.IsNullOrWhiteSpace())
-                throw new ArgumentNullException("Имя параметра не может быть пустым, состоять из пробелов или быть null");
+                throw new ArgumentNullException("paramName. Имя параметра не может быть пустым, состоять из пробелов или быть null");
+
+            if (property == null)
+                throw new ArgumentNullException("property. Выражение для свойства не может быть null");
+
+            Type typeT = typeof(T);
+            DbType mappedFromT;
+            if (!HeplerDataAcces.TypeMaps.TryGetValue(typeT, out mappedFromT) && convertProperty == null)
+                throw new ArgumentException($"Для типа {typeT.FullName} должен быть указан конвертор");
+
+            if (convertProperty != null)
+            {
+                Expression body = (convertProperty as LambdaExpression).Body;
+                if (body.NodeType == ExpressionType.Convert)
+                    body = (body as UnaryExpression).Operand;
+
+                if (!paramType.HasValue)
+                    paramType = HeplerDataAcces.TypeMapDbType(body.Type);
+            }
 
             var proprow = (property as LambdaExpression).Body;
-            if (proprow.NodeType == ExpressionType.Convert)
-                proprow = (proprow as UnaryExpression).Operand as MemberExpression;
+            if (proprow.NodeType != ExpressionType.MemberAccess)
+                throw new ArgumentException("В выражении property возможен только доступ к свойству или полю класса");
 
             String propName = (proprow as MemberExpression).Member.Name;
             String key = actionType.ToString() + " " + propName;
             if (commandParams.ContainsKey(key))
-                throw new ArgumentException("Для свойства  " + propName + " уже указано сопоставление");
+                throw new ArgumentException($"Для свойства {propName} уже указано сопоставление");
 
             DbParamSetting param = new DbParamSetting();
             param.ParamName = paramName;
 
-            if (typeParam.HasValue)
-                param.ParamType = typeParam.Value;
-            else
-                param.ParamType = HeplerDataAcces.TypeMapDbType(proprow.Type);
+            if (!paramType.HasValue)
+                paramType = HeplerDataAcces.TypeMapDbType(proprow.Type);
+            param.ParamType = paramType.Value;
+
+            if (convertProperty != null)
+            {
+                Func<T, Object> convFunct = (convertProperty as Expression<Func<T, Object>>).Compile();
+                param.ConvetProperty = x => convFunct((T)x);
+            }
 
             commandParams.Add(key, param);
         }
@@ -235,7 +291,7 @@ namespace Cav.DataAcces
         protected void ConfigCommand(AdapterConfig config)
         {
             if (comands.ContainsKey(config.ActionType))
-                throw new ArgumentException("В адаптере уже определена сомманда с типом " + config.ActionType.ToString());
+                throw new ArgumentException($"В адаптере уже определена сомманда с типом {config.ActionType.ToString()}");
             if (config.TextCommand.IsNullOrWhiteSpace())
                 throw new ArgumentNullException("Текст команды не может быть пустым");
 
@@ -343,14 +399,15 @@ namespace Cav.DataAcces
         private Dictionary<CommandActionType, AdapterConfig> comands = new Dictionary<CommandActionType, AdapterConfig>();
     }
 
-    /// <summary>
-    /// Интерфейс для параметров адаптеров
-    /// </summary>
-    public interface IAdapterParametrs { }
-
     internal struct DbParamSetting
     {
         public String ParamName { get; set; }
         public DbType ParamType { get; set; }
+        public Func<Object, Object> ConvetProperty { get; set; }
     }
+
+    /// <summary>
+    /// Интерфейс для параметров адаптеров
+    /// </summary>
+    public interface IAdapterParametrs { }
 }

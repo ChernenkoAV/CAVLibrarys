@@ -63,11 +63,11 @@ namespace Cav.Soap
 
             binding.Elements.Remove<TextMessageEncodingBindingElement>();
             binding.Elements.Insert(0, new SMEVMessageEncodingBindingElement()
-                {
-                    LoggerInstance = LoggerInstance,
-                    SenderActor = SenderActor,
-                    RecipientActor = RecipientActor
-                });
+            {
+                LoggerInstance = LoggerInstance,
+                SenderActor = SenderActor,
+                RecipientActor = RecipientActor
+            });
 
             AsymmetricSecurityBindingElement asbe = binding.Elements.Find<AsymmetricSecurityBindingElement>();
             asbe.EnableUnsecuredResponse = EnableUnsecuredResponse;
@@ -334,10 +334,7 @@ namespace Cav.Soap
 
                     ExecLogThreadHelper.WriteLog(LoggerInstance, sp);
                 }
-                catch
-                {
-                    // TODO залогировать исключение
-                }
+                catch { }
                 finally
                 {
                     if (CorrelationObject != null && CorrelationObject.Direction == Dir.ClientDirection)
@@ -442,10 +439,7 @@ namespace Cav.Soap
 
                     ExecLogThreadHelper.WriteLog(LoggerInstance, sp);
                 }
-                catch
-                {
-                    // TODO залогировать исключение, наверное
-                }
+                catch { }
                 finally
                 {
                     if (CorrelationObject != null && CorrelationObject.Direction == Dir.ServiceDirection)

@@ -163,7 +163,7 @@ namespace Cav.Soap
             //}
             //catch
             //{
-            //    //TODO Сделать логгер ошибок
+            //    
             //    // прячем ошибку
             //}
             //finally
@@ -208,7 +208,7 @@ namespace Cav.Soap
             //}
             //catch
             //{
-            //    // TODO Вставить логгер ошибок
+            //    
             //}
             //finally
             //{
@@ -254,10 +254,7 @@ namespace Cav.Soap
 
                 ExecLogThreadHelper.WriteLog(implementationLog, sp);
             }
-            catch
-            {
-                // TODO залогировать исключение
-            }
+            catch { }
             finally
             {
                 request = buff.CreateMessage();
@@ -295,10 +292,7 @@ namespace Cav.Soap
 
                 ExecLogThreadHelper.WriteLog(implementationLog, sp);
             }
-            catch
-            {
-                // TODO залогировать исключение
-            }
+            catch { }
             finally
             {
                 reply = buff.CreateMessage();

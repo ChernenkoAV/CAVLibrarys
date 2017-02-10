@@ -40,15 +40,18 @@ namespace Cav.DataAcces
         private Dictionary<String, Action<Trow, DataRow>> insertPropKeyFieldMap = new Dictionary<string, Action<Trow, DataRow>>();
         private LambdaExpression insertExpression = null;
 
+
         /// <summary>
         /// Сопоставление свойства объекта отражения и имени параметра адаптера
         /// </summary>
+        /// <typeparam name="T">Тип свойства</typeparam>
         /// <param name="property">Свойство</param>
         /// <param name="paramName">Имя параметра</param>
         /// <param name="typeParam">Тип параметра в БД</param>
-        protected void MapInsertParam(Expression<Func<Trow, Object>> property, String paramName, DbType? typeParam = null)
+        /// <param name="addedConvertFunct">Дополнительная функция преобразования</param> 
+        protected void MapInsertParam<T>(Expression<Func<Trow, T>> property, String paramName, DbType? typeParam = null, Expression<Func<T, Object>> addedConvertFunct = null)
         {
-            MapParam(CommandActionType.Insert, property, paramName, typeParam);
+            MapParam<T>(CommandActionType.Insert, property, paramName, typeParam, addedConvertFunct);
 
             var paramExp = property.Parameters[0];
 
@@ -61,7 +64,7 @@ namespace Cav.DataAcces
             Expression metodCall =
                     Expression.Call(
                         typeof(HeplerDataAcces),
-                        "ForParceParams",
+                        nameof(HeplerDataAcces.ForParceParams),
                         new Type[] { typeof(Trow) },
                         insadeCall ?? paramExp,
                         Expression.Quote(property),
@@ -77,13 +80,8 @@ namespace Cav.DataAcces
         /// </summary>
         /// <param name="property"></param>
         /// <param name="fieldName"></param>
-        protected void MapInsertKeyParam(Expression<Func<Trow, Object>> property, String fieldName)
+        protected void MapInsertKeyParam<T>(Expression<Func<Trow, T>> property, String fieldName)
         {
-            if (fieldName.IsNullOrWhiteSpace())
-                throw new ArgumentNullException("Не указано имя поля для сопоставления");
-            if (property == null)
-                throw new ArgumentNullException("Не указано свойство для сопоставления");
-
             MapSelectFieldInDictionary(insertPropKeyFieldMap, property, fieldName);
         }
 
@@ -106,12 +104,13 @@ namespace Cav.DataAcces
         /// <summary>
         /// Сопоставление объекта параметров удаления и параметров адаптера удаления
         /// </summary>
+        /// <typeparam name="T">Тип свойства</typeparam>
         /// <param name="property">Свойство</param>
         /// <param name="paramName">Имя параметра</param>
         /// <param name="typeParam">Тип параметра в БД</param>
-        protected void MapDeleteParam(Expression<Func<TdeleteParams, Object>> property, String paramName, DbType? typeParam = null)
+        protected void MapDeleteParam<T>(Expression<Func<TdeleteParams, T>> property, String paramName, DbType? typeParam = null)
         {
-            MapParam(CommandActionType.Delete, property, paramName, typeParam);
+            MapParam<T>(CommandActionType.Delete, property, paramName, typeParam);
         }
 
         #endregion
@@ -133,12 +132,14 @@ namespace Cav.DataAcces
         /// <summary>
         /// Сопоставление свойств класса параметров обновления и параметров адаптера
         /// </summary>
+        /// <typeparam name="T">Тип свойства</typeparam>
         /// <param name="property">Свойство</param>
         /// <param name="paramName">Имя параметра</param>
         /// <param name="typeParam">Тип параметра в БД</param>
-        protected void MapUpdateParam(Expression<Func<TupdateParams, Object>> property, String paramName, DbType? typeParam = null)
+        /// <param name="addedConvertFunct">Дополнительная функция преобразования</param>
+        protected void MapUpdateParam<T>(Expression<Func<TupdateParams, T>> property, String paramName, DbType? typeParam = null, Expression<Func<T, Object>> addedConvertFunct = null)
         {
-            MapParam(CommandActionType.Update, property, paramName, typeParam);
+            MapParam<T>(CommandActionType.Update, property, paramName, typeParam, addedConvertFunct);
         }
 
         #endregion

@@ -87,6 +87,10 @@ namespace Cav
             if (val is DBNull)
                 val = returnType.GetDefault();
 
+            returnType = Nullable.GetUnderlyingType(returnType);
+            if (returnType != null && returnType.IsEnum)
+                val = Enum.ToObject(returnType, val);
+
             if (conv != null && val != null)
                 val = conv(val);
 

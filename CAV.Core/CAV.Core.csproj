@@ -140,6 +140,7 @@
     <Compile Include="DigitalSignature\DSGeneric.cs" />
     <Compile Include="Routine\PredicateBuilder.cs" />
     <Compile Include="Routine\ProductionCalendar.cs" />
+    <Compile Include="Routine\ReflectHelpers.cs" />
     <Compile Include="Routine\WinServiceManager.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Routine\DomainContext.cs" />

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows.Forms;
-using Cav.BaseClases;
 
 namespace Cav.WinForms.BaseClases
 {
@@ -17,11 +16,6 @@ namespace Cav.WinForms.BaseClases
         {
             InitializeComponent();
         }
-
-        /// <summary>
-        /// Экземпляр бизнесслогики, необходимый для работы модуля интерфейса
-        /// </summary>
-        public BusinessLogicBase BusinessLogic { get; set; }
 
         /// <summary>
         /// Компонент находится в режиме дизайнера

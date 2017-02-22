@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows.Forms;
-using Cav.BaseClases;
 
 namespace Cav.WinForms.BaseClases
 {
@@ -19,11 +18,6 @@ namespace Cav.WinForms.BaseClases
 
             this.Focus();
         }
-
-        /// <summary>
-        /// Экземпляр бизнесслогики, необходимый для работы диалогового окна
-        /// </summary>
-        public BusinessLogicBase BusinessLogic { get; set; }
 
         /// <summary>
         /// Компонент находится в режиме дизайнера

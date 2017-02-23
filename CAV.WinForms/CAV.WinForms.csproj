@@ -105,28 +105,22 @@
     <PropertyGroup>
         <AssemblyOriginatorKeyFile>Cav.snk</AssemblyOriginatorKeyFile>
     </PropertyGroup>
-    <ItemGroup Condition="'$(TargetFrameworkVersion)' == 'v4.0'">
-        <Reference Include="Cav.Core, Version=2.4.0.0, Culture=neutral, PublicKeyToken=f136b1fd0b87e3f0, processorArchitecture=MSIL">
+    <ItemGroup >
+        <Reference Condition="'$(TargetFrameworkVersion)' == 'v4.0'" Include="Cav.Core, Version=2.4.0.0, Culture=neutral, PublicKeyToken=f136b1fd0b87e3f0, processorArchitecture=MSIL">
             <HintPath>..\packages\Cav.Core.2.4.0\lib\net40\Cav.Core.dll</HintPath>
             <SpecificVersion>False</SpecificVersion>
             <Private>False</Private>
         </Reference>
-    </ItemGroup>
-    <ItemGroup Condition="'$(TargetFrameworkVersion)' == 'v4.5'">
-        <Reference Include="Cav.Core, Version=2.4.0.0, Culture=neutral, PublicKeyToken=f136b1fd0b87e3f0, processorArchitecture=MSIL">
+        <Reference Condition="'$(TargetFrameworkVersion)' == 'v4.5'" Include="Cav.Core, Version=2.4.0.0, Culture=neutral, PublicKeyToken=f136b1fd0b87e3f0, processorArchitecture=MSIL">
             <HintPath>..\packages\Cav.Core.2.4.0\lib\net45\Cav.Core.dll</HintPath>
             <SpecificVersion>False</SpecificVersion>
             <Private>False</Private>
         </Reference>
-    </ItemGroup>
-    <ItemGroup Condition="'$(TargetFrameworkVersion)' == 'v4.6.1'">
-        <Reference Include="Cav.Core, Version=2.4.0.0, Culture=neutral, PublicKeyToken=f136b1fd0b87e3f0, processorArchitecture=MSIL">
+        <Reference Condition="'$(TargetFrameworkVersion)' == 'v4.6.1'" Include="Cav.Core, Version=2.4.0.0, Culture=neutral, PublicKeyToken=f136b1fd0b87e3f0, processorArchitecture=MSIL">
             <HintPath>..\packages\Cav.Core.2.4.0\lib\net461\Cav.Core.dll</HintPath>
             <SpecificVersion>False</SpecificVersion>
             <Private>False</Private>
         </Reference>
-    </ItemGroup>
-    <ItemGroup>
         <Reference Include="System" />
         <Reference Include="System.Core" />
         <Reference Include="System.Drawing" />

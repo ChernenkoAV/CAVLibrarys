@@ -13,6 +13,7 @@ namespace Cav.BaseClases
     /// Базовый класс для создания адаптеров к БД
     /// </summary>
     [Obsolete("Скоро будет удалено. Используйте DataAccesBase и его наследников")]
+    // TODO Удалить
     public class DBAdapterBase : Component
     {
         /// <summary>

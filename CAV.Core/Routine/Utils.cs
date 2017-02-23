@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Deployment.Application;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Web;
@@ -46,10 +47,7 @@ namespace Cav
 
             var request = WebRequest.Create(GoogleForm);
 
-            String postData = null;
-            foreach (var pv in ParamValueForm)
-                postData = pv.Key + "=" + pv.Value + "&";
-            postData = postData.Remove(postData.Length - 1);
+            String postData = ParamValueForm.Select(x => x.Key + "=" + x.Value).ToArray().JoinValuesToString("&");
             postData = HttpUtility.UrlPathEncode(postData);
             var data = Encoding.UTF8.GetBytes(postData);
 

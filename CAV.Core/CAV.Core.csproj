@@ -118,6 +118,7 @@
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -131,6 +132,7 @@
     <Compile Include="BaseClases\DBAdapterBase.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Container\Locator.cs" />
     <Compile Include="DataAcces\DataAccesBase.cs" />
     <Compile Include="DataAcces\DataAccesBase_IUD.cs" />
     <Compile Include="DataAcces\DataAccesBase_S.cs" />
@@ -140,13 +142,14 @@
     <Compile Include="DigitalSignature\DSGeneric.cs" />
     <Compile Include="Routine\PredicateBuilder.cs" />
     <Compile Include="Routine\ProductionCalendar.cs" />
+    <Compile Include="Routine\ProgramSettingsBase.cs" />
     <Compile Include="Routine\ReflectHelpers.cs" />
     <Compile Include="Routine\WinServiceManager.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Routine\DomainContext.cs" />
     <Compile Include="Routine\ErrorCatcher.cs" />
     <Compile Include="Routine\Extentions.cs" />
-    <Compile Include="Routine\ProgramSettingsBase.cs" />
+    <Compile Include="Routine\ProgramSettingsBaseOld.cs" />
     <Compile Include="Routine\Utils.cs" />
     <Compile Include="Soap\ServiceErrorHandler.cs" />
     <Compile Include="Soap\ServiceInstanceProvider.cs" />

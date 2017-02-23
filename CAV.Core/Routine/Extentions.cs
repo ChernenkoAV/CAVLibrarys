@@ -30,13 +30,13 @@ namespace Cav
         /// Сериализатор XML
         /// </summary>
         /// <param name="o">Обьект</param>
-        /// <param name="FileName">Файл, куда сохранить</param>
-        public static void XMLSerialize(this object o, string FileName)
+        /// <param name="fileName">Файл, куда сохранить</param>
+        public static void XMLSerialize(this object o, string fileName)
         {
-            File.Delete(FileName);
+            File.Delete(fileName);
             XmlSerializer xs = new XmlSerializer(o.GetType());
 
-            using (Stream ms = File.Create(FileName))
+            using (Stream ms = File.Create(fileName))
                 xs.Serialize(ms, o);
         }
 
@@ -60,43 +60,52 @@ namespace Cav
         /// Десиарелизатор 
         /// </summary>
         /// <typeparam name="T">Тип для десиарелизации</typeparam>
-        /// <param name="XDoc">XDocument, из которого десириализовать</param>
+        /// <param name="xDoc">XDocument, из которого десириализовать</param>
         /// <returns>Объект указанного типа</returns>
-        public static T XMLDeserialize<T>(this XDocument XDoc)
+        public static T XMLDeserialize<T>(this XContainer xDoc)
         {
-            if (XDoc == null)
-                return default(T);
-
-            XmlRootAttribute xra = new XmlRootAttribute(XDoc.Root.Name.LocalName);
-            xra.Namespace = XDoc.Root.Name.Namespace.NamespaceName;
-            XmlSerializer xs = new XmlSerializer(typeof(T), xra);
-
-            using (StringReader sr = new StringReader(XDoc.ToString()))
-                return (T)xs.Deserialize(sr);
+            return (T)xDoc.XMLDeserialize(typeof(T));
         }
 
         /// <summary>
-        /// Десиарелизатор 
+        /// Десиреализатор
         /// </summary>
-        /// <typeparam name="T">Тип для десиарелизации</typeparam>
-        /// <param name="XElm">XElement, из которого десириализовать</param>
-        /// <returns>Объект указанного типа</returns>
-        public static T XMLDeserialize<T>(this XElement XElm)
+        /// <param name="xDoc">XML-документ, содержащий данные для десериализации</param>
+        /// <param name="type">Тип</param>
+        /// <returns></returns>
+        public static Object XMLDeserialize(this XContainer xDoc, Type type)
         {
-            return XDocument.Parse(XElm.ToString()).XMLDeserialize<T>();
+            if (type == null)
+                throw new ArgumentNullException("type");
+
+            if (xDoc == null)
+                return type.GetDefault();
+
+            XElement el = (xDoc as XElement) ?? (xDoc as XDocument).Root;
+
+            if (el == null)
+                return type.GetDefault();
+
+            XmlRootAttribute xra = new XmlRootAttribute(el.Name.LocalName);
+            xra.Namespace = el.Name.Namespace.NamespaceName;
+            XmlSerializer xs = new XmlSerializer(type, xra);
+
+            using (StringReader sr = new StringReader(xDoc.ToString()))
+                return xs.Deserialize(sr);
         }
 
         /// <summary>
         /// Десиарелизатор. Если XmlElement = null, то вернет default(T).
         /// </summary>
         /// <typeparam name="T">Тип для десиарелизации</typeparam>
-        /// <param name="XElm">XmlElement, из которого десириализовать</param>
+        /// <param name="xmlElement">Элемент, из которого десириализовать</param>
         /// <returns>Объект указанного типа или default(T), если XmlElement = null</returns>
-        public static T XMLDeserialize<T>(this XmlElement XElm)
+        public static T XMLDeserialize<T>(this XmlElement xmlElement)
         {
-            if (XElm == null)
+            if (xmlElement == null)
                 return default(T);
-            return XDocument.Parse(XElm.OuterXml).XMLDeserialize<T>();
+
+            return XDocument.Parse(xmlElement.OuterXml).XMLDeserialize<T>();
         }
 
         /// <summary>
@@ -107,10 +116,24 @@ namespace Cav
         /// <returns>Объект указанного типа или default(T), если строка IsNullOrWhiteSpace</returns>
         public static T XMLDeserialize<T>(this String xml)
         {
-            if (xml.IsNullOrWhiteSpace())
-                return default(T);
+            return (T)xml.XMLDeserialize(typeof(T));
+        }
 
-            return XDocument.Parse(xml).XMLDeserialize<T>();
+        /// <summary>
+        /// Десиреализатор из строки, содержащей XML.
+        /// </summary>
+        /// <param name="xml">Строка, содержащая XML</param>
+        /// <param name="type">Тип</param>
+        /// <returns>Объект или default(T), если строка IsNullOrWhiteSpace</returns>
+        public static Object XMLDeserialize(this String xml, Type type)
+        {
+            if (type == null)
+                throw new ArgumentNullException("type");
+
+            if (xml.IsNullOrWhiteSpace())
+                return type.GetDefault();
+
+            return XDocument.Parse(xml).XMLDeserialize(type);
         }
 
 
@@ -118,38 +141,42 @@ namespace Cav
         /// Десиарелизатор из файла
         /// </summary>
         /// <typeparam name="T">Тип для десиарелизации</typeparam>
-        /// <param name="FileName">Файл, из которого десириализовать</param>
+        /// <param name="fileName">Файл, из которого десириализовать</param>
         /// <returns>Объект указанного типа</returns>
-        public static T XMLDeserializeFromFile<T>(this String FileName)
+        public static T XMLDeserializeFromFile<T>(this String fileName)
         {
-            if (!File.Exists(FileName))
-                return default(T);
+            return (T)fileName.XMLDeserializeFromFile(typeof(T));
+        }
 
-            XDocument xdoc = XDocument.Load(FileName);
+        /// <summary>
+        /// Десиарелизатор из файла
+        /// </summary>
+        /// <param name="fileName">Файл, из которого десириализовать</param>
+        /// <param name="type">Тип</param>
+        /// <returns>Объект</returns>
+        public static Object XMLDeserializeFromFile(this String fileName, Type type)
+        {
+            if (!File.Exists(fileName))
+                return type.GetDefault();
 
-            XmlRootAttribute xra = new XmlRootAttribute(xdoc.Root.Name.LocalName);
-            xra.Namespace = xdoc.Root.Name.Namespace.NamespaceName;
-            XmlSerializer xs = new XmlSerializer(typeof(T), xra);
-
-            using (StringReader sr = new StringReader(xdoc.ToString()))
-                return (T)xs.Deserialize(sr);
+            return XDocument.Load(fileName).XMLDeserialize(type);
         }
 
         /// <summary>
         /// Преобразование XML
         /// </summary>
-        /// <param name="XML">XML для преобразования</param>
-        /// <param name="XSLT">XSLT-шаблона перобразования </param>
+        /// <param name="xml">XML для преобразования</param>
+        /// <param name="xslt">XSLT-шаблона перобразования </param>
         /// <returns>Результат преобразования</returns>
-        public static String XMLTransform(this XDocument XML, XDocument XSLT)
+        public static String XMLTransform(this XContainer xml, XContainer xslt)
         {
             XslCompiledTransform xct = new XslCompiledTransform();
-            xct.Load(XSLT.CreateReader());
+            xct.Load(xslt.CreateReader());
 
             StringBuilder res = new StringBuilder();
 
             using (TextWriter wr = new StringWriter(res))
-            { xct.Transform(XML.CreateReader(), new XsltArgumentList(), wr); }
+            { xct.Transform(xml.CreateReader(), new XsltArgumentList(), wr); }
 
             return res.ToString();
         }
@@ -157,48 +184,49 @@ namespace Cav
         /// <summary>
         /// Преобразование XML
         /// </summary>
-        /// <param name="XML">XML для преобразования</param>
-        /// <param name="XSLT">XSLT-шаблона перобразования </param>
+        /// <param name="xml">XML для преобразования</param>
+        /// <param name="xslt">XSLT-шаблона перобразования </param>
         /// <returns>Результат преобразования</returns>
-        public static String XMLTransform(this XDocument XML, String XSLT)
+        public static String XMLTransform(this XContainer xml, String xslt)
         {
-            return XML.XMLTransform(XDocument.Parse(XSLT));
+            return xml.XMLTransform(XDocument.Parse(xslt));
         }
 
         /// <summary>
         /// Валидация xml схеме xsd
         /// </summary>
-        /// <param name="XML">Строка, содержащяя валидируемый xml</param>
-        /// <param name="XSD">Строка, содержащая схему xsd</param>
+        /// <param name="xml">Строка, содержащяя валидируемый xml</param>
+        /// <param name="xsd">Строка, содержащая схему xsd</param>
         /// <returns>Текст реультатов валидации. Если валидация успешна - null</returns>
-        public static String XMLValidate(this String XML, String XSD)
+        public static String XMLValidate(this String xml, String xsd)
         {
-            return XDocument.Parse(XML).XMLValidate(XSD);
+            return XDocument.Parse(xml).XMLValidate(xsd);
         }
 
         /// <summary>
         /// Валидация xml схеме xsd
         /// </summary>
-        /// <param name="XML">XDocument, содержащий валидируемый xml</param>
-        /// <param name="XSD">Строка, содержащая схему xsd</param>
+        /// <param name="xml">XDocument, содержащий валидируемый xml</param>
+        /// <param name="xsd">Строка, содержащая схему xsd</param>
         /// <returns>Текст реультатов валидации. Если валидация успешна - null</returns>
-        public static String XMLValidate(this XDocument XML, String XSD)
+        public static String XMLValidate(this XContainer xml, String xsd)
         {
-            return XML.XMLValidate(XDocument.Parse(XSD));
+            return xml.XMLValidate(XDocument.Parse(xsd));
         }
 
         /// <summary>
         /// Валидация xml схеме xsd
         /// </summary>
-        /// <param name="XML">XDocument, содержащий валидируемый xml</param>
-        /// <param name="XSD">XDocument, содержащий схему xsd</param>
+        /// <param name="xml">XDocument, содержащий валидируемый xml</param>
+        /// <param name="xsd">XDocument, содержащий схему xsd</param>
         /// <returns>Текст реультатов валидации. Если валидация успешна - null</returns>
-        public static String XMLValidate(this XDocument XML, XDocument XSD)
+        public static String XMLValidate(this XContainer xml, XContainer xsd)
         {
             XmlSchemaSet shs = new XmlSchemaSet();
-            shs.Add("", XSD.CreateReader());
+            shs.Add("", xsd.CreateReader());
             String res = null;
-            XML.Validate(shs, (a, b) => { res += b.Message + Environment.NewLine; });
+            XElement el = ((xml as XElement) ?? (xml as XDocument).Root);
+            el.Validate(el.GetSchemaInfo().SchemaElement, shs, (a, b) => { res += b.Message + Environment.NewLine; });
             return res;
         }
 

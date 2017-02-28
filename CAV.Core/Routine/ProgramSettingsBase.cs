@@ -13,9 +13,13 @@ namespace Cav.Configuration
     public enum Area
     {
         /// <summary>
-        /// Для пользователя
+        /// Для пользователя (не перемещаемый)
         /// </summary>
-        User,
+        UserLocal,
+        /// <summary>
+        /// Для пользователя (перемещаемый)
+        /// </summary>
+        UserRoaming,
         /// <summary>
         /// Для приложения (В папке сборки)
         /// </summary>
@@ -26,9 +30,16 @@ namespace Cav.Configuration
         CommonApp
     }
 
+    /// <summary>
+    /// Обрасть сохранения для свойства. Если не задано, то - <see cref="Area.UserLocal"/>
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
     public sealed class ProgramSettingsAreaAttribute : Attribute
     {
+        /// <summary>
+        /// Указание области хранения дайла для свойства
+        /// </summary>
+        /// <param name="AreaSetting"></param>
         public ProgramSettingsAreaAttribute(Area AreaSetting)
         {
             this.Value = AreaSetting;
@@ -36,44 +47,83 @@ namespace Cav.Configuration
         internal Area Value { get; private set; }
     }
 
+    /// <summary>
+    /// Имя файла. Если не заданно -  typeof(T).FullName + ".json"
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public sealed class ProgramSettingsFileAttribute : Attribute
     {
+        /// <summary>
+        /// Указание специфического имени файла хранения настроек
+        /// </summary>
+        /// <param name="FileName"></param>
         public ProgramSettingsFileAttribute(String FileName)
         {
             this.FileName = FileName;
         }
         internal String FileName { get; private set; }
     }
-
+    /// <summary>
+    /// Базовый класс для сохранения настроек
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public abstract class ProgramSettingsBase<T> where T : ProgramSettingsBase<T>
     {
-        protected ProgramSettingsBase() { }
+        /// <summary>
+        /// Событие, возникающее при перезагрузке данных. Также вызывается при первичной загрузке.
+        /// </summary>
+        public event Action<ProgramSettingsBase<T>> ReloadEvent;
+        /// <summary>
+        /// Создание экземпляра объекта настроек
+        /// </summary>
+        protected ProgramSettingsBase()
+        {
+            if (internalCreate)
+                return;
+            throw new TypeAccessException("Для получения экземпляра воспользуйтесь свойством Instance");
+        }
 
         private static T _instance = null;
+        private static Boolean internalCreate = false;
+        private static Object lockObj = new object();
+        /// <summary>
+        /// Получение объекта настроек
+        /// </summary>
         public static T Instance
         {
             get
             {
-                if (_instance == null)
+
+                if (_instance != null)
+                    return _instance;
+
+                lock (lockObj)
                 {
-                    _instance = (T)Activator.CreateInstance(typeof(T));
+                    if (_instance == null)
+                    {
+                        internalCreate = true;
+
+                        _instance = (T)Activator.CreateInstance(typeof(T));
+
+                        internalCreate = false;
 
 
 #if NET40
-                    String filename = ((ProgramSettingsFileAttribute)typeof(T).GetCustomAttributes(typeof(ProgramSettingsFileAttribute), false).FirstOrDefault() ?? new ProgramSettingsFileAttribute(null)).FileName;
+                        String filename = ((ProgramSettingsFileAttribute)typeof(T).GetCustomAttributes(typeof(ProgramSettingsFileAttribute), false).FirstOrDefault() ?? new ProgramSettingsFileAttribute(null)).FileName;
 #else
                     String filename = (typeof(T).GetCustomAttribute<ProgramSettingsFileAttribute>() ?? new ProgramSettingsFileAttribute(null)).FileName;
 #endif
-                    if (filename.IsNullOrWhiteSpace())
-                        filename = typeof(T).FullName + ".json";
+                        if (filename.IsNullOrWhiteSpace())
+                            filename = typeof(T).FullName + ".json";
 
-                    filename = filename.ReplaceInvalidPathChars();
+                        filename = filename.ReplaceInvalidPathChars();
 
-                    _instance.fileNameApp = Path.Combine(Path.GetDirectoryName(typeof(T).Assembly.Location), filename);
-                    _instance.fileNameUser = Path.Combine(DomainContext.AppDataUserStorage, filename);
-                    _instance.fileNameAppCommon = Path.Combine(DomainContext.AppDataCommonStorage, filename);
-                    _instance.Reload();
+                        _instance.fileNameApp = Path.Combine(Path.GetDirectoryName(typeof(T).Assembly.Location), filename);
+                        _instance.fileNameUserRoaming = Path.Combine(DomainContext.AppDataUserStorageRoaming, filename);
+                        _instance.fileNameUserLocal = Path.Combine(DomainContext.AppDataUserStorageLocal, filename);
+                        _instance.fileNameAppCommon = Path.Combine(DomainContext.AppDataCommonStorage, filename);
+                        _instance.Reload();
+                    }
                 }
 
                 return _instance;
@@ -81,7 +131,8 @@ namespace Cav.Configuration
         }
 
         private String fileNameApp = null;
-        private String fileNameUser = null;
+        private String fileNameUserRoaming = null;
+        private String fileNameUserLocal = null;
         private String fileNameAppCommon = null;
 
         private void FromJsonDeserialize(String fileName, PropertyInfo[] prinfs)
@@ -128,7 +179,9 @@ namespace Cav.Configuration
 
             File.WriteAllText(fileName, jsonStr);
         }
-
+        /// <summary>
+        /// Перезагрузить настройки
+        /// </summary>
         public void Reload()
         {
             lock (this)
@@ -168,21 +221,39 @@ namespace Cav.Configuration
                         ).ToArray()
                     );
 
-                FromJsonDeserialize(fileNameUser,
+                FromJsonDeserialize(fileNameUserRoaming,
                     prinfs
                     .Where(pinfo =>
 #if NET40
-                        pinfo.GetCustomAttributes(typeof(ProgramSettingsAreaAttribute), false).FirstOrDefault() == null ||
-                        ((ProgramSettingsAreaAttribute)pinfo.GetCustomAttributes(typeof(ProgramSettingsAreaAttribute), false).First()).Value == Area.User
+                        pinfo.GetCustomAttributes(typeof(ProgramSettingsAreaAttribute), false).FirstOrDefault() != null &&
+                        ((ProgramSettingsAreaAttribute)pinfo.GetCustomAttributes(typeof(ProgramSettingsAreaAttribute), false).First()).Value == Area.UserRoaming
 #else
-                        pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>() == null || pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>().Value == Area.User
+                        pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>() == null || pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>().Value == Area.UserRoaming
 #endif
 
                         ).ToArray()
                     );
-            }
-        }
 
+                FromJsonDeserialize(fileNameUserLocal,
+                prinfs
+                .Where(pinfo =>
+#if NET40
+                        pinfo.GetCustomAttributes(typeof(ProgramSettingsAreaAttribute), false).FirstOrDefault() == null ||
+                    ((ProgramSettingsAreaAttribute)pinfo.GetCustomAttributes(typeof(ProgramSettingsAreaAttribute), false).First()).Value == Area.UserLocal
+#else
+                        pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>() == null || pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>().Value == Area.UserLocal
+#endif
+
+                    ).ToArray()
+                );
+            }
+
+            if (ReloadEvent != null)
+                ReloadEvent(this);
+        }
+        /// <summary>
+        /// Сохранить настройки
+        /// </summary>
         public void Save()
         {
             lock (this)
@@ -191,7 +262,8 @@ namespace Cav.Configuration
 
                 Dictionary<String, String> appVal = new Dictionary<String, String>();
                 Dictionary<String, String> appCommonVal = new Dictionary<String, String>();
-                Dictionary<String, String> userVal = new Dictionary<String, String>();
+                Dictionary<String, String> userRoamingVal = new Dictionary<String, String>();
+                Dictionary<String, String> userLocalVal = new Dictionary<String, String>();
 
                 var jss = new JavaScriptSerializer();
 
@@ -206,15 +278,18 @@ namespace Cav.Configuration
                         continue;
 
 #if NET40
-                    var psatr = (ProgramSettingsAreaAttribute)pinfo.GetCustomAttributes(typeof(ProgramSettingsAreaAttribute), false).FirstOrDefault() ?? new ProgramSettingsAreaAttribute(Area.User);
+                    var psatr = (ProgramSettingsAreaAttribute)pinfo.GetCustomAttributes(typeof(ProgramSettingsAreaAttribute), false).FirstOrDefault() ?? new ProgramSettingsAreaAttribute(Area.UserLocal);
 #else
-                    var psatr = pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>() ?? new ProgramSettingsAreaAttribute(Area.User);
+                    var psatr = pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>() ?? new ProgramSettingsAreaAttribute(Area.UserLocal);
 #endif
 
                     switch (psatr.Value)
                     {
-                        case Area.User:
-                            userVal.Add(pinfo.Name, jss.Serialize(val));
+                        case Area.UserLocal:
+                            userLocalVal.Add(pinfo.Name, jss.Serialize(val));
+                            break;
+                        case Area.UserRoaming:
+                            userRoamingVal.Add(pinfo.Name, jss.Serialize(val));
                             break;
                         case Area.App:
                             appVal.Add(pinfo.Name, jss.Serialize(val));
@@ -227,7 +302,8 @@ namespace Cav.Configuration
                     }
                 }
 
-                ToJsonSerialize(fileNameUser, userVal);
+                ToJsonSerialize(fileNameUserRoaming, userRoamingVal);
+                ToJsonSerialize(fileNameUserLocal, userLocalVal);
                 ToJsonSerialize(fileNameAppCommon, appCommonVal);
                 ToJsonSerialize(fileNameApp, appVal);
             }

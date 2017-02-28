@@ -6,9 +6,14 @@ using System.Linq;
 
 namespace Cav.Container
 {
+    /// <summary>
+    /// Локатор-контейнер объектов
+    /// </summary>
     public static class Locator
     {
-
+        /// <summary>
+        /// Дополнительные действия с объектом после создания
+        /// </summary>
         public static Action<Object> AdditionalSettingsObject { get; set; }
         static Locator()
         {
@@ -29,8 +34,15 @@ namespace Cav.Container
             Type typrObj = inst.GetType();
             cacheObjects.TryAdd(typrObj, inst);
         }
-
+        /// <summary>
+        /// Использовать кэш объектов (false - объект и зависимости создаются заново)
+        /// </summary>
         public static Boolean UseCache { get; set; }
+        /// <summary>
+        ///Получить экземпляр указанного типа 
+        /// </summary>
+        /// <param name="typeInstance"></param>
+        /// <returns></returns>
         public static object GetInstance(Type typeInstance)
         {
             if (typeInstance == null)
@@ -134,7 +146,11 @@ namespace Cav.Container
 
             sq.Enqueue(typeInstance);
         }
-
+        /// <summary>
+        /// Получить экземпляры объектов типа - наследника указанного
+        /// </summary>
+        /// <param name="typeParent">Тип-родитель</param>
+        /// <returns>Массив экземпляров</returns>
         public static Array GetInstances(Type typeParent)
         {
             List<Type> typeForCreate = new List<Type>();
@@ -168,12 +184,20 @@ namespace Cav.Container
 
             return res;
         }
-
+        /// <summary>
+        /// Получить объект указанного типа
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static T GetInstance<T>() where T : class
         {
             return (T)Locator.GetInstance(typeof(T));
         }
-
+        /// <summary>
+        /// Получить экземпляры объектов типа - наследника указанного
+        /// </summary>
+        /// <typeparam name="T">Тип-родитель</typeparam>
+        /// <returns>Массив объектов типов-наследников</returns>
         public static T[] GetInstances<T>()
         {
             return Locator.GetInstances(typeof(T)).OfType<T>().ToArray();

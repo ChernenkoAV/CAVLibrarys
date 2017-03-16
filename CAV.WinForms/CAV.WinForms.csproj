@@ -105,22 +105,44 @@
     <PropertyGroup>
         <AssemblyOriginatorKeyFile>Cav.snk</AssemblyOriginatorKeyFile>
     </PropertyGroup>
+    <Choose>
+        <When Condition="'$(TargetFrameworkVersion)' == 'v4.0'">
+            <ItemGroup>
+                <Reference Include="Cav.Core, Version=2.4.0.0">
+                    <HintPath>..\packages\Cav.Core.2.4.0\lib\net40\Cav.Core.dll</HintPath>
+                    <SpecificVersion>False</SpecificVersion>
+                    <Private>False</Private>
+                </Reference>
+            </ItemGroup>
+        </When>
+        <When Condition="'$(TargetFrameworkVersion)' == 'v4.5'">
+            <ItemGroup>
+                <Reference  Include="Cav.Core, Version=2.4.0.0">
+                    <HintPath>..\packages\Cav.Core.2.4.0\lib\net45\Cav.Core.dll</HintPath>
+                    <SpecificVersion>False</SpecificVersion>
+                    <Private>False</Private>
+                </Reference>
+            </ItemGroup>
+        </When>
+        <When Condition="'$(TargetFrameworkVersion)' == 'v4.6.1'">
+            <ItemGroup>
+                <Reference Include="Cav.Core, Version=2.4.0.0">
+                    <HintPath>..\packages\Cav.Core.2.4.0\lib\net461\Cav.Core.dll</HintPath>
+                    <SpecificVersion>False</SpecificVersion>
+                    <Private>False</Private>
+                </Reference>
+            </ItemGroup>
+        </When>
+        <!--
+        <Otherwise>
+            <ItemGroup>
+                <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
+            </ItemGroup>
+        </Otherwise>
+        -->
+    </Choose>
+
     <ItemGroup >
-        <Reference Condition="'$(TargetFrameworkVersion)' == 'v4.0'" Include="Cav.Core, Version=2.4.0.0, Culture=neutral, PublicKeyToken=f136b1fd0b87e3f0, processorArchitecture=MSIL">
-            <HintPath>..\packages\Cav.Core.2.4.0\lib\net40\Cav.Core.dll</HintPath>
-            <SpecificVersion>False</SpecificVersion>
-            <Private>False</Private>
-        </Reference>
-        <Reference Condition="'$(TargetFrameworkVersion)' == 'v4.5'" Include="Cav.Core, Version=2.4.0.0, Culture=neutral, PublicKeyToken=f136b1fd0b87e3f0, processorArchitecture=MSIL">
-            <HintPath>..\packages\Cav.Core.2.4.0\lib\net45\Cav.Core.dll</HintPath>
-            <SpecificVersion>False</SpecificVersion>
-            <Private>False</Private>
-        </Reference>
-        <Reference Condition="'$(TargetFrameworkVersion)' == 'v4.6.1'" Include="Cav.Core, Version=2.4.0.0, Culture=neutral, PublicKeyToken=f136b1fd0b87e3f0, processorArchitecture=MSIL">
-            <HintPath>..\packages\Cav.Core.2.4.0\lib\net461\Cav.Core.dll</HintPath>
-            <SpecificVersion>False</SpecificVersion>
-            <Private>False</Private>
-        </Reference>
         <Reference Include="System" />
         <Reference Include="System.Core" />
         <Reference Include="System.Drawing" />

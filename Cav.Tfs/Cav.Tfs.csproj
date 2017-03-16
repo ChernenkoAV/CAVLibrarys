@@ -1,142 +1,164 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">DebugNet45</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{36F539FB-8F96-44AB-AAFD-91AE06BEE0AF}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Cav</RootNamespace>
-    <AssemblyName>Cav.Tfs</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugNet40|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\_Build\</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <DefineConstants>TRACE;DEBUG;NET40</DefineConstants>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugNet45|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\_Build\</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <DefineConstants>TRACE;DEBUG;NET45</DefineConstants>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugNet461|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\_Build\</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <DefineConstants>TRACE;DEBUG;NET461</DefineConstants>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <OutputPath>..\_Build\Cav.Tfs\</OutputPath>
-    <DocumentationFile>..\_Build\Cav.Tfs\Cav.Tfs.xml</DocumentationFile>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <DefineConstants>
-    </DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseNet40|AnyCPU'">
-    <OutputPath>..\_Build\Cav.Tfs\Net40\</OutputPath>
-    <DocumentationFile>..\_Build\Cav.Tfs\Net40\Cav.Tfs.xml</DocumentationFile>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <DefineConstants>NET40</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseNet45|AnyCPU'">
-    <OutputPath>..\_Build\Cav.Tfs\Net45\</OutputPath>
-    <DocumentationFile>..\_Build\Cav.Tfs\Net45\Cav.Tfs.xml</DocumentationFile>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <DefineConstants>NET45</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseNet461|AnyCPU'">
-    <OutputPath>..\_Build\Cav.Tfs\Net461\</OutputPath>
-    <DocumentationFile>..\_Build\Cav.Tfs\Net461\Cav.Tfs.xml</DocumentationFile>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <DefineConstants>NET461</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>cav.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Condition="'$(TargetFrameworkVersion)' == 'v4.0'" Include="Cav.Core, Version=2.5.0.0">
-      <HintPath>..\packages\Cav.Core.2.5.0\lib\net40\Cav.Core.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
-    </Reference>
-    <Reference Condition="'$(TargetFrameworkVersion)' == 'v4.5'" Include="Cav.Core, Version=2.5.0.0">
-      <HintPath>..\packages\Cav.Core.2.5.0\lib\net45\Cav.Core.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
-    </Reference>
-    <Reference Condition="'$(TargetFrameworkVersion)' == 'v4.6.1'" Include="Cav.Core, Version=2.5.0.0">
-      <HintPath>..\packages\Cav.Core.2.5.0\lib\net461\Cav.Core.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Windows.Forms" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WrapTfsClient.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="cav.snk" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>if $(ConfigurationName)==Release PowerShell -NoProfile -ExecutionPolicy Bypass -Command "&amp; '$(SolutionDir)nuspec\CreatePackage.ps1' -ProjectPath '$(ProjectPath)' -MSBuid '$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)'</PostBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">DebugNet45</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <ProjectGuid>{36F539FB-8F96-44AB-AAFD-91AE06BEE0AF}</ProjectGuid>
+        <OutputType>Library</OutputType>
+        <AppDesignerFolder>Properties</AppDesignerFolder>
+        <RootNamespace>Cav</RootNamespace>
+        <AssemblyName>Cav.Tfs</AssemblyName>
+        <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+        <FileAlignment>512</FileAlignment>
+        <TargetFrameworkProfile />
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugNet40|AnyCPU' ">
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>..\_Build\</OutputPath>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+        <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+        <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+        <DefineConstants>TRACE;DEBUG;NET40</DefineConstants>
+        <Prefer32Bit>false</Prefer32Bit>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugNet45|AnyCPU' ">
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>..\_Build\</OutputPath>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+        <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+        <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+        <DefineConstants>TRACE;DEBUG;NET45</DefineConstants>
+        <Prefer32Bit>false</Prefer32Bit>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugNet461|AnyCPU'">
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>..\_Build\</OutputPath>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+        <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+        <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+        <DefineConstants>TRACE;DEBUG;NET461</DefineConstants>
+        <Prefer32Bit>false</Prefer32Bit>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+        <OutputPath>..\_Build\Cav.Tfs\</OutputPath>
+        <DocumentationFile>..\_Build\Cav.Tfs\Cav.Tfs.xml</DocumentationFile>
+        <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+        <DefineConstants>
+        </DefineConstants>
+        <Optimize>true</Optimize>
+        <DebugType>pdbonly</DebugType>
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <ErrorReport>prompt</ErrorReport>
+        <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+        <Prefer32Bit>false</Prefer32Bit>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseNet40|AnyCPU'">
+        <OutputPath>..\_Build\Cav.Tfs\Net40\</OutputPath>
+        <DocumentationFile>..\_Build\Cav.Tfs\Net40\Cav.Tfs.xml</DocumentationFile>
+        <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+        <DefineConstants>NET40</DefineConstants>
+        <Optimize>true</Optimize>
+        <DebugType>pdbonly</DebugType>
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <ErrorReport>prompt</ErrorReport>
+        <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+        <Prefer32Bit>false</Prefer32Bit>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseNet45|AnyCPU'">
+        <OutputPath>..\_Build\Cav.Tfs\Net45\</OutputPath>
+        <DocumentationFile>..\_Build\Cav.Tfs\Net45\Cav.Tfs.xml</DocumentationFile>
+        <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+        <DefineConstants>NET45</DefineConstants>
+        <Optimize>true</Optimize>
+        <DebugType>pdbonly</DebugType>
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <ErrorReport>prompt</ErrorReport>
+        <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+        <Prefer32Bit>false</Prefer32Bit>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseNet461|AnyCPU'">
+        <OutputPath>..\_Build\Cav.Tfs\Net461\</OutputPath>
+        <DocumentationFile>..\_Build\Cav.Tfs\Net461\Cav.Tfs.xml</DocumentationFile>
+        <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+        <DefineConstants>NET461</DefineConstants>
+        <Optimize>true</Optimize>
+        <DebugType>pdbonly</DebugType>
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <ErrorReport>prompt</ErrorReport>
+        <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+        <Prefer32Bit>false</Prefer32Bit>
+    </PropertyGroup>
+    <PropertyGroup>
+        <SignAssembly>true</SignAssembly>
+    </PropertyGroup>
+    <PropertyGroup>
+        <AssemblyOriginatorKeyFile>cav.snk</AssemblyOriginatorKeyFile>
+    </PropertyGroup>
+    <Choose>
+        <When Condition="'$(TargetFrameworkVersion)' == 'v4.0'">
+            <ItemGroup>
+                <Reference Include="Cav.Core, Version=2.5.0.0">
+                    <HintPath>..\packages\Cav.Core.2.5.0\lib\net40\Cav.Core.dll</HintPath>
+                    <SpecificVersion>False</SpecificVersion>
+                    <Private>False</Private>
+                </Reference>
+            </ItemGroup>
+        </When>
+        <When Condition="'$(TargetFrameworkVersion)' == 'v4.5'">
+            <ItemGroup>
+                <Reference  Include="Cav.Core, Version=2.5.0.0">
+                    <HintPath>..\packages\Cav.Core.2.5.0\lib\net45\Cav.Core.dll</HintPath>
+                    <SpecificVersion>False</SpecificVersion>
+                    <Private>False</Private>
+                </Reference>
+            </ItemGroup>
+        </When>
+        <When Condition="'$(TargetFrameworkVersion)' == 'v4.6.1'">
+            <ItemGroup>
+                <Reference Include="Cav.Core, Version=2.5.0.0">
+                    <HintPath>..\packages\Cav.Core.2.5.0\lib\net461\Cav.Core.dll</HintPath>
+                    <SpecificVersion>False</SpecificVersion>
+                    <Private>False</Private>
+                </Reference>
+            </ItemGroup>
+        </When>
+        <!--
+        <Otherwise>
+            <ItemGroup>
+                <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
+            </ItemGroup>
+        </Otherwise>
+        -->
+    </Choose>
+
+    <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+        <Reference Include="System.Windows.Forms" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="WrapTfsClient.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="cav.snk" />
+        <None Include="packages.config" />
+    </ItemGroup>
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+    <PropertyGroup>
+        <PostBuildEvent>if $(ConfigurationName)==Release PowerShell -NoProfile -ExecutionPolicy Bypass -Command "&amp; '$(SolutionDir)nuspec\CreatePackage.ps1' -ProjectPath '$(ProjectPath)' -MSBuid '$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)'</PostBuildEvent>
+    </PropertyGroup>
+    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

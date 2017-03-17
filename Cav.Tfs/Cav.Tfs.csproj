@@ -12,6 +12,7 @@
         <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
         <FileAlignment>512</FileAlignment>
         <TargetFrameworkProfile />
+        <DocumentationFile>..\_Build\Cav.Tfs.xml</DocumentationFile>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugNet40|AnyCPU' ">
         <DebugSymbols>true</DebugSymbols>

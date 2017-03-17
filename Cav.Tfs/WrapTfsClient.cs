@@ -801,6 +801,17 @@ namespace Cav.Tfs
 
             return wi;
         }
+
+        /// <summary>
+        /// Скачать файл из СКВ
+        /// </summary>
+        /// <param name="vcs">СКВ</param>
+        /// <param name="serverPath">Путь к фойлу на серврере СКВ</param>
+        /// <param name="localFile">Путь к локальному расположению файла</param>
+        public void VersionControlServerDownloadFile(IVersionControlServer vcs, String serverPath, String localFile)
+        {
+            ((VersionControlServer)vcs).VCS.InvokeMethod("DownloadFile", serverPath, localFile);
+        }
     }
 }
 

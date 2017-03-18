@@ -718,10 +718,12 @@ namespace Cav.Tfs
                 throw new ArgumentException("Не удалось определить проект");
 
 
-            Action<QueryItemNode, object> recSeek = null;
+            Func<object, QueryItemNode> recSeek = null;
 
-            recSeek = new Action<QueryItemNode, object>((qin, itm) =>
+            recSeek = new Func<object, QueryItemNode>((itm) =>
                 {
+                    var qin = new QueryItemNode();
+
                     qin.Name = itm.GetPropertyValue("Name") as String;
                     qin.ProjectName = projectName;
                     IEnumerable folder = itm as IEnumerable;
@@ -736,13 +738,21 @@ namespace Cav.Tfs
                             if (((itemInfolder as IEnumerable) != null) &&
                                 ((int)itemInfolder.GetPropertyValue("Count")) == 0)
                                 continue;
-
-                            var childEl = new QueryItemNode();
-
-                            recSeek(childEl, itemInfolder);
-                            qin.ChildNodes.Add(childEl);
+                            var childEl = recSeek(itemInfolder);
+                            if (childEl != null)
+                                qin.ChildNodes.Add(childEl);
                         }
                     }
+                    else
+                    {
+                        if (itm.GetPropertyValue("QueryType").ToString() != "List")
+                            return null;
+                    }
+
+                    if (qin.IsFolder && !qin.ChildNodes.Any())
+                        return null;
+
+                    return qin;
                 });
 
 
@@ -751,10 +761,9 @@ namespace Cav.Tfs
                 if (((int)item.GetPropertyValue("Count")) == 0)
                     continue;
 
-                var nitmNode = new QueryItemNode();
-
-                recSeek(nitmNode, item);
-                res.Add(nitmNode);
+                var nitmNode = recSeek(item);
+                if (nitmNode != null)
+                    res.Add(nitmNode);
             }
 
             return res;

@@ -482,10 +482,46 @@ namespace Cav.Tfs
         {
             var gpc = WorkspaceGetPendingChanges(ws);
             var wscp = tfsVersionControlClientAssembly.CreateInstance("WorkspaceCheckInParameters", gpc.PC, commentOnCheckIn);
-            if (numberTasks != null)
+            if ((numberTasks ?? new List<int>()).Any())
             {
-                // TODO Получить рабочие элементы
-                //wscp.AssociatedWorkItems
+                var tpc = ((Workspace)ws).WS
+                    .GetPropertyValue("VersionControlServer")
+                    .GetPropertyValue("TeamProjectCollection");
+                Type workItemStoreType = tfsWorkItemTrackingClientAssembly.
+#if NET40
+                GetTypes()
+#else
+                ExportedTypes
+#endif
+                .Single(x => x.Name == "WorkItemStore");
+
+                var wis = tpc.InvokeMethod("GetService", workItemStoreType);
+
+                var associate = tfsVersionControlClientAssembly.GetEnumValue("WorkItemCheckinAction", "Associate");
+
+                Type workItemCheckinInfoType = tfsVersionControlClientAssembly.
+#if NET40
+                GetTypes()
+#else
+                ExportedTypes
+#endif
+                .Single(x => x.Name == "WorkItemCheckinInfo");
+
+                List<Object> associatedWorkItems = new List<object>();
+                foreach (var idTask in numberTasks)
+                {
+                    var wim = wis.InvokeMethod("GetWorkItem", idTask);
+                    var wici = tfsVersionControlClientAssembly.CreateInstance("WorkItemCheckinInfo", wim, associate);
+                    associatedWorkItems.Add(wici);
+                }
+
+                Array associatedWorkItemsArray = Array.CreateInstance(workItemCheckinInfoType, associatedWorkItems.Count);
+
+                for (int i = 0; i < associatedWorkItems.Count; i++)
+                    associatedWorkItemsArray.SetValue(Convert.ChangeType(associatedWorkItems[i], workItemCheckinInfoType), i);
+
+
+                wscp.SetPropertyValue("AssociatedWorkItems", associatedWorkItemsArray);
             }
 
             ((Workspace)ws).WS.InvokeMethod("CheckIn", wscp);

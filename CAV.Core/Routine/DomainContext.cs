@@ -15,7 +15,7 @@ namespace Cav
     /// <summary>
     /// Домен приложения.
     /// </summary>
-    public static partial class DomainContext
+    public static class DomainContext
     {
         #region Для запуска программы в одном экземпляре (На базе поиска процесса)
 
@@ -261,7 +261,7 @@ namespace Cav
         /// <summary>
         /// Путь в AppData для текущего пользователя текущего приложения(%AppData%\"NameEntryAssembly") (Если отсутствует - то он создается...)
         /// </summary>
-        [Obsolete("Будет удалено. используйте AppDataUserStorageRoaming либо AppDataUserStorageLocal")]
+        [Obsolete("Будет удалено. используйте AppDataUserStorageRoaming либо AppDataUserStorageLocal", true)]
         public static String AppDataUserStorage
         {
             get

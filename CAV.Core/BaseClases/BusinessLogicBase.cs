@@ -6,7 +6,7 @@ namespace Cav.BaseClases
     /// <summary>
     /// Базовый класс для реализации бизнесс-логик
     /// </summary>
-    [Obsolete("Будет удалено. Используйте внедрение зависимости в конструктор и контейнер Cav.Container.Locator")]
+    [Obsolete("Будет удалено. Используйте внедрение зависимости в конструктор и контейнер Cav.Container.Locator", true)]
     // TODO Удалить
     public class BusinessLogicBase : Component
     {

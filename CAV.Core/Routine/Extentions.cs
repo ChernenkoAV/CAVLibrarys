@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Web.Script.Serialization;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
@@ -232,6 +233,50 @@ namespace Cav
 
         #endregion
 
+        #region Сериализация-десериализация JSON
+
+        /// <summary>
+        /// Сериализация объекта в строку JSON
+        /// </summary>
+        /// <param name="obj">Объект десиреализации</param>
+        /// <returns>Результирующая строка JSON</returns>
+        public static string JSONSerialize(this Object obj)
+        {
+            if (obj == null)
+                return null;
+
+            var jss = new JavaScriptSerializer();
+            return jss.Serialize(obj);
+        }
+
+        /// <summary>
+        /// Десиреализация из строки в JSON формате
+        /// </summary>
+        /// <typeparam name="T">Тип десериализации</typeparam>
+        /// <param name="str">Исходная строка</param>
+        /// <returns>Результат десериализации</returns>
+        public static T JSONDeserialize<T>(this String str)
+        {
+            return (T)str.JSONDeserialize(typeof(T));
+        }
+
+        /// <summary>
+        /// Десиреализация из строки в JSON формате
+        /// </summary>        
+        /// <param name="str">Исходная строка</param>
+        /// <param name="targetType">Тип десериализации</param>
+        /// <returns>Результат десериализации</returns>
+        public static object JSONDeserialize(this String str, Type targetType)
+        {
+            if (str.IsNullOrWhiteSpace())
+                return targetType.GetDefault();
+
+            var jss = new JavaScriptSerializer();
+            return jss.Deserialize(str, targetType);
+        }
+
+        #endregion
+
         #region Работа со строками
 
         [ThreadStatic]
@@ -432,10 +477,9 @@ namespace Cav
         public static byte[] GZipCompress(this byte[] sourse)
         {
             using (MemoryStream result = new MemoryStream())
+            using (GZipStream tstream = new GZipStream(result, CompressionMode.Compress))
             {
-                using (GZipStream tstream = new GZipStream(result, CompressionMode.Compress))
-                    tstream.Write(sourse, 0, sourse.Length);
-
+                tstream.Write(sourse, 0, sourse.Length);
                 return result.ToArray();
             }
         }
@@ -671,6 +715,8 @@ namespace Cav
             return null;
         }
 
+        #region Работа с Enum
+
         /// <summary>
         /// Получение значений <see cref="DescriptionAttribute"/> элементов перечесления
         /// </summary>
@@ -704,5 +750,72 @@ namespace Cav
                                  .Cast<Enum>()
                                  .Where(m => Convert.ToUInt64(m) != 0L && flag.HasFlag(m));
         }
+
+        #endregion
+
+
+        #region Сериализация-десериализация и шифрование
+        /// <summary>
+        /// Сериализация объекта и шифрование алгоритмом AES
+        /// </summary>
+        /// <param name="obj">Объект</param>
+        /// <param name="key">Ключ шифрования</param>
+        /// <returns>Зашифрованный объект</returns>
+        public static byte[] SerializeAesEncrypt(this Object obj, String key)
+        {
+            if (obj == null)
+                return null;
+
+            byte[] keyByte = Encoding.UTF8.GetBytes(key).ComputeMD5Checksum().ToByteArray();
+            byte[] data = Encoding.UTF8.GetBytes(obj.JSONSerialize());
+
+            var aes = new AesCryptoServiceProvider();
+            aes.Key = keyByte;
+            aes.IV = keyByte;
+
+            using (ICryptoTransform crtr = aes.CreateEncryptor())
+            using (var memres = new MemoryStream())
+            using (var crstr = new CryptoStream(memres, crtr, CryptoStreamMode.Write))
+            {
+                crstr.Write(data, 0, data.Length);
+                crstr.FlushFinalBlock();
+                data = memres.ToArray();
+            }
+
+            return data;
+        }
+
+        /// <summary>
+        /// Дешифрация алгоритмом AES и десереализация объекта из массива шифра. Работает только после <see cref="Extentions.SerializeAesEncrypt(object, string)"/>
+        /// , так как с ключом производятся манипуляции
+        /// </summary>
+        /// <typeparam name="T">Тип для десериализации</typeparam>
+        /// <param name="data">Массив шифрованных данных</param>
+        /// <param name="key">Ключь шифрования</param>
+        /// <returns></returns>
+        public static T DeserializeAesDecrypt<T>(this byte[] data, String key)
+        {
+            if (data == null)
+                return default(T);
+
+            byte[] keyByte = Encoding.UTF8.GetBytes(key).ComputeMD5Checksum().ToByteArray();
+
+            var aes = new AesCryptoServiceProvider();
+            aes.Key = keyByte;
+            aes.IV = keyByte;
+
+            using (ICryptoTransform crtr = aes.CreateDecryptor())
+            using (var memres = new MemoryStream())
+            using (var crstr = new CryptoStream(memres, crtr, CryptoStreamMode.Write))
+            {
+                crstr.Write(data, 0, data.Length);
+                crstr.FlushFinalBlock();
+                data = memres.ToArray();
+            }
+
+            return Encoding.UTF8.GetString(data).JSONDeserialize<T>();
+        }
+
+        #endregion 
     }
 }

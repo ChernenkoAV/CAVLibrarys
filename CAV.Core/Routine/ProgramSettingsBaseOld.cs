@@ -57,7 +57,7 @@ namespace Cav.ProgramSettins
     /// </example>
 
     // TODO Удалить
-    [Obsolete("Будет удалено. Используйте Cav.Configuration.ProgramSettingsBase<>")]
+    [Obsolete("Будет удалено. Используйте Cav.Configuration.ProgramSettingsBase<>", true)]
     public abstract class ProgramSettingsBase : INotifyPropertyChanged, INotifyPropertyChanging
     {
         /// <summary>

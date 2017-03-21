@@ -1,4 +1,7 @@
-﻿using System;
+﻿
+
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -107,11 +110,10 @@ namespace Cav.Configuration
 
                         internalCreate = false;
 
-
 #if NET40
                         String filename = ((ProgramSettingsFileAttribute)typeof(T).GetCustomAttributes(typeof(ProgramSettingsFileAttribute), false).FirstOrDefault() ?? new ProgramSettingsFileAttribute(null)).FileName;
 #else
-                    String filename = (typeof(T).GetCustomAttribute<ProgramSettingsFileAttribute>() ?? new ProgramSettingsFileAttribute(null)).FileName;
+                        String filename = (typeof(T).GetCustomAttribute<ProgramSettingsFileAttribute>() ?? new ProgramSettingsFileAttribute(null)).FileName;
 #endif
                         if (filename.IsNullOrWhiteSpace())
                             filename = typeof(T).FullName + ".json";
@@ -143,10 +145,7 @@ namespace Cav.Configuration
             if (!File.Exists(fileName))
                 return;
 
-            Dictionary<String, String> pvl = null;
-
-            var jss = new JavaScriptSerializer();
-            pvl = jss.Deserialize<Dictionary<String, String>>(File.ReadAllText(fileName));
+            var pvl = File.ReadAllText(fileName).JSONDeserialize<Dictionary<String, String>>();
 
             if (pvl == null)
             {
@@ -159,11 +158,13 @@ namespace Cav.Configuration
                 var pi = prinfs.FirstOrDefault(x => x.Name == pv.Key);
                 if (pi == null)
                     continue;
+
+                pi.SetValue(this, pv.Value.JSONDeserialize(pi.PropertyType)
 #if NET40
-                pi.SetValue(this, jss.Deserialize(pv.Value, pi.PropertyType), null);
-#else
-                pi.SetValue(this, jss.Deserialize(pv.Value, pi.PropertyType));
+                , null
 #endif
+                );
+
             }
         }
 
@@ -174,10 +175,8 @@ namespace Cav.Configuration
 
             if (!props.Any())
                 return;
-            var jss = new JavaScriptSerializer();
-            var jsonStr = jss.Serialize(props);
 
-            File.WriteAllText(fileName, jsonStr);
+            File.WriteAllText(fileName, props.JSONSerialize());
         }
         /// <summary>
         /// Перезагрузить настройки
@@ -189,11 +188,12 @@ namespace Cav.Configuration
                 PropertyInfo[] prinfs = this.GetType().GetProperties();
 
                 foreach (var pinfo in prinfs)
+                    pinfo.SetValue(this, pinfo.PropertyType.GetDefault()
 #if NET40
-                    pinfo.SetValue(this, pinfo.PropertyType.GetDefault(), null);
-#else
-                    pinfo.SetValue(this, pinfo.PropertyType.GetDefault());
+                    , null
 #endif
+                    );
+
 
 
                 FromJsonDeserialize(fileNameApp,
@@ -269,11 +269,12 @@ namespace Cav.Configuration
 
                 foreach (var pinfo in prinfs)
                 {
+                    Object val = pinfo.GetValue(this
 #if NET40
-                    Object val = pinfo.GetValue(this, null);
-#else
-                    Object val = pinfo.GetValue(this);
+                    , null
 #endif
+                    );
+
                     if (val == null)
                         continue;
 

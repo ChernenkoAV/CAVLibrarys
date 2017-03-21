@@ -179,7 +179,7 @@ namespace Cav
         public static void InitConnection(
             Type typeConnection,
             String connectionString,
-            String connectionName)
+            String connectionName = null)
         {
             if (typeConnection == null)
                 throw new ArgumentNullException("typeConnection");

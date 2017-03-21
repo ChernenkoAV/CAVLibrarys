@@ -167,19 +167,39 @@ namespace Cav
             String connectionName = null)
             where TConnection : DbConnection
         {
+            InitConnection(typeof(TConnection), connectionString, connectionName);
+        }
+
+        /// <summary>
+        /// Инициализация нового соединения с БД указанного типа. Проверка соединения с сервером.
+        /// </summary>
+        /// <param name="typeConnection">Тип - наследник DbConnection</param>
+        /// <param name="connectionString">Строка соединения</param>
+        /// <param name="connectionName">Имя подключения</param>
+        public static void InitConnection(
+            Type typeConnection,
+            String connectionString,
+            String connectionName = null)
+        {
+            if (typeConnection == null)
+                throw new ArgumentNullException("typeConnection");
+
+            if (!typeConnection.IsSubclassOf(typeof(DbConnection)))
+                throw new ArgumentNullException("typeConnection не является наследником DbConnection");
+
             if (connectionString.IsNullOrWhiteSpace())
                 throw new ArgumentNullException("connectionString");
 
             if (connectionName.IsNullOrWhiteSpace())
                 connectionName = defaultNameConnection;
 
-            using (DbConnection conn = (DbConnection)Activator.CreateInstance(typeof(TConnection), connectionString))
+            using (DbConnection conn = (DbConnection)Activator.CreateInstance(typeConnection, connectionString))
                 conn.Open();
 
             var setCon = new SettingConnection()
             {
                 ConnectionString = connectionString,
-                ConnectionType = typeof(TConnection)
+                ConnectionType = typeConnection
             };
 
             if (dcsb.ContainsKey(connectionName))

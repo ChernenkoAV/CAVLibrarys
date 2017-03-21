@@ -767,7 +767,7 @@ namespace Cav
                 return null;
 
             byte[] keyByte = Encoding.UTF8.GetBytes(key).ComputeMD5Checksum().ToByteArray();
-            byte[] data = Encoding.UTF8.GetBytes(obj.JSONSerialize());
+            byte[] data = Encoding.UTF8.GetBytes(obj.JSONSerialize()).GZipCompress();
 
             var aes = new AesCryptoServiceProvider();
             aes.Key = keyByte;
@@ -813,7 +813,7 @@ namespace Cav
                 data = memres.ToArray();
             }
 
-            return Encoding.UTF8.GetString(data).JSONDeserialize<T>();
+            return Encoding.UTF8.GetString(data.GZipDecompress()).JSONDeserialize<T>();
         }
 
         #endregion 

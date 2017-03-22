@@ -477,9 +477,10 @@ namespace Cav
         public static byte[] GZipCompress(this byte[] sourse)
         {
             using (MemoryStream result = new MemoryStream())
-            using (GZipStream tstream = new GZipStream(result, CompressionMode.Compress))
             {
-                tstream.Write(sourse, 0, sourse.Length);
+                using (GZipStream tstream = new GZipStream(result, CompressionMode.Compress))
+                    tstream.Write(sourse, 0, sourse.Length);
+
                 return result.ToArray();
             }
         }

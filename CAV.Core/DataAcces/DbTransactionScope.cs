@@ -92,14 +92,18 @@ namespace Cav
 
             if (tran != null && !complete)
             {
-                var conn = tran.Connection;
-                tran.Rollback();
-                tran.Dispose();
-                //transactions.TryRemove(connName, out tran);
                 transactions.Remove(connName);
                 rootTran = null;
-                conn.Close();
-                conn.Dispose();
+
+                var conn = tran.Connection;
+                if (conn != null)
+                {
+                    tran.Rollback();
+                    tran.Dispose();
+
+                    conn.Close();
+                    conn.Dispose();
+                }
             }
 
             if (rootTran != currentTran)
@@ -108,16 +112,19 @@ namespace Cav
             tran = TransactionGet(connName);
             if (tran != null)
             {
-                var conn = tran.Connection;
-                tran.Commit();
-                tran.Dispose();
-                //transactions.TryRemove(connName, out tran);
                 transactions.Remove(connName);
                 rootTran = null;
-                conn.Close();
-                conn.Dispose();
-            }
 
+                var conn = tran.Connection;
+                if (conn != null)
+                {
+                    tran.Commit();
+                    tran.Dispose();
+
+                    conn.Close();
+                    conn.Dispose();
+                }
+            }
         }
 
         #endregion

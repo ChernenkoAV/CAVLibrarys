@@ -257,29 +257,52 @@ namespace Cav.DataAcces
         {
             if (cmd == null)
                 return;
+
+            var cmdConn = cmd.Connection;
+            var cmdTran = cmd.Transaction;
+
             cmd.Transaction = null;
-            if (DbTransactionScope.TransactionGet(ConnectionName) == null)
-                if (cmd.Connection != null)
-                    try
-                    {
-                        cmd.Connection.Close();
-                        cmd.Connection.Dispose();
-                    }
-                    catch { }
-
-
             cmd.Connection = null;
             try
             {
                 cmd.Dispose();
             }
             catch { }
+
+            var tran = DbTransactionScope.TransactionGet(ConnectionName);
+
+            if (tran != null && tran.Connection == null)
+                throw new NullReferenceException("Несогласованное состояние объекта транзакции. Соедиение с БД сброшено.");
+
+            if (tran != null)
+            {
+                if (cmdConn == null || cmdTran == null)
+                    throw new NullReferenceException("Несогласованное состояние объекта транзакции в команде. Соедиение с БД сброшено.");
+            }
+            else if (cmdConn != null)
+                try
+                {
+                    cmdConn.Close();
+                    cmdConn.Dispose();
+                }
+                catch { }
+
         }
 
         private DbCommand tuneCommand(DbCommand cmd)
         {
-            cmd.Connection = DbTransactionScope.Connection(ConnectionName);
-            cmd.Transaction = DbTransactionScope.TransactionGet(ConnectionName);
+            var tran = DbTransactionScope.TransactionGet(ConnectionName);
+
+            if (tran != null && tran.Connection == null)
+                throw new NullReferenceException("Несогласованное состояние транзакции. Соедиение с БД сброшено.");
+
+            if (tran != null)
+                cmd.Connection = tran.Connection;
+            else
+                cmd.Connection = DbTransactionScope.Connection(ConnectionName);
+
+            cmd.Transaction = tran;
+
             return cmd;
         }
     }

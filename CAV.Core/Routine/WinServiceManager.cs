@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration.Install;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Security.Principal;
 using System.ServiceProcess;
+using System.Xml.Linq;
 
 namespace Cav.WinService
 {
@@ -45,7 +48,14 @@ namespace Cav.WinService
 
             ServiceController sc = new ServiceController(ServiceName);
 
-            if (sc.Status != ServiceControllerStatus.Running)
+            List<ServiceControllerStatus> stats = new List<ServiceControllerStatus>();
+            stats.Add(ServiceControllerStatus.Running);
+            stats.Add(ServiceControllerStatus.StartPending);
+            stats.Add(ServiceControllerStatus.StopPending);
+            stats.Add(ServiceControllerStatus.ContinuePending);
+            stats.Add(ServiceControllerStatus.PausePending);
+
+            if (!stats.Contains(sc.Status))
                 sc.Start();
         }
 
@@ -97,5 +107,58 @@ namespace Cav.WinService
 
             return System.Diagnostics.Process.Start(processInfo);
         }
+
+        /// <summary>
+        /// Добавление представления в события Windows
+        /// </summary>
+        /// <param name="source">Наименование источника событий из журнала "Приложения"(Application). Как правило - имя службы</param>
+        /// <param name="nameView">Наименование представления для отображения в дереве событий</param>
+        /// <param name="descriptionView">Описание представления</param>
+        public static void AddEventView(String source, String nameView, String descriptionView)
+        {
+            String filepath = Path.Combine(@"c:\ProgramData\Microsoft\Event Viewer\Views\", source.ReplaceInvalidPathChars() + ".xml");
+            if (File.Exists(filepath))
+                File.Delete(filepath);
+
+            var xml =
+            new XDocument(
+                new XElement("ViewerConfig",
+                    new XElement("QueryConfig",
+                        new XElement("QueryNode",
+                            new XElement("Name", nameView),
+                            new XElement("Description", descriptionView),
+                            new XElement("QueryList",
+                                new XElement("Query",
+                                    new XAttribute("Id", 0),
+                                    new XElement("Select",
+                                        new XAttribute("Path", "Application"),
+                                        $"*[System[Provider[@Name='{source}']]]"
+                                                )
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        );
+
+            xml.Save(filepath);
+        }
+
+        ///// <summary>
+        ///// Установка аргументов к файлу запуска слжбы. Без проверок. Может отработать корректно, но только один раз
+        ///// </summary>
+        ///// <param name="serviceName">Имя службы</param>
+        ///// <param name="ars">строка с аргуметами</param>
+        //public static void SetServiceArgumentsToExeFile(String serviceName, String ars)
+        //{
+        //    using (var system = Registry.LocalMachine.OpenSubKey("System"))
+        //    using (var curContrSet = system.OpenSubKey("CurrentControlSet"))
+        //    using (var servs = curContrSet.OpenSubKey("Services"))
+        //    using (var serv = servs.OpenSubKey(serviceName, RegistryKeyPermissionCheck.ReadWriteSubTree))
+        //    {
+        //        string path = serv.GetValue("ImagePath") + " " + ars;
+        //        serv.SetValue("ImagePath", path);
+        //    }
+        //}
     }
 }

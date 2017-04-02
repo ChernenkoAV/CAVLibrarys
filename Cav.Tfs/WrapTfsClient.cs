@@ -217,14 +217,15 @@ namespace Cav.Tfs
     {
         private const string tfsClient12 = @"C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\ReferenceAssemblies\v2.0\";
         private const string tfsClient14 = @"C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\";
-        private static String pathTfsdll = null;
+        private String pathTfsdll = null;
 
-        private const string tfsClientDll = "Microsoft.TeamFoundation.Client.dll";
-        private const string tfsVersionControlClientDll = "Microsoft.TeamFoundation.VersionControl.Client.dll";
-        private const string tfsVersionControlCommonDll = "Microsoft.TeamFoundation.VersionControl.Common.dll";
-        private const string tfsVersionControlControlsCommonDll = "Microsoft.TeamFoundation.VersionControl.Controls.Common.dll";
-        private const string tfsVersionControlControlsDll = "Microsoft.TeamFoundation.VersionControl.Controls.dll";
-        private const string tfsWorkItemTrackingClientDll = "Microsoft.TeamFoundation.WorkItemTracking.Client.dll";
+        private const string tfsPrefix = "Microsoft.TeamFoundation.";
+        private const string tfsClientDll = tfsPrefix + "Client.dll";
+        private const string tfsVersionControlClientDll = tfsPrefix + "VersionControl.Client.dll";
+        private const string tfsVersionControlCommonDll = tfsPrefix + "VersionControl.Common.dll";
+        private const string tfsVersionControlControlsCommonDll = tfsPrefix + "VersionControl.Controls.Common.dll";
+        private const string tfsVersionControlControlsDll = tfsPrefix + "VersionControl.Controls.dll";
+        private const string tfsWorkItemTrackingClientDll = tfsPrefix + "WorkItemTracking.Client.dll";
 
         private static Assembly tfsClientAssembly = null;
         private static Assembly tfsVersionControlCommonAssembly = null;
@@ -233,8 +234,14 @@ namespace Cav.Tfs
         private static Assembly tfsVersionControlControlsAssembly = null;
         private static Assembly tfsWorkItemTrackingClientAssembly = null;
 
-        static WrapTfs()
+        /// <summary>
+        /// 
+        /// </summary>
+        public WrapTfs()
         {
+            if (tfsClientAssembly != null)
+                return;
+
             if (Directory.Exists(tfsClient14))
                 pathTfsdll = tfsClient14;
             if (pathTfsdll == null && Directory.Exists(tfsClient12))
@@ -242,34 +249,30 @@ namespace Cav.Tfs
             if (pathTfsdll == null)
                 throw new FileNotFoundException(String.Format("Not found TFS assemblys on path {0}, {1}.", tfsClient14, tfsClient12));
 
-            AppDomain.CurrentDomain.AssemblyResolve += WrapTfs.CurrentDomain_AssemblyResolve;
+            AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve;
 
-            tfsClientAssembly = AppDomain.CurrentDomain.Load(File.ReadAllBytes(Path.Combine(pathTfsdll, tfsClientDll)));
-            tfsVersionControlClientAssembly = AppDomain.CurrentDomain.Load(File.ReadAllBytes(Path.Combine(pathTfsdll, tfsVersionControlClientDll)));
-            tfsVersionControlControlsCommonAssembly = AppDomain.CurrentDomain.Load(File.ReadAllBytes(Path.Combine(pathTfsdll, tfsVersionControlControlsCommonDll)));
-            tfsVersionControlControlsAssembly = AppDomain.CurrentDomain.Load(File.ReadAllBytes(Path.Combine(pathTfsdll, tfsVersionControlControlsDll)));
-            tfsVersionControlCommonAssembly = AppDomain.CurrentDomain.Load(File.ReadAllBytes(Path.Combine(pathTfsdll, tfsVersionControlCommonDll)));
-            tfsWorkItemTrackingClientAssembly = AppDomain.CurrentDomain.Load(File.ReadAllBytes(Path.Combine(pathTfsdll, tfsWorkItemTrackingClientDll)));
+            tfsClientAssembly = Assembly.LoadFile(Path.Combine(pathTfsdll, tfsClientDll));
+            tfsVersionControlClientAssembly = Assembly.LoadFile(Path.Combine(pathTfsdll, tfsVersionControlClientDll));
+            tfsVersionControlControlsCommonAssembly = Assembly.LoadFile(Path.Combine(pathTfsdll, tfsVersionControlControlsCommonDll));
+            tfsVersionControlControlsAssembly = Assembly.LoadFile(Path.Combine(pathTfsdll, tfsVersionControlControlsDll));
+            tfsVersionControlCommonAssembly = Assembly.LoadFile(Path.Combine(pathTfsdll, tfsVersionControlCommonDll));
+            tfsWorkItemTrackingClientAssembly = Assembly.LoadFile(Path.Combine(pathTfsdll, tfsWorkItemTrackingClientDll));
         }
 
-        private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+
+        private Assembly AssemblyResolve(object sender, ResolveEventArgs args)
         {
             var asly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName == args.Name);
             if (asly != null)
                 return asly;
 
-            string assemblyFile = (args.Name.Contains(','))
-                ? args.Name.Substring(0, args.Name.IndexOf(','))
-                : args.Name;
+            var assemblyName = new AssemblyName(args.Name);
+            string assemblyFile = assemblyName.Name + ".dll";
 
-            assemblyFile += ".dll";
             var path = Path.Combine(pathTfsdll, assemblyFile);
             if (!File.Exists(path))
             {
-                var culture = args.Name.Split(new Char[] { ',' }).Where(x => x.Contains("Culture")).FirstOrDefault();
-                if (culture == null)
-                    throw new FileLoadException($"Not define culture for {args.Name}");
-                var targetculture = culture.Split(new char[] { '=', '-' }).Where(x => !x.Contains("Culture")).FirstOrDefault();
+                var targetculture = assemblyName.CultureInfo.TwoLetterISOLanguageName;
                 if (targetculture == null)
                     throw new FileLoadException($"Not compute culture for {args.Name}");
                 path = Path.Combine(Path.Combine(pathTfsdll, targetculture), assemblyFile);

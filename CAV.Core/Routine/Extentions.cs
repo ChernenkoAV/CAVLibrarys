@@ -520,9 +520,10 @@ namespace Cav
         /// <typeparam name="T">Тип идентификатора</typeparam>
         /// <param name="values">Значения</param>
         /// <param name="separator">Разделитель</param>
-        /// <param name="Distinct">Только уникальные значения</param>
+        /// <param name="distinct">Только уникальные значения</param>
+        /// <param name="format">Формат преобразования к строке каждого объекта в коллекции(по умолчанию "{0}")</param>
         /// <returns>Значения разделенные разделителем</returns>
-        public static string JoinValuesToString<T>(this IEnumerable<T> values, string separator = ",", Boolean Distinct = true)
+        public static string JoinValuesToString<T>(this IEnumerable<T> values, string separator = ",", Boolean distinct = true, String format = null)
         {
             if (values == null)
                 return null;
@@ -531,10 +532,11 @@ namespace Cav
                 return null;
 
             var vals = values;
-            if (Distinct)
+            if (distinct)
                 vals = values.Distinct();
+            format = format.GetNullIfIsNullOrWhiteSpace() ?? "{0}";
 
-            return string.Join(separator, vals.Select(x => x.ToString()).ToArray());
+            return string.Join(separator, vals.Select(x => String.Format(format, x)).ToArray());
         }
 
         /// <summary>
@@ -542,12 +544,12 @@ namespace Cav
         /// </summary>
         /// <typeparam name="T">Тип коллекции</typeparam>
         /// <param name="rows">Коллекция</param>
-        /// <param name="ColumnName">Колонка для получения значений (Для коллекции DataRow)</param>
+        /// <param name="columnName">Колонка для получения значений (Для коллекции DataRow)</param>
         /// <returns>Строка ИД-ков через ','</returns>
-        public static String MakeIDsList<T>(this IEnumerable<T> rows, string ColumnName = "ID")
+        public static String MakeIDsList<T>(this IEnumerable<T> rows, string columnName = "ID")
         {
             if (rows.FirstOrDefault() is DataRow)
-                return rows.Cast<DataRow>().GetColumnValues<Guid>(ColumnName).JoinValuesToString();
+                return rows.Cast<DataRow>().GetColumnValues<Guid>(columnName).JoinValuesToString();
             else
                 return rows.JoinValuesToString();
         }

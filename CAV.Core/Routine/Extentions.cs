@@ -8,10 +8,10 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization.Json;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Web.Script.Serialization;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
@@ -245,8 +245,12 @@ namespace Cav
             if (obj == null)
                 return null;
 
-            var jss = new JavaScriptSerializer();
-            return jss.Serialize(obj);
+            using (var ms = new MemoryStream())
+            {
+                var dcs = new DataContractJsonSerializer(obj.GetType());
+                dcs.WriteObject(ms, obj);
+                return Encoding.UTF8.GetString(ms.ToArray());
+            }
         }
 
         /// <summary>
@@ -271,8 +275,8 @@ namespace Cav
             if (str.IsNullOrWhiteSpace())
                 return targetType.GetDefault();
 
-            var jss = new JavaScriptSerializer();
-            return jss.Deserialize(str, targetType);
+            using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(str)))
+                return (new DataContractJsonSerializer(targetType)).ReadObject(ms);
         }
 
         #endregion

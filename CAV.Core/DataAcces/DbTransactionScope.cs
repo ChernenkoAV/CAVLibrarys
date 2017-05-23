@@ -5,6 +5,12 @@ using System.Data.Common;
 namespace Cav
 {
     /// <summary>
+    /// Делегат окончания работы транзакции
+    /// </summary>
+    /// <param name="connName">Имя соединения с БД</param>
+    public delegate void DbTransactionScopeEnd(String connName);
+
+    /// <summary>
     /// "Груповая" транзакция. Обертка для вызовов в БД. Только для одного DbConnection
     /// </summary>
     public class DbTransactionScope : IDisposable
@@ -85,6 +91,8 @@ namespace Cav
         /// </summary>
         public void Dispose()
         {
+            String connNameEv = connName;
+
             if (connName.IsNullOrWhiteSpace())
                 connName = DomainContext.defaultNameConnection;
 
@@ -103,6 +111,9 @@ namespace Cav
 
                     conn.Close();
                     conn.Dispose();
+
+                    if (TransactionRollback != null)
+                        TransactionRollback(connNameEv);
                 }
             }
 
@@ -123,10 +134,23 @@ namespace Cav
 
                     conn.Close();
                     conn.Dispose();
+
+                    if (TransactionCommit != null)
+                        TransactionCommit(connNameEv);
                 }
             }
         }
 
         #endregion
+
+        /// <summary>
+        /// Событие окончания транзакции комитом
+        /// </summary>
+        public static event DbTransactionScopeEnd TransactionCommit;
+
+        /// <summary>
+        /// Событие окончание транзакции откатом
+        /// </summary>
+        public static event DbTransactionScopeEnd TransactionRollback;
     }
 }

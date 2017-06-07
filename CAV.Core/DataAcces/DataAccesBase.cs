@@ -42,9 +42,6 @@ namespace Cav.DataAcces
         }
         private void monitorHelperAfter(DbCommand command, object objColrn)
         {
-            // обнуляем ссылочку, что б объет не висел в памяти зазря
-            providerFactory = null;
-
             if (MonitorCommandAfterExecute == null)
                 return;
 
@@ -65,7 +62,7 @@ namespace Cav.DataAcces
             catch { }
         }
 
-        internal DbProviderFactory providerFactory = null;
+        private DbProviderFactory providerFactory = null;
 
         internal DbProviderFactory DbProviderFactoryGet()
         {

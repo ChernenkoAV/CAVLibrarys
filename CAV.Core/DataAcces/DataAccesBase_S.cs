@@ -69,6 +69,15 @@ namespace Cav.DataAcces
                 {
                     if (item.Value.ConvetProperty != null)
                         val = item.Value.ConvetProperty(val);
+
+                    if (val != null)
+                    {
+                        var valType = val.GetType();
+                        valType = Nullable.GetUnderlyingType(valType) ?? valType;
+                        if (valType == typeof(DateTime))
+                            val = new DateTimeOffset((DateTime)val).LocalDateTime;
+                    }
+
                     prmCmd.Value = val;
                 }
 

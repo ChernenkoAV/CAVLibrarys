@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace Cav.DataAcces
@@ -30,10 +31,15 @@ namespace Cav.DataAcces
             this.Configured();
 
             DbCommand execCom = AddParamToCommand(CommandActionType.Insert, insertExpression, newObj);
-            var resExec = FillTable(execCom);
-            foreach (DataRow dbrow in resExec.Rows)
-                foreach (var ff in insertPropKeyFieldMap)
-                    ff.Value(newObj, dbrow);
+            if (insertPropKeyFieldMap.Any())
+            {
+                var resExec = FillTable(execCom);
+                foreach (DataRow dbrow in resExec.Rows)
+                    foreach (var ff in insertPropKeyFieldMap)
+                        ff.Value(newObj, dbrow);
+            }
+            else
+                ExecuteNonQuery(execCom);
         }
 
 

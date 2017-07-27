@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
 using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
 using System.ServiceModel.Security;
+using System.Xml.Linq;
 
 namespace Cav.Soap
 {
@@ -13,6 +15,50 @@ namespace Cav.Soap
     /// </summary>
     public static class SoapHelper
     {
+        /// <summary>
+        /// Фиксация префиксов постранств имен в сообщении SOAP. Прописываются в элементе пакета и тела
+        /// </summary>
+        /// <param name="communicationObject">Объект коомуникации</param>
+        /// <param name="xmlNamespaces">Набор значений "префикс - пространство имен"</param>
+        public static void FixatePrefixNamespace<T>(
+                this T communicationObject,
+                Dictionary<String, XNamespace> xmlNamespaces)
+                where T : class, ICommunicationObject, IDisposable
+        {
+            if (xmlNamespaces == null)
+                throw new ArgumentNullException("xmlNamespaces");
+            if (!xmlNamespaces.Any())
+                throw new ArgumentException("xmlNamespaces empty");
+            if (communicationObject == null)
+                throw new ArgumentNullException("communicationObject");
+
+            Dictionary<String, String> nss = new Dictionary<string, string>();
+
+            foreach (var item in xmlNamespaces)
+            {
+                if (item.Key == null)
+                    throw new ArgumentException("prefix is null");
+                if (item.Value == null)
+                    throw new ArgumentException("namespace is null");
+                nss.Add(item.Key, item.Value.NamespaceName);
+            }
+
+            var fmr = new FixatePrefixMessageFormatter(nss);
+
+            if ((communicationObject as ServiceHostBase) != null)
+            {
+                var servhost = (communicationObject as ServiceHostBase);
+                foreach (var ep in servhost.Description.Endpoints)
+                    ep.Behaviors.Add(fmr);
+            }
+            else
+            {
+                ServiceEndpoint ep = (ServiceEndpoint)communicationObject.GetType().GetProperty("Endpoint").GetValue(communicationObject, null);
+                ep.Behaviors.Add(fmr);
+            }
+        }
+
+
         /// <summary>
         /// Добавить обработчик ошибок выполнения методов сервиса
         /// </summary>

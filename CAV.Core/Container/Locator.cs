@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Cav.Container
 {
@@ -155,8 +156,29 @@ namespace Cav.Container
         {
             List<Type> typeForCreate = new List<Type>();
 
-            var allTypeInDomain = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).ToArray();
+#if NET40
+            Type[] allTypeInDomain = null;
+
+            try
+            {
+                allTypeInDomain = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).ToArray();
+            }
+            catch (ReflectionTypeLoadException rtlex)
+            {
+                var msg = rtlex.Message + Environment.NewLine + rtlex.LoaderExceptions.Select(x => x.Expand()).JoinValuesToString(separator: Environment.NewLine);
+                throw new SystemException(msg);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
             Func<Type, bool> predicat = null;
+#else
+            TypeInfo[] allTypeInDomain = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.DefinedTypes).ToArray();
+
+            Func<TypeInfo, bool> predicat = null;
+#endif
 
             if (typeParent.IsClass)
                 predicat = (t) => t.IsSubclassOf(typeParent);
@@ -167,7 +189,12 @@ namespace Cav.Container
             if (predicat == null)
                 throw new ArgumentException("в качестве типа-родителя необходимо указать тип класса либо интерфейса");
 
-            var typeImplemented = allTypeInDomain.Where(predicat).ToArray();
+            var typeImplemented = allTypeInDomain.Where(predicat)
+#if NET40
+#else
+            .Select(x => x.AsType())
+#endif
+            .ToArray();
 
             typeForCreate.AddRange(typeImplemented);
 

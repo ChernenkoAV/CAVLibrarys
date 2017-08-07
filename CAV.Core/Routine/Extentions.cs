@@ -570,7 +570,7 @@ namespace Cav
         public static Guid ComputeMD5Checksum(this Stream inputData)
         {
             if (inputData == null)
-                throw new ArgumentNullException("ComputeMD5Checksum:inputData == null");
+                throw new ArgumentNullException($"{nameof(ComputeMD5ChecksumString)}:{nameof(inputData)}");
             MD5 md5 = new MD5CryptoServiceProvider();
             return new Guid(md5.ComputeHash(inputData));
         }
@@ -583,7 +583,7 @@ namespace Cav
         public static Guid ComputeMD5Checksum(this byte[] inputData)
         {
             if (inputData == null)
-                throw new ArgumentNullException("ComputeMD5Checksum:inputData == null");
+                throw new ArgumentNullException($"{nameof(ComputeMD5ChecksumString)}:{nameof(inputData)}");
             using (MemoryStream ms = new MemoryStream(inputData))
                 return ComputeMD5Checksum(ms);
         }
@@ -591,12 +591,28 @@ namespace Cav
         /// <summary>
         /// Вычисление MD5-хеша файла
         /// </summary>
-        /// <param name="FilePath">Путь к файлу</param>
+        /// <param name="filePath">Путь к файлу</param>
         /// <returns>Хеш, перобразованный к Guid</returns>
-        public static Guid ComputeMD5Checksum(this string FilePath)
+        public static Guid ComputeMD5ChecksumFile(this string filePath)
         {
-            using (FileStream fs = File.Open(FilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            if (filePath.IsNullOrWhiteSpace())
+                throw new ArgumentNullException($"{nameof(ComputeMD5ChecksumString)}:{nameof(filePath)}");
+
+            using (FileStream fs = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 return ComputeMD5Checksum(fs);
+        }
+
+        /// <summary>
+        /// Вычисление MD5-хеша строки. Байты берутся UTF8.
+        /// </summary>
+        /// <param name="str">Входная строка</param>
+        /// <returns>Хеш, перобразованный к Guid</returns>
+        public static Guid ComputeMD5ChecksumString(this string str)
+        {
+            if (str.IsNullOrWhiteSpace())
+                throw new ArgumentNullException($"{nameof(ComputeMD5ChecksumString)}:{nameof(str)}");
+
+            return Encoding.UTF8.GetBytes(str).ComputeMD5Checksum();
         }
 
         #endregion

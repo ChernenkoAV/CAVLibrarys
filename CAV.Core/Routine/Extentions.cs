@@ -527,7 +527,11 @@ namespace Cav
         /// <param name="distinct">Только уникальные значения</param>
         /// <param name="format">Формат преобразования к строке каждого объекта в коллекции(по умолчанию "{0}")</param>
         /// <returns>Значения разделенные разделителем</returns>
-        public static string JoinValuesToString<T>(this IEnumerable<T> values, string separator = ",", Boolean distinct = true, String format = null)
+        public static string JoinValuesToString<T>(
+            this IEnumerable<T> values,
+            string separator = ",",
+            Boolean distinct = true,
+            String format = null)
         {
             if (values == null)
                 return null;
@@ -538,6 +542,10 @@ namespace Cav
             var vals = values;
             if (distinct)
                 vals = values.Distinct();
+
+            if (!typeof(T).IsValueType)
+                vals = vals.Where(x => x != null).ToArray();
+
             format = format.GetNullIfIsNullOrWhiteSpace() ?? "{0}";
 
             return string.Join(separator, vals.Select(x => String.Format(format, x)).ToArray());

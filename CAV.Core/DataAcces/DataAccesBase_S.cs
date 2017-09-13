@@ -296,7 +296,7 @@ namespace Cav.DataAcces
         protected void ConfigCommand(AdapterConfig config)
         {
             if (comands.ContainsKey(config.ActionType))
-                throw new ArgumentException($"В адаптере уже определена сомманда с типом {config.ActionType.ToString()}");
+                throw new ArgumentException($"В адаптере уже определена команда с типом {config.ActionType.ToString()}");
             if (config.TextCommand.IsNullOrWhiteSpace())
                 throw new ArgumentNullException("Текст команды не может быть пустым");
 

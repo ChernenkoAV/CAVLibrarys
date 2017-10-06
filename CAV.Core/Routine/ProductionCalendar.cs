@@ -50,12 +50,12 @@ namespace Cav.Routine
             /// <summary>
             /// для сериализации
             /// </summary>
-            [XmlAttribute("t")]            
+            [XmlAttribute("t")]
             public TypeHoliDay Kind { get; set; }
             /// <summary>
             /// для сериализации
             /// </summary>
-            [XmlAttribute("h")]            
+            [XmlAttribute("h")]
             public int HoliID { get; set; }
             /// <summary>
             /// для сериализации
@@ -161,6 +161,9 @@ namespace Cav.Routine
                 bodyXML = sr.ReadToEnd();
 
             var cdr = bodyXML.XMLDeserialize<ProductionCalendar>();
+
+            if (!cdr.Days.Any())
+                return res;
 
             foreach (var day in cdr.Days)
                 day.Date = DateTime.Parse(day.DayMonth + "." + cdr.Year.ToString(), CultureInfo.InvariantCulture);

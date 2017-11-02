@@ -39,7 +39,7 @@ namespace Cav.ReflectHelpers
 #else
             ExportedTypes
 #endif            
-            .Single(x => x.Name == className).GetProperty(propertyName).
+            .Single(x => x.Name == className || x.FullName == className).GetProperty(propertyName).
 #if NET40
             GetValue(null, null);
 #else
@@ -76,7 +76,7 @@ namespace Cav.ReflectHelpers
 #else
             ExportedTypes
 #endif            
-            .Single(x => x.Name == className);
+            .Single(x => x.Name == className || x.FullName == className);
             return Activator.CreateInstance(clType, args);
         }
         /// <summary>
@@ -94,7 +94,7 @@ namespace Cav.ReflectHelpers
 #else
             ExportedTypes
 #endif            
-            .Single(x => x.Name == enumTypeName);
+            .Single(x => x.Name == enumTypeName || x.FullName == enumTypeName);
             return Enum.Parse(rtType, valueName);
         }
         /// <summary>

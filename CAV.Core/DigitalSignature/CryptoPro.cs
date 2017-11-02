@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.IO;
+using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
+using System.ServiceModel.Security;
 using System.Text;
 using System.Xml;
+using Cav.ReflectHelpers;
 using Cav.Soap;
 
 namespace Cav.DigitalSignature
@@ -14,6 +17,38 @@ namespace Cav.DigitalSignature
     /// </summary>
     sealed public class CryptoProRutine
     {
+        #region Алгоритмы для ЭЦП
+
+        /// <summary>
+        /// Получение GostAlgorithmSuite.BasicGostObsolete из КриптоПрошной сборки с отложенной загрузкой.
+        /// </summary>
+        /// <remarks>
+        /// CryptoPro.Sharpei.ServiceModel должен быть в GAC.
+        /// Используется CryptoPro.Sharpei.ServiceModel, Version=1.4.0.1, Culture=neutral, PublicKeyToken=473b8c5086e795f5, processorArchitecture=MSIL
+        /// </remarks>
+        public static SecurityAlgorithmSuite CriptoProBasicGostObsolete
+        {
+            get
+            {
+                if (_criptoProBasicGostObsolete != null)
+                    return _criptoProBasicGostObsolete;
+
+                lock (lockObj)
+                {
+                    var assly = Assembly.Load("CryptoPro.Sharpei.ServiceModel, Version=1.4.0.1, Culture=neutral, PublicKeyToken=473b8c5086e795f5, processorArchitecture=MSIL");
+                    _criptoProBasicGostObsolete = (SecurityAlgorithmSuite)assly.GetStaticPropertyValue("GostAlgorithmSuite", "BasicGostObsolete");
+                }
+
+
+                return _criptoProBasicGostObsolete;
+            }
+        }
+
+        private static SecurityAlgorithmSuite _criptoProBasicGostObsolete;
+        private static object lockObj = new object();
+
+        #endregion
+
         #region Функционал
 
         /// <summary>

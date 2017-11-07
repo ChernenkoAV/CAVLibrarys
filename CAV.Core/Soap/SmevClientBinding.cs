@@ -29,23 +29,27 @@ namespace Cav.Soap
         /// <summary>
         /// Создание биндинга для взаимодействия по СМЭВ
         /// </summary>
-        /// <param name="AlgorithmSuite">Указывает набор алгоритмов.</param>
-        /// <param name="Proxy">Прокси для клиента</param>
-        /// <param name="LoggerInstance">Экземпляр объекта, реализующего ISoapPackageLog для логирования</param>
-        /// <param name="EnableUnsecuredResponse">Задает значение, указывающее, может ли отправлять и получать небезопасные ответы или безопасные запросы.</param>
-        /// <param name="SenderActor">Actor отправителя</param>
-        /// <param name="RecipientActor">Actor получателя</param>
-        /// <param name="AllowInsecureTransport">Можно ли отправлять сообщения в смешанном режиме безопасности</param>
+        /// <param name="algorithmSuite">Указывает набор алгоритмов.</param>
+        /// <param name="proxy">Прокси для клиента</param>
+        /// <param name="senderActor">Actor отправителя</param>
+        /// <param name="recipientActor">Actor получателя</param>
+        /// <param name="loggerInstance">Экземпляр объекта, реализующего ISoapPackageLog для логирования</param>
+        /// <param name="enableUnsecuredResponse">Задает значение, указывающее, может ли отправлять и получать небезопасные ответы или безопасные запросы.</param>        
+        /// <param name="allowInsecureTransport">Можно ли отправлять сообщения в смешанном режиме безопасности</param>
         /// <returns></returns>
         public static SmevBinding Create(
-            SecurityAlgorithmSuite AlgorithmSuite,
-            String Proxy = null,
-            String SenderActor = null,
-            String RecipientActor = null,
-            ISoapPackageLog LoggerInstance = null,
-            Boolean EnableUnsecuredResponse = false,
-            Boolean AllowInsecureTransport = false)
+            SecurityAlgorithmSuite algorithmSuite,
+            String proxy = null,
+            String senderActor = "http://smev.gosuslugi.ru/actors/smev",
+            String recipientActor = "http://smev.gosuslugi.ru/actors/recipient",
+            ISoapPackageLog loggerInstance = null,
+            Boolean enableUnsecuredResponse = false,
+            Boolean allowInsecureTransport = false)
         {
+
+            senderActor = senderActor.GetNullIfIsNullOrWhiteSpace() ?? "http://smev.gosuslugi.ru/actors/smev";
+            recipientActor = recipientActor.GetNullIfIsNullOrWhiteSpace() ?? "http://smev.gosuslugi.ru/actors/recipient";
+
             System.Net.WebRequest.DefaultWebProxy.Credentials = System.Net.CredentialCache.DefaultNetworkCredentials;
 
             BasicHttpBinding basicHttpBinding = new BasicHttpBinding();
@@ -53,7 +57,7 @@ namespace Cav.Soap
             basicHttpBinding.Security.Transport.ClientCredentialType = HttpClientCredentialType.None;
             basicHttpBinding.Security.Transport.ProxyCredentialType = HttpProxyCredentialType.None;
             basicHttpBinding.Security.Message.ClientCredentialType = BasicHttpMessageCredentialType.Certificate;
-            basicHttpBinding.Security.Message.AlgorithmSuite = AlgorithmSuite;
+            basicHttpBinding.Security.Message.AlgorithmSuite = algorithmSuite;
 
 
 
@@ -64,13 +68,13 @@ namespace Cav.Soap
             binding.Elements.Remove<TextMessageEncodingBindingElement>();
             binding.Elements.Insert(0, new SMEVMessageEncodingBindingElement()
             {
-                LoggerInstance = LoggerInstance,
-                SenderActor = SenderActor,
-                RecipientActor = RecipientActor
+                LoggerInstance = loggerInstance,
+                SenderActor = senderActor,
+                RecipientActor = recipientActor
             });
 
             AsymmetricSecurityBindingElement asbe = binding.Elements.Find<AsymmetricSecurityBindingElement>();
-            asbe.EnableUnsecuredResponse = EnableUnsecuredResponse;
+            asbe.EnableUnsecuredResponse = enableUnsecuredResponse;
             asbe.IncludeTimestamp = false;
             asbe.MessageProtectionOrder = MessageProtectionOrder.SignBeforeEncrypt;
             asbe.LocalClientSettings.DetectReplays = false;
@@ -78,7 +82,7 @@ namespace Cav.Soap
             asbe.AllowSerializedSigningTokenOnReply = true;
             asbe.RecipientTokenParameters.RequireDerivedKeys = false;
             asbe.RecipientTokenParameters.InclusionMode = SecurityTokenInclusionMode.AlwaysToInitiator;
-            asbe.AllowInsecureTransport = AllowInsecureTransport;
+            asbe.AllowInsecureTransport = allowInsecureTransport;
 
             HttpTransportBindingElement htbe = binding.Elements.Find<HttpTransportBindingElement>();
             htbe.ManualAddressing = false;
@@ -86,9 +90,9 @@ namespace Cav.Soap
             htbe.MaxBufferSize = int.MaxValue - 1;
             htbe.MaxBufferPoolSize = int.MaxValue - 1;
 
-            if (!Proxy.IsNullOrWhiteSpace())
+            if (!proxy.IsNullOrWhiteSpace())
             {
-                htbe.ProxyAddress = new Uri(Proxy);
+                htbe.ProxyAddress = new Uri(proxy);
                 htbe.UseDefaultWebProxy = false;
             }
 
@@ -117,36 +121,9 @@ namespace Cav.Soap
 
         private MessageEncodingBindingElement innerBindingElement;
         private MessageVersion messageVer = MessageVersion.Soap11;
-        private string senderActor = "http://smev.gosuslugi.ru/actors/smev";
-        private string recipientActor = "http://smev.gosuslugi.ru/actors/recipient";
 
-        public string SenderActor
-        {
-            get
-            {
-                return senderActor;
-            }
-            set
-            {
-                if (value == null)
-                    return;
-                senderActor = value;
-            }
-        }
-
-        public string RecipientActor
-        {
-            get
-            {
-                return recipientActor;
-            }
-            set
-            {
-                if (value == null)
-                    return;
-                recipientActor = value;
-            }
-        }
+        public string SenderActor { get; set; }
+        public string RecipientActor { get; set; }
 
         public override MessageVersion MessageVersion
         {
@@ -237,20 +214,20 @@ namespace Cav.Soap
 
     internal class SMEVMessageEncoder : MessageEncoder
     {
-        public SMEVMessageEncoder(SMEVMessageEncoderFactory Factory)
+        public SMEVMessageEncoder(SMEVMessageEncoderFactory factory)
         {
-            this.factory = Factory;
+            this.factory = factory;
 
             writerSettings = new XmlWriterSettings();
             this.writerSettings.ConformanceLevel = ConformanceLevel.Fragment;
             this.writerSettings.OmitXmlDeclaration = true;
             this.writerSettings.NewLineHandling = NewLineHandling.Entitize;
-            if (factory.CharSet.Trim().ToLower() == "utf-8")
+            if (this.factory.CharSet.Trim().ToLower() == "utf-8")
                 this.writerSettings.Encoding = new UTF8Encoding(false);
             else
-                this.writerSettings.Encoding = Encoding.GetEncoding(factory.CharSet);
+                this.writerSettings.Encoding = Encoding.GetEncoding(this.factory.CharSet);
 
-            theContentType = String.Format("{0}; charset={1}", factory.MediaType, writerSettings.Encoding.HeaderName);
+            this.theContentType = string.Format("{0}; charset={1}", this.factory.MediaType, this.writerSettings.Encoding.HeaderName);
         }
 
         public ISoapPackageLog LoggerInstance { get; set; }
@@ -487,14 +464,14 @@ namespace Cav.Soap
         {
         }
 
-        internal SMEVMessageEncoderFactory(string mediaType, string charSet, MessageVersion version, MessageEncoderFactory messageFactory, string SenderActor, string RecipientActor)
+        internal SMEVMessageEncoderFactory(string mediaType, string charSet, MessageVersion version, MessageEncoderFactory messageFactory, string senderActor, string recipientActor)
         {
             theFactory = messageFactory;
             theVersion = version;
             theMediaType = mediaType;
             theCharSet = charSet;
-            this.SenderActor = SenderActor;
-            this.RecipientActor = RecipientActor;
+            this.SenderActor = senderActor;
+            this.RecipientActor = recipientActor;
             theEncoder = new SMEVMessageEncoder(this);
         }
 
@@ -536,8 +513,6 @@ namespace Cav.Soap
         public string SenderActor { get; private set; }
         public string RecipientActor { get; private set; }
 
-
-
         public string MediaType
         {
             get
@@ -567,23 +542,23 @@ namespace Cav.Soap
         /// <summary>
         /// Реализация сервиса (класс)
         /// </summary>
-        protected Type ImplemetationServiceType;
+        protected Type implemetationServiceType;
         /// <summary>
         /// Сертификат сервера
         /// </summary>
-        protected X509Certificate2 CertificateServer;
+        protected X509Certificate2 certificateServer;
         /// <summary>
         /// Набор алгоритмов (Типа криптопрошных...)
         /// </summary>
-        protected SecurityAlgorithmSuite AlgorithmSuite;
+        protected SecurityAlgorithmSuite algorithmSuite;
         /// <summary>
         /// actor в исходящем сообщении
         /// </summary>
-        protected String SenderActor = null;
+        protected String senderActor = null;
         /// <summary>
         /// actor в входящем сообщении
         /// </summary>
-        protected String RecipientActor = null;
+        protected String recipientActor = null;
 
         /// <summary>
         /// Создание нового экземпляра хоста службы
@@ -593,14 +568,14 @@ namespace Cav.Soap
         /// <returns></returns>
         protected override ServiceHost CreateServiceHost(Type t, Uri[] baseAddresses)
         {
-            if (ImplemetationServiceType == null)
+            if (implemetationServiceType == null)
                 throw new Exception("Не определен класс реализации сервиса");
-            if (CertificateServer == null)
+            if (certificateServer == null)
                 throw new Exception("Не определен сертификат сервера");
-            if (AlgorithmSuite == null)
+            if (algorithmSuite == null)
                 throw new Exception("Не определен набор алгоритмов");
 
-            return new SmevServiceHost(ImplemetationServiceType, baseAddresses, AlgorithmSuite, CertificateServer, SenderActor, RecipientActor);
+            return new SmevServiceHost(implemetationServiceType, baseAddresses, algorithmSuite, certificateServer, senderActor, recipientActor);
         }
 
         /// <summary>
@@ -615,6 +590,8 @@ namespace Cav.Soap
         }
     }
 
+    // TODO Реализовать для selfHosting!!
+
     /// <summary>
     /// Кастомизированный хост сервиса
     /// </summary>
@@ -625,17 +602,17 @@ namespace Cav.Soap
         /// </summary>
         /// <param name="IS">Тип класа, реализующего сервис</param>
         /// <param name="uri">Uri базовых адресов</param>
-        /// <param name="AlgorithmSuite">Набор алгоритмов</param>
-        /// <param name="CertificateServer">Сертификат сервера</param>
-        /// <param name="SenderActor">actor отправителя сообщения</param>
-        /// <param name="RecipientActor">actor получателя сообщения</param>
-        internal SmevServiceHost(Type IS, Uri[] uri, SecurityAlgorithmSuite AlgorithmSuite, X509Certificate2 CertificateServer, String SenderActor, String RecipientActor)
+        /// <param name="algorithmSuite">Набор алгоритмов</param>
+        /// <param name="certificateServer">Сертификат сервера</param>
+        /// <param name="senderActor">actor отправителя сообщения</param>
+        /// <param name="recipientActor">actor получателя сообщения</param>
+        internal SmevServiceHost(Type IS, Uri[] uri, SecurityAlgorithmSuite algorithmSuite, X509Certificate2 certificateServer, String senderActor, String recipientActor)
             : base(IS, uri)
         {
-            algorithmSuite = AlgorithmSuite;
-            сertificateServer = CertificateServer;
-            senderActor = SenderActor;
-            recipientActor = RecipientActor;
+            this.algorithmSuite = algorithmSuite;
+            сertificateServer = certificateServer;
+            this.senderActor = senderActor;
+            this.recipientActor = recipientActor;
         }
         /// <summary>
         /// Набор алгоритмов (Типа криптопрошных...)
@@ -667,6 +644,7 @@ namespace Cav.Soap
             ISoapPackageLog logger = null;
             try
             {
+                // TODO Переделать определение наследования интерфейса.
                 if (this.Description.ServiceType.GetInterfaces().Any(x => x == typeof(ISoapPackageLog)))
                     logger = (ISoapPackageLog)Activator.CreateInstance(this.Description.ServiceType);
             }
@@ -675,10 +653,10 @@ namespace Cav.Soap
             foreach (var item in this.BaseAddresses)
             {
                 var sep = this.AddServiceEndpoint(cd.ContractType, SmevBinding.Create(
-                    AlgorithmSuite: algorithmSuite,
-                    LoggerInstance: logger,
-                    SenderActor: senderActor,
-                    RecipientActor: recipientActor), "");
+                    algorithmSuite: algorithmSuite,
+                    loggerInstance: logger,
+                    senderActor: senderActor,
+                    recipientActor: recipientActor), "");
                 sep.Contract.ProtectionLevel = System.Net.Security.ProtectionLevel.Sign;
                 sep.Behaviors.Add(new SoapLogEndpointBehavior());
                 lse.Add(sep);

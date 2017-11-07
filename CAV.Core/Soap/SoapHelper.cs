@@ -183,13 +183,13 @@ namespace Cav.Soap
                 catch { }
 
             var binding = SmevBinding.Create(
-                AlgorithmSuite: AlgorithmSuite,
-                Proxy: Proxy,
-                LoggerInstance: logger,
-                SenderActor: SenderActor,
-                RecipientActor: RecipientActor,
-                EnableUnsecuredResponse: EnableUnsecuredResponse,
-                AllowInsecureTransport: AllowInsecureTransport);
+                algorithmSuite: AlgorithmSuite,
+                proxy: Proxy,
+                loggerInstance: logger,
+                senderActor: SenderActor,
+                recipientActor: RecipientActor,
+                enableUnsecuredResponse: EnableUnsecuredResponse,
+                allowInsecureTransport: AllowInsecureTransport);
 
             if (SendTimeout.HasValue)
                 binding.SendTimeout = SendTimeout.Value;

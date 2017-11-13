@@ -10,7 +10,7 @@
         <projectUrl>https://github.com/ChernenkoAV/CavLibrarys</projectUrl>
         <iconUrl>https://raw.githubusercontent.com/ChernenkoAV/CavLibrarys/master/Cav.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>Набор утилит, облегчающих рутинные оперции</description>
+        <description>A set of utilities that facilitate routine operations</description>
         <copyright>Copyright 2017</copyright>
         <tags>Cav utils soap смев smev</tags>
         <dependencies> 

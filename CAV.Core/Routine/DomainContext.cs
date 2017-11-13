@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Data.Common;
 using System.Data.SqlClient;
@@ -74,7 +74,7 @@ namespace Cav
         /// <summary>
         /// Коллекция настроек соединения с БД
         /// </summary>
-        private static Dictionary<String, SettingConnection> dcsb = new Dictionary<string, SettingConnection>();
+        private static ConcurrentDictionary<String, SettingConnection> dcsb = new ConcurrentDictionary<string, SettingConnection>();
         private struct SettingConnection
         {
             public String ConnectionString { get; set; }
@@ -193,19 +193,22 @@ namespace Cav
             if (connectionName.IsNullOrWhiteSpace())
                 connectionName = defaultNameConnection;
 
+            SettingConnection setCon;
+
+            if (dcsb.TryGetValue(connectionName, out setCon))
+                if (setCon.ConnectionString == connectionString && setCon.ConnectionType == typeConnection)
+                    return;
+
             using (DbConnection conn = (DbConnection)Activator.CreateInstance(typeConnection, connectionString))
                 conn.Open();
 
-            var setCon = new SettingConnection()
+            setCon = new SettingConnection()
             {
                 ConnectionString = connectionString,
                 ConnectionType = typeConnection
             };
 
-            if (dcsb.ContainsKey(connectionName))
-                dcsb[connectionName] = setCon;
-            else
-                dcsb.Add(connectionName, setCon);
+            dcsb.AddOrUpdate(connectionName, setCon, (k, v) => setCon);
         }
 
         /// <summary>

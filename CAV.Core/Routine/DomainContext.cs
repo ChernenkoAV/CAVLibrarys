@@ -221,10 +221,11 @@ namespace Cav
             if (connectionName.IsNullOrWhiteSpace())
                 connectionName = defaultNameConnection;
 
-            if (!dcsb.ContainsKey(connectionName))
-                throw new Exception("Соединение с БД не настроено");
+            SettingConnection setCon;
 
-            var setCon = dcsb[connectionName];
+            if (!dcsb.TryGetValue(connectionName, out setCon))
+                throw new InvalidOperationException("Соединение с БД не настроено");
+
             var connection = (DbConnection)Activator.CreateInstance(setCon.ConnectionType, setCon.ConnectionString);
             connection.Open();
             return connection;

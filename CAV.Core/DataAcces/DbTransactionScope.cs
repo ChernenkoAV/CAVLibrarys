@@ -13,7 +13,7 @@ namespace Cav
     /// <summary>
     /// "Груповая" транзакция. Обертка для вызовов в БД. Только для одного DbConnection
     /// </summary>
-    public class DbTransactionScope : IDisposable
+    public sealed class DbTransactionScope : IDisposable
     {
         /// <summary>
         /// Создание нового экземпляра обертки транзации

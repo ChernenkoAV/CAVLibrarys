@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
@@ -43,7 +43,7 @@ namespace Cav.DataAcces
         }
 
 
-        private Dictionary<String, Action<Trow, DataRow>> insertPropKeyFieldMap = new Dictionary<string, Action<Trow, DataRow>>();
+        private ConcurrentDictionary<String, Action<Trow, DataRow>> insertPropKeyFieldMap = new ConcurrentDictionary<string, Action<Trow, DataRow>>();
         private LambdaExpression insertExpression = null;
 
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -173,7 +174,7 @@ namespace Cav.DataAcces
             MapSelectFieldInDictionary(selectPropFieldMap, property, fieldName, convertProperty);
         }
 
-        internal void MapSelectFieldInDictionary<T>(Dictionary<String, Action<Trow, DataRow>> d, Expression<Func<Trow, T>> property, String fieldName, Expression<Func<Object, T>> convertProperty = null)
+        internal void MapSelectFieldInDictionary<T>(ConcurrentDictionary<String, Action<Trow, DataRow>> d, Expression<Func<Trow, T>> property, String fieldName, Expression<Func<Object, T>> convertProperty = null)
         {
             if (fieldName.IsNullOrWhiteSpace())
                 throw new ArgumentNullException("paramName. Имя параметра не может быть пустым, состоять из пробелов или быть null");
@@ -224,7 +225,7 @@ namespace Cav.DataAcces
 
             Expression<Action<Trow, DataRow>> readfomfield = Expression.Lambda<Action<Trow, DataRow>>(assToProp, p_rowObg, p_dbRow);
 
-            d.Add(paramName, readfomfield.Compile());
+            d.TryAdd(paramName, readfomfield.Compile());
         }
 
         /// <summary>
@@ -286,7 +287,7 @@ namespace Cav.DataAcces
                 param.ConvetProperty = x => convFunct((T)x);
             }
 
-            commandParams.Add(key, param);
+            commandParams.TryAdd(key, param);
         }
 
         /// <summary>
@@ -300,7 +301,7 @@ namespace Cav.DataAcces
             if (config.TextCommand.IsNullOrWhiteSpace())
                 throw new ArgumentNullException("Текст команды не может быть пустым");
 
-            comands.Add(config.ActionType, config);
+            comands.TryAdd(config.ActionType, config);
         }
 
         private DbCommand CreateCommand(AdapterConfig config)
@@ -399,9 +400,9 @@ namespace Cav.DataAcces
             Delete
         }
 
-        private Dictionary<String, Action<Trow, DataRow>> selectPropFieldMap = new Dictionary<string, Action<Trow, DataRow>>();
-        private Dictionary<String, DbParamSetting> commandParams = new Dictionary<string, DbParamSetting>();
-        private Dictionary<CommandActionType, AdapterConfig> comands = new Dictionary<CommandActionType, AdapterConfig>();
+        private ConcurrentDictionary<String, Action<Trow, DataRow>> selectPropFieldMap = new ConcurrentDictionary<string, Action<Trow, DataRow>>();
+        private ConcurrentDictionary<String, DbParamSetting> commandParams = new ConcurrentDictionary<string, DbParamSetting>();
+        private ConcurrentDictionary<CommandActionType, AdapterConfig> comands = new ConcurrentDictionary<CommandActionType, AdapterConfig>();
     }
 
     internal struct DbParamSetting

@@ -210,9 +210,32 @@ namespace Cav
         /// <param name="xml">XDocument, содержащий валидируемый xml</param>
         /// <param name="xsd">Строка, содержащая схему xsd</param>
         /// <returns>Текст реультатов валидации. Если валидация успешна - null</returns>
-        public static String XMLValidate(this XContainer xml, String xsd)
+        public static String XMLValidate(this XDocument xml, String xsd)
         {
             return xml.XMLValidate(XDocument.Parse(xsd));
+        }
+
+        /// <summary>
+        /// Валидация xml схеме xsd
+        /// </summary>
+        /// <param name="xml">XElement, содержащий валидируемый xml</param>
+        /// <param name="xsd">Строка, содержащая схему xsd</param>
+        /// <returns>Текст реультатов валидации. Если валидация успешна - null</returns>
+        public static String XMLValidate(this XElement xml, String xsd)
+        {
+            return xml.XMLValidate(XDocument.Parse(xsd));
+        }
+
+
+        /// <summary>
+        /// Валидация xml схеме xsd
+        /// </summary>
+        /// <param name="xml">XElement, содержащий валидируемый xml</param>
+        /// <param name="xsd">XDocument, содержащий схему xsd</param>
+        /// <returns>Текст реультатов валидации. Если валидация успешна - null</returns>
+        public static String XMLValidate(this XElement xml, XDocument xsd)
+        {
+            return (new XDocument(xml)).XMLValidate(xsd);
         }
 
         /// <summary>
@@ -221,13 +244,12 @@ namespace Cav
         /// <param name="xml">XDocument, содержащий валидируемый xml</param>
         /// <param name="xsd">XDocument, содержащий схему xsd</param>
         /// <returns>Текст реультатов валидации. Если валидация успешна - null</returns>
-        public static String XMLValidate(this XContainer xml, XContainer xsd)
+        public static String XMLValidate(this XDocument xml, XDocument xsd)
         {
             XmlSchemaSet shs = new XmlSchemaSet();
             shs.Add("", xsd.CreateReader());
             String res = null;
-            XElement el = ((xml as XElement) ?? (xml as XDocument).Root);
-            el.Validate(el.GetSchemaInfo().SchemaElement, shs, (a, b) => { res += b.Message + Environment.NewLine; });
+            xml.Validate(shs, (a, b) => { res += b.Message + Environment.NewLine; });
             return res;
         }
 

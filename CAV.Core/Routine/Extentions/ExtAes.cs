@@ -41,7 +41,7 @@ namespace Cav
         }
 
         /// <summary>
-        /// Дешифрация алгоритмом AES и десереализация объекта из массива шифра. Работает только после <see cref="Extentions.SerializeAesEncrypt(object, string)"/>
+        /// Дешифрация алгоритмом AES и десереализация объекта из массива шифра. Работает только после <see cref="SerializeAesEncrypt(object, string)"/>
         /// , так как с ключом производятся манипуляции
         /// </summary>
         /// <typeparam name="T">Тип для десериализации</typeparam>

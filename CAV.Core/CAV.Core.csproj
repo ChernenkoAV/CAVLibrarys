@@ -141,6 +141,18 @@
     <Compile Include="DigitalSignature\CryptoPro.cs" />
     <Compile Include="DigitalSignature\DSGeneric.cs" />
     <Compile Include="DynamicCode\DynamicCodeHelper.cs" />
+    <Compile Include="Routine\Extentions\ExtAes.cs" />
+    <Compile Include="Routine\Extentions\ExtCollection.cs" />
+    <Compile Include="Routine\Extentions\ExtDataRow.cs" />
+    <Compile Include="Routine\Extentions\ExtDateTime.cs" />
+    <Compile Include="Routine\Extentions\ExtEnum.cs" />
+    <Compile Include="Routine\Extentions\ExtException.cs" />
+    <Compile Include="Routine\Extentions\ExtGZip.cs" />
+    <Compile Include="Routine\Extentions\ExtMD5.cs" />
+    <Compile Include="Routine\Extentions\ExtNetJSON.cs" />
+    <Compile Include="Routine\Extentions\ExtObjectRoutine.cs" />
+    <Compile Include="Routine\Extentions\ExtString.cs" />
+    <Compile Include="Routine\Extentions\ExtXml.cs" />
     <Compile Include="Routine\PredicateBuilder.cs" />
     <Compile Include="Routine\ProductionCalendar.cs" />
     <Compile Include="Routine\ProgramSettingsBase.cs" />
@@ -149,7 +161,6 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Routine\DomainContext.cs" />
     <Compile Include="Routine\ErrorCatcher.cs" />
-    <Compile Include="Routine\Extentions.cs" />
     <Compile Include="Routine\ProgramSettingsBaseOld.cs" />
     <Compile Include="Routine\Utils.cs" />
     <Compile Include="Soap\FixatePrefixNamespace.cs" />

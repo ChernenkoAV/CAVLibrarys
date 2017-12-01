@@ -1,4 +1,5 @@
 ﻿using System;
+using Cav.ReflectHelpers;
 
 namespace Cav
 {
@@ -31,6 +32,37 @@ namespace Cav
         public static Nullable<T> NullIf<T>(this T exp, T operand) where T : struct
         {
             return exp.Equals(operand) ? (T?)null : exp;
+        }
+
+        /// <summary>
+        /// Получение свойства у объекта. Обработка вложеных объектов
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="pathProperty">Путь к свойству вида "PropertyA.PropertyB.PropertyC"</param>
+        /// <param name="throwIfObjectIsNull">Вернуть исключение, если вложеный объект = null, либо результат - null</param>
+        /// <returns></returns>
+        public static object GetPropertyValueNestedObject<T>(this T obj, string pathProperty, bool throwIfObjectIsNull = false) where T : class
+        {
+            if (pathProperty.IsNullOrWhiteSpace())
+                return null;
+
+            var elnts = pathProperty.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+
+            Object res = obj;
+
+            try
+            {
+                foreach (var el in elnts)
+                    res = res.GetPropertyValue(el);
+            }
+            catch
+            {
+                if (throwIfObjectIsNull)
+                    throw;
+                return null;
+            }
+
+            return res;
         }
     }
 }

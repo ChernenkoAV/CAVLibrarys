@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Cav.ReflectHelpers;
 
 namespace Cav
@@ -63,6 +64,29 @@ namespace Cav
             }
 
             return res;
+        }
+
+        /// <summary>
+        /// Проверка вхождения значения в перечень
+        /// </summary>
+        /// <param name="arg">Искомый аргумент</param>
+        /// <param name="args">Перечень значений</param>
+        /// <returns></returns>
+        public static bool In(this string arg, params string[] args)
+        {
+            return args.Contains(arg);
+        }
+
+        /// <summary>
+        /// Проверка вхождения значения в перечень
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="arg">Искомый аргумент</param>
+        /// <param name="args">Перечень значений</param>
+        /// <returns></returns>
+        public static bool In<T>(this T arg, params T[] args) where T : struct
+        {
+            return args.Contains(arg);
         }
     }
 }

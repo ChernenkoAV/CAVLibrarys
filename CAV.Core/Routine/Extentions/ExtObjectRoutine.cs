@@ -69,11 +69,13 @@ namespace Cav
         /// <summary>
         /// Проверка вхождения значения в перечень
         /// </summary>
-        /// <param name="arg">Искомый аргумент</param>
+        /// <param name="arg">Проверяемый аргумент</param>
         /// <param name="args">Перечень значений</param>
-        /// <returns></returns>
+        /// <returns>Если аргумент IsNullOrWhiteSpace() результат всегда false</returns>
         public static bool In(this string arg, params string[] args)
         {
+            if (arg.IsNullOrWhiteSpace())
+                return false;
             return args.Contains(arg);
         }
 
@@ -81,11 +83,26 @@ namespace Cav
         /// Проверка вхождения значения в перечень
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="arg">Искомый аргумент</param>
+        /// <param name="arg">Проверяемый аргумент</param>
         /// <param name="args">Перечень значений</param>
         /// <returns></returns>
         public static bool In<T>(this T arg, params T[] args) where T : struct
         {
+            return args.Contains(arg);
+        }
+
+        /// <summary>
+        /// Проверка на вхождение значения в перечень (для Nullable-типов)
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="arg">Проверяемый аргумент</param>
+        /// <param name="args">Перечень значений</param>
+        /// <returns></returns>
+        public static bool In<T>(this T? arg, params T?[] args) where T : struct
+        {
+            if (!arg.HasValue)
+                return false;
+
             return args.Contains(arg);
         }
     }

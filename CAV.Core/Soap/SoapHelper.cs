@@ -9,6 +9,7 @@ using System.ServiceModel.Dispatcher;
 using System.ServiceModel.Security;
 using System.Xml.Linq;
 using Cav.DigitalSignature;
+using Cav.ReflectHelpers;
 
 namespace Cav.Soap
 {
@@ -235,13 +236,17 @@ namespace Cav.Soap
         /// <param name="loggerType">Тип логгера</param>
         /// <param name="loggerInstanse">Экземпляр логгера</param>
         /// <param name="sendTimeout">Таймаут посыла сообщения</param>
+        /// <param name="credentialsUserName">Логин</param>
+        /// <param name="credentialsUserPass">Пароль</param>
         /// <returns></returns>
         public static WrapClient<T> CreateBasicClient<T>(
             String uri,
             String proxy = null,
             Type loggerType = null,
             ISoapPackageLog loggerInstanse = null,
-            TimeSpan? sendTimeout = null)
+            TimeSpan? sendTimeout = null,
+            string credentialsUserName = null,
+            string credentialsUserPass = null)
             where T : class, ICommunicationObject, IDisposable
         {
             var ea = new EndpointAddress(uri);
@@ -270,8 +275,16 @@ namespace Cav.Soap
 
             if (logger != null)
             {
-                ServiceEndpoint se = (ServiceEndpoint)client.GetType().GetProperty("Endpoint").GetValue(client, null);
+                ServiceEndpoint se = (ServiceEndpoint)client.GetPropertyValue("Endpoint");
                 se.Behaviors.Add(new SoapLogEndpointBehavior(logger));
+            }
+
+            if (!credentialsUserName.IsNullOrWhiteSpace())
+            {
+                var сlientCredentials = (ClientCredentials)client.GetPropertyValue("ClientCredentials");
+
+                сlientCredentials.UserName.UserName = credentialsUserName;
+                сlientCredentials.UserName.Password = credentialsUserPass;
             }
 
             return new WrapClient<T>(client);

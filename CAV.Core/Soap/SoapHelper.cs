@@ -56,7 +56,7 @@ namespace Cav.Soap
             }
             else
             {
-                ServiceEndpoint ep = (ServiceEndpoint)communicationObject.GetType().GetProperty("Endpoint").GetValue(communicationObject, null);
+                ServiceEndpoint ep = (ServiceEndpoint)communicationObject.GetPropertyValue("Endpoint");
                 ep.Behaviors.Add(fmr);
             }
         }
@@ -105,7 +105,7 @@ namespace Cav.Soap
             }
             else
             {
-                ServiceEndpoint ep = (ServiceEndpoint)communicationObject.GetType().GetProperty("Endpoint").GetValue(communicationObject, null);
+                ServiceEndpoint ep = (ServiceEndpoint)communicationObject.GetPropertyValue("Endpoint");
                 ep.Behaviors.Add(psi);
             }
         }
@@ -202,7 +202,7 @@ namespace Cav.Soap
 
             T client = (T)Activator.CreateInstance(typeof(T), binding, ea);
 
-            ClientCredentials cc = (ClientCredentials)client.GetType().GetProperty("ClientCredentials").GetValue(client, null);
+            ClientCredentials cc = (ClientCredentials)client.GetPropertyValue("ClientCredentials");
             if (clientSert == null)
                 throw new NullReferenceException("Не указан клиентский сертификат. Либо не найден в хранилище, либо строка с BASE64 невалидна.");
             cc.ClientCertificate.Certificate = clientSert;
@@ -214,7 +214,7 @@ namespace Cav.Soap
 
             // сообщение только подписываем. не шифруя(по умолчанию - и шифруется)
 
-            ChannelFactory channelFactory = (ChannelFactory)client.GetType().GetProperty("ChannelFactory").GetValue(client, null);
+            ChannelFactory channelFactory = (ChannelFactory)client.GetPropertyValue("ChannelFactory");
             channelFactory.Endpoint.Contract.ProtectionLevel = System.Net.Security.ProtectionLevel.Sign;
             channelFactory.Endpoint.Behaviors.Add(new SoapLogEndpointBehavior());
 

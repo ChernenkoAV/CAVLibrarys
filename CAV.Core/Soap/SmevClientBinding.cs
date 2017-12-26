@@ -108,8 +108,15 @@ namespace Cav.Soap
     {
         public SMEVMessageEncodingBindingElement()
         {
-            innerBindingElement = new TextMessageEncodingBindingElement();
-            innerBindingElement.MessageVersion = messageVer;
+            var tmebe = new TextMessageEncodingBindingElement();
+            tmebe.MessageVersion = messageVer;
+            tmebe.ReaderQuotas.MaxStringContentLength = int.MaxValue - 1;
+            tmebe.ReaderQuotas.MaxArrayLength = int.MaxValue - 1;
+            tmebe.ReaderQuotas.MaxBytesPerRead = int.MaxValue - 1;
+            tmebe.ReaderQuotas.MaxDepth = int.MaxValue - 1;
+            tmebe.ReaderQuotas.MaxNameTableCharCount = int.MaxValue - 1;
+
+            innerBindingElement = tmebe;
         }
 
         public SMEVMessageEncodingBindingElement(MessageEncodingBindingElement innerBindingElement)

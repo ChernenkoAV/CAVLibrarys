@@ -322,6 +322,7 @@ namespace Cav.Soap
         /// <param name="senderActor">Актор сервиса</param>
         /// <param name="recipientActor">Актор клиента</param>
         /// <param name="algorithmSuite">Если null, то берется <see cref="CryptoProRutine.CriptoProBasicGostObsolete"/></param>
+        /// <param name="loggerInstance">Экземпляр объекта, реализующего <see cref="ISoapPackageLog"/> для логирования</param>
         /// <returns></returns>
         public static ServiceHost CreateSmevHost(
             Type implementType,
@@ -330,7 +331,8 @@ namespace Cav.Soap
             Type contractType = null,
             String senderActor = "http://smev.gosuslugi.ru/actors/recipient",
             String recipientActor = "http://smev.gosuslugi.ru/actors/smev",
-            SecurityAlgorithmSuite algorithmSuite = null)
+            SecurityAlgorithmSuite algorithmSuite = null,
+            ISoapPackageLog loggerInstance = null)
         {
             var cert = DSGeneric.FindCertByThumbprint(servSert);
             if (cert == null)
@@ -349,7 +351,8 @@ namespace Cav.Soap
                 binding: SmevBinding.Create(
                     algorithmSuite: algorithmSuite,
                     senderActor: senderActor,
-                    recipientActor: recipientActor),
+                    recipientActor: recipientActor,
+                    loggerInstance: loggerInstance),
                 address: endpointUri);
 
             res.Credentials.ServiceCertificate.Certificate = cert;

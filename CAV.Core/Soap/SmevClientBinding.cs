@@ -33,7 +33,7 @@ namespace Cav.Soap
         /// <param name="proxy">Прокси для клиента</param>
         /// <param name="senderActor">Actor отправителя</param>
         /// <param name="recipientActor">Actor получателя</param>
-        /// <param name="loggerInstance">Экземпляр объекта, реализующего ISoapPackageLog для логирования</param>
+        /// <param name="loggerInstance">Экземпляр объекта, реализующего <see cref="ISoapPackageLog"/> для логирования</param>
         /// <param name="enableUnsecuredResponse">Задает значение, указывающее, может ли отправлять и получать небезопасные ответы или безопасные запросы.</param>        
         /// <param name="allowInsecureTransport">Можно ли отправлять сообщения в смешанном режиме безопасности</param>
         /// <returns></returns>

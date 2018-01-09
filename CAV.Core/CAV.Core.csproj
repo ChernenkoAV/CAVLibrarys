@@ -126,12 +126,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseClases\BusinessLogicBase.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="BaseClases\DBAdapterBase.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Container\Locator.cs" />
     <Compile Include="DataAcces\DataAccesBase.cs" />
     <Compile Include="DataAcces\DataAccesBase_IUD.cs" />
@@ -161,7 +155,6 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Routine\DomainContext.cs" />
     <Compile Include="Routine\ErrorCatcher.cs" />
-    <Compile Include="Routine\ProgramSettingsBaseOld.cs" />
     <Compile Include="Routine\Utils.cs" />
     <Compile Include="Soap\FixatePrefixNamespace.cs" />
     <Compile Include="Soap\ServiceErrorHandler.cs" />

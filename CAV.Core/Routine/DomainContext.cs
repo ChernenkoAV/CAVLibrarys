@@ -283,26 +283,6 @@ namespace Cav
         }
 
         /// <summary>
-        /// Путь в AppData для текущего пользователя текущего приложения(%AppData%\"NameEntryAssembly") (Если отсутствует - то он создается...)
-        /// </summary>
-        [Obsolete("Будет удалено. используйте AppDataUserStorageRoaming либо AppDataUserStorageLocal", true)]
-        public static String AppDataUserStorage
-        {
-            get
-            {
-                string path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                // Косяк в XP
-                if (path.Contains(@"C:\Windows\system32"))
-                    path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-
-                path = Path.Combine(path, NameEntryAssembly);
-                if (!Directory.Exists(path))
-                    Directory.CreateDirectory(path);
-                return path;
-            }
-        }
-
-        /// <summary>
         /// Путь в AppData для текущего пользователя текущего приложения(перемещаемый)(%APPDATA%\"NameEntryAssembly") (Если отсутствует - то он создается...)
         /// </summary>
         public static String AppDataUserStorageRoaming

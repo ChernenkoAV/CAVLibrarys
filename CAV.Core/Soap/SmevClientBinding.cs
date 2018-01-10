@@ -31,8 +31,8 @@ namespace Cav.Soap
         /// </summary>
         /// <param name="algorithmSuite">Указывает набор алгоритмов.</param>
         /// <param name="proxy">Прокси для клиента</param>
-        /// <param name="senderActor">Actor отправителя</param>
-        /// <param name="recipientActor">Actor получателя</param>
+        /// <param name="senderActor">Actor отправителя (по умолчанию <code>http://smev.gosuslugi.ru/actors/smev</code>)</param>
+        /// <param name="recipientActor">Actor получателя (по умолчанию <code>http://smev.gosuslugi.ru/actors/recipient</code>)</param>
         /// <param name="loggerInstance">Экземпляр объекта, реализующего <see cref="ISoapPackageLog"/> для логирования</param>
         /// <param name="enableUnsecuredResponse">Задает значение, указывающее, может ли отправлять и получать небезопасные ответы или безопасные запросы.</param>        
         /// <param name="allowInsecureTransport">Можно ли отправлять сообщения в смешанном режиме безопасности</param>
@@ -40,8 +40,8 @@ namespace Cav.Soap
         public static SmevBinding Create(
             SecurityAlgorithmSuite algorithmSuite,
             String proxy = null,
-            String senderActor = "http://smev.gosuslugi.ru/actors/smev",
-            String recipientActor = "http://smev.gosuslugi.ru/actors/recipient",
+            String senderActor = null,
+            String recipientActor = null,
             ISoapPackageLog loggerInstance = null,
             Boolean enableUnsecuredResponse = false,
             Boolean allowInsecureTransport = false)
@@ -58,9 +58,6 @@ namespace Cav.Soap
             basicHttpBinding.Security.Transport.ProxyCredentialType = HttpProxyCredentialType.None;
             basicHttpBinding.Security.Message.ClientCredentialType = BasicHttpMessageCredentialType.Certificate;
             basicHttpBinding.Security.Message.AlgorithmSuite = algorithmSuite;
-
-
-
 
             SmevBinding binding = new SmevBinding(basicHttpBinding);
             binding.Name = "SmevBinding";

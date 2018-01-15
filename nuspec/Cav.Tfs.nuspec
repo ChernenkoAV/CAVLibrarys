@@ -15,10 +15,10 @@
         <tags>cav tfs tfs2013 tfs2015 wrap</tags>
         <dependencies>
             <group targetFramework="net45">
-                <dependency id="Cav.Core" version="3.0.0" />
+                <dependency id="Cav.Core" version="4.0.0" />
             </group>
             <group targetFramework="net461">
-                <dependency id="Cav.Core" version="3.0.0" />
+                <dependency id="Cav.Core" version="4.0.0" />
             </group>
         </dependencies> 
     </metadata>

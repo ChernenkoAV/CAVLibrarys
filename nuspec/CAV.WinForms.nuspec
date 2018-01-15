@@ -15,10 +15,10 @@
         <tags>Cav winforms dialogs</tags>
         <dependencies>
             <group targetFramework="net45">
-                <dependency id="Cav.Core" version="3.0.0" />
+                <dependency id="Cav.Core" version="4.0.0" />
             </group>
             <group targetFramework="net461">
-                <dependency id="Cav.Core" version="3.0.0" />
+                <dependency id="Cav.Core" version="4.0.0" />
             </group>
         </dependencies>
     </metadata>

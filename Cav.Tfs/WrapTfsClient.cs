@@ -329,12 +329,7 @@ namespace Cav.Tfs
         {
             var tpc = TeamProjectCollectionGet(serverUri);
             Type vcsType = tfsVersionControlClientAssembly.
-#if NET40
-                GetTypes()
-#else
-            ExportedTypes
-#endif
-            .Single(x => x.Name == "VersionControlServer");
+                ExportedTypes.Single(x => x.Name == "VersionControlServer");
 
             var res = new VersionControlServer();
             res.VCS = tpc.InvokeMethod("GetService", vcsType);
@@ -491,24 +486,14 @@ namespace Cav.Tfs
                     .GetPropertyValue("VersionControlServer")
                     .GetPropertyValue("TeamProjectCollection");
                 Type workItemStoreType = tfsWorkItemTrackingClientAssembly.
-#if NET40
-                GetTypes()
-#else
-                ExportedTypes
-#endif
-                .Single(x => x.Name == "WorkItemStore");
+                    ExportedTypes.Single(x => x.Name == "WorkItemStore");
 
                 var wis = tpc.InvokeMethod("GetService", workItemStoreType);
 
                 var associate = tfsVersionControlClientAssembly.GetEnumValue("WorkItemCheckinAction", "Associate");
 
                 Type workItemCheckinInfoType = tfsVersionControlClientAssembly.
-#if NET40
-                GetTypes()
-#else
-                ExportedTypes
-#endif
-                .Single(x => x.Name == "WorkItemCheckinInfo");
+                    ExportedTypes.Single(x => x.Name == "WorkItemCheckinInfo");
 
                 List<Object> associatedWorkItems = new List<object>();
                 foreach (var idTask in numberTasks)
@@ -605,12 +590,8 @@ namespace Cav.Tfs
             var GetRequest = tfsVersionControlClientAssembly.CreateInstance("GetRequest", ItemSpec, VersionSpecLatest);
 
             var GetOptionsType = tfsVersionControlClientAssembly.
-#if NET40
-                GetTypes()
-#else
-            ExportedTypes
-#endif
-            .Single(x => x.Name == "GetOptions");
+                ExportedTypes.Single(x => x.Name == "GetOptions");
+
             int GetOptionsGetAll = (int)tfsVersionControlClientAssembly.GetEnumValue("GetOptions", "GetAll");
             int GetOptionsOverwrit = (int)tfsVersionControlClientAssembly.GetEnumValue("GetOptions", "Overwrite");
             var GetOptionsValue = Enum.ToObject(GetOptionsType, GetOptionsGetAll + GetOptionsOverwrit);
@@ -697,12 +678,7 @@ namespace Cav.Tfs
 
             var tpc = TeamProjectCollectionGet(serverUri);
             Type workItemStoreType = tfsWorkItemTrackingClientAssembly.
-#if NET40
-                GetTypes()
-#else
-            ExportedTypes
-#endif
-            .Single(x => x.Name == "WorkItemStore");
+                ExportedTypes.Single(x => x.Name == "WorkItemStore");
 
             var wis = tpc.InvokeMethod("GetService", workItemStoreType);
             var prs = wis.GetPropertyValue("Projects") as ICollection;
@@ -787,12 +763,7 @@ namespace Cav.Tfs
 
             var tpc = TeamProjectCollectionGet(serverUri);
             Type workItemStoreType = tfsWorkItemTrackingClientAssembly.
-#if NET40
-                GetTypes()
-#else
-            ExportedTypes
-#endif
-            .Single(x => x.Name == "WorkItemStore");
+                ExportedTypes.Single(x => x.Name == "WorkItemStore");
 
             var wis = tpc.InvokeMethod("GetService", workItemStoreType);
             var prs = wis.GetPropertyValue("Projects") as ICollection;
@@ -834,12 +805,7 @@ namespace Cav.Tfs
         {
             var tpc = TeamProjectCollectionGet(serverUri);
             Type workItemStoreType = tfsWorkItemTrackingClientAssembly.
-#if NET40
-                GetTypes()
-#else
-            ExportedTypes
-#endif
-            .Single(x => x.Name == "WorkItemStore");
+                ExportedTypes.Single(x => x.Name == "WorkItemStore");
 
             var wis = tpc.InvokeMethod("GetService", workItemStoreType);
             var wim = wis.InvokeMethod("GetWorkItem", id);

@@ -17,12 +17,7 @@ namespace Cav.ReflectHelpers
         /// <returns></returns>
         public static Object GetPropertyValue(this object obj, String propertyName)
         {
-            return obj.GetType().GetProperty(propertyName).
-#if NET40
-            GetValue(obj, null);
-#else
-            GetValue(obj);
-#endif
+            return obj.GetType().GetProperty(propertyName).GetValue(obj);
         }
         /// <summary>
         /// Получение значения статического свойства
@@ -33,18 +28,8 @@ namespace Cav.ReflectHelpers
         /// <returns></returns>
         public static Object GetStaticPropertyValue(this Assembly asm, String className, String propertyName)
         {
-            return asm.
-#if NET40
-            GetExportedTypes()
-#else
-            ExportedTypes
-#endif            
-            .Single(x => x.Name == className || x.FullName == className).GetProperty(propertyName).
-#if NET40
-            GetValue(null, null);
-#else
-            GetValue(null);
-#endif            
+            return asm.ExportedTypes
+                .Single(x => x.Name == className || x.FullName == className).GetProperty(propertyName).GetValue(null);
         }
         /// <summary>
         /// Установка значения свойства
@@ -54,12 +39,7 @@ namespace Cav.ReflectHelpers
         /// <param name="value">значение</param>
         public static void SetPropertyValue(this object obj, String propertyName, Object value)
         {
-            obj.GetType().GetProperty(propertyName).
-#if NET40
-            SetValue(obj, value, null);
-#else
-            SetValue(obj, value);
-#endif
+            obj.GetType().GetProperty(propertyName).SetValue(obj, value);
         }
         /// <summary>
         /// Создание экземпляра класса
@@ -70,13 +50,8 @@ namespace Cav.ReflectHelpers
         /// <returns></returns>
         public static Object CreateInstance(this Assembly asm, String className, params object[] args)
         {
-            Type clType = asm.
-#if NET40
-            GetExportedTypes()
-#else
-            ExportedTypes
-#endif            
-            .Single(x => x.Name == className || x.FullName == className);
+            Type clType = asm.ExportedTypes
+                .Single(x => x.Name == className || x.FullName == className);
             return Activator.CreateInstance(clType, args);
         }
         /// <summary>
@@ -88,13 +63,9 @@ namespace Cav.ReflectHelpers
         /// <returns></returns>
         public static Object GetEnumValue(this Assembly asm, String enumTypeName, String valueName)
         {
-            Type rtType = asm.
-#if NET40
-            GetExportedTypes()
-#else
-            ExportedTypes
-#endif            
-            .Single(x => x.Name == enumTypeName || x.FullName == enumTypeName);
+            Type rtType = asm.ExportedTypes
+                .Single(x => x.Name == enumTypeName || x.FullName == enumTypeName);
+
             return Enum.Parse(rtType, valueName);
         }
         /// <summary>
@@ -121,13 +92,8 @@ namespace Cav.ReflectHelpers
         /// <returns>Результат выполения</returns>
         public static Object InvokeStaticMethod(this Assembly asm, String className, String methodName, params Object[] args)
         {
-            Type rtType = asm.
-#if NET40
-            GetExportedTypes()
-#else
-            ExportedTypes
-#endif
-            .Single(x => x.Name == className);
+            Type rtType = asm.ExportedTypes
+                .Single(x => x.Name == className);
 
             var mi = rtType.GetMethod(methodName, args.Select(x => x.GetType()).ToArray());
             return mi.Invoke(null, args);

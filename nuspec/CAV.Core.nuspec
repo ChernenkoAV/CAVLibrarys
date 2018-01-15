@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+<package>
     <metadata>
         <id>Cav.Core</id>
         <version>0.0.0</version>
@@ -11,18 +11,15 @@
         <iconUrl>https://raw.githubusercontent.com/ChernenkoAV/CavLibrarys/master/Cav.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>A set of utilities that facilitate routine operations</description>
-        <copyright>Copyright 2017</copyright>
+        <copyright>Copyright 2018</copyright>
+        <releaseNotes></releaseNotes>
         <tags>Cav utils soap смев smev</tags>
-        <dependencies> 
-            <group targetFramework="net40"></group>
+        <dependencies>
             <group targetFramework="net45"></group>
             <group targetFramework="net461"></group>
         </dependencies> 
     </metadata>
     <files>
-        <file src="net40\Cav.Core.dll" target="lib\net40\" />
-        <file src="net40\Cav.Core.pdb" target="lib\net40\" />
-        <file src="net40\Cav.Core.xml" target="lib\net40\" />
         <file src="net45\Cav.Core.dll" target="lib\net45\" />
         <file src="net45\Cav.Core.pdb" target="lib\net45\" />
         <file src="net45\Cav.Core.xml" target="lib\net45\" />

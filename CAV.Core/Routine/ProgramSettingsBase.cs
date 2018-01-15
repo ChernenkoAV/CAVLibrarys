@@ -110,11 +110,8 @@ namespace Cav.Configuration
 
                         internalCreate = false;
 
-#if NET40
-                        String filename = ((ProgramSettingsFileAttribute)typeof(T).GetCustomAttributes(typeof(ProgramSettingsFileAttribute), false).FirstOrDefault() ?? new ProgramSettingsFileAttribute(null)).FileName;
-#else
                         String filename = (typeof(T).GetCustomAttribute<ProgramSettingsFileAttribute>() ?? new ProgramSettingsFileAttribute(null)).FileName;
-#endif
+
                         if (filename.IsNullOrWhiteSpace())
                             filename = typeof(T).FullName + ".json";
 
@@ -159,12 +156,7 @@ namespace Cav.Configuration
                 if (pi == null)
                     continue;
 
-                pi.SetValue(this, pv.Value.JSONDeserialize(pi.PropertyType)
-#if NET40
-                , null
-#endif
-                );
-
+                pi.SetValue(this, pv.Value.JSONDeserialize(pi.PropertyType));
             }
         }
 
@@ -188,62 +180,33 @@ namespace Cav.Configuration
                 PropertyInfo[] prinfs = this.GetType().GetProperties();
 
                 foreach (var pinfo in prinfs)
-                    pinfo.SetValue(this, pinfo.PropertyType.GetDefault()
-#if NET40
-                    , null
-#endif
-                    );
-
-
+                    pinfo.SetValue(this, pinfo.PropertyType.GetDefault());
 
                 FromJsonDeserialize(fileNameApp,
                     prinfs
                     .Where(pinfo =>
-#if NET40
-                        pinfo.GetCustomAttributes(typeof(ProgramSettingsAreaAttribute), false).FirstOrDefault() != null &&
-                        ((ProgramSettingsAreaAttribute)pinfo.GetCustomAttributes(typeof(ProgramSettingsAreaAttribute), false).First()).Value == Area.App
-#else
                         pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>() != null && pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>().Value == Area.App
-#endif
-
                         ).ToArray()
                     );
 
                 FromJsonDeserialize(fileNameAppCommon,
                     prinfs
                     .Where(pinfo =>
-#if NET40
-                        pinfo.GetCustomAttributes(typeof(ProgramSettingsAreaAttribute), false).FirstOrDefault() != null &&
-                        ((ProgramSettingsAreaAttribute)pinfo.GetCustomAttributes(typeof(ProgramSettingsAreaAttribute), false).First()).Value == Area.CommonApp
-#else
                         pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>() != null && pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>().Value == Area.CommonApp
-#endif                        
                         ).ToArray()
                     );
 
                 FromJsonDeserialize(fileNameUserRoaming,
                     prinfs
                     .Where(pinfo =>
-#if NET40
-                        pinfo.GetCustomAttributes(typeof(ProgramSettingsAreaAttribute), false).FirstOrDefault() != null &&
-                        ((ProgramSettingsAreaAttribute)pinfo.GetCustomAttributes(typeof(ProgramSettingsAreaAttribute), false).First()).Value == Area.UserRoaming
-#else
                         pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>() == null || pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>().Value == Area.UserRoaming
-#endif
-
                         ).ToArray()
                     );
 
                 FromJsonDeserialize(fileNameUserLocal,
                 prinfs
                 .Where(pinfo =>
-#if NET40
-                        pinfo.GetCustomAttributes(typeof(ProgramSettingsAreaAttribute), false).FirstOrDefault() == null ||
-                    ((ProgramSettingsAreaAttribute)pinfo.GetCustomAttributes(typeof(ProgramSettingsAreaAttribute), false).First()).Value == Area.UserLocal
-#else
                         pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>() == null || pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>().Value == Area.UserLocal
-#endif
-
                     ).ToArray()
                 );
             }
@@ -269,20 +232,12 @@ namespace Cav.Configuration
 
                 foreach (var pinfo in prinfs)
                 {
-                    Object val = pinfo.GetValue(this
-#if NET40
-                    , null
-#endif
-                    );
+                    Object val = pinfo.GetValue(this);
 
                     if (val == null)
                         continue;
 
-#if NET40
-                    var psatr = (ProgramSettingsAreaAttribute)pinfo.GetCustomAttributes(typeof(ProgramSettingsAreaAttribute), false).FirstOrDefault() ?? new ProgramSettingsAreaAttribute(Area.UserLocal);
-#else
                     var psatr = pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>() ?? new ProgramSettingsAreaAttribute(Area.UserLocal);
-#endif
 
                     switch (psatr.Value)
                     {

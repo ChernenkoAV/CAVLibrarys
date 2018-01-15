@@ -13,19 +13,7 @@
         <FileAlignment>512</FileAlignment>
         <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
         <RestorePackages>true</RestorePackages>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugNet40|AnyCPU' ">
-        <DebugSymbols>true</DebugSymbols>
-        <DebugType>full</DebugType>
-        <Optimize>false</Optimize>
-        <OutputPath>..\_Build\</OutputPath>
-        <ErrorReport>prompt</ErrorReport>
-        <WarningLevel>4</WarningLevel>
-        <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-        <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-        <DefineConstants>TRACE;DEBUG;NET40</DefineConstants>
-        <Prefer32Bit>false</Prefer32Bit>
-    </PropertyGroup>
+    </PropertyGroup>    
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugNet45|AnyCPU' ">
         <DebugSymbols>true</DebugSymbols>
         <DebugType>full</DebugType>
@@ -53,21 +41,9 @@
     <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
         <OutputPath>..\_Build\Cav.WinForms\</OutputPath>
         <DocumentationFile>..\_Build\Cav.WinForms\Cav.WinForms.xml</DocumentationFile>
-        <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+        <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
         <DefineConstants>
         </DefineConstants>
-        <Optimize>true</Optimize>
-        <DebugType>pdbonly</DebugType>
-        <PlatformTarget>AnyCPU</PlatformTarget>
-        <ErrorReport>prompt</ErrorReport>
-        <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-        <Prefer32Bit>false</Prefer32Bit>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseNet40|AnyCPU'">
-        <OutputPath>..\_Build\Cav.WinForms\Net40\</OutputPath>
-        <DocumentationFile>..\_Build\Cav.WinForms\Net40\Cav.WinForms.xml</DocumentationFile>
-        <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-        <DefineConstants>NET40</DefineConstants>
         <Optimize>true</Optimize>
         <DebugType>pdbonly</DebugType>
         <PlatformTarget>AnyCPU</PlatformTarget>
@@ -106,19 +82,10 @@
         <AssemblyOriginatorKeyFile>Cav.snk</AssemblyOriginatorKeyFile>
     </PropertyGroup>
     <Choose>
-        <When Condition="'$(TargetFrameworkVersion)' == 'v4.0'">
-            <ItemGroup>
-                <Reference Include="Cav.Core, Version=2.4.0.0">
-                    <HintPath>..\packages\Cav.Core.2.4.0\lib\net40\Cav.Core.dll</HintPath>
-                    <SpecificVersion>False</SpecificVersion>
-                    <Private>False</Private>
-                </Reference>
-            </ItemGroup>
-        </When>
         <When Condition="'$(TargetFrameworkVersion)' == 'v4.5'">
             <ItemGroup>
-                <Reference  Include="Cav.Core, Version=2.4.0.0">
-                    <HintPath>..\packages\Cav.Core.2.4.0\lib\net45\Cav.Core.dll</HintPath>
+                <Reference Include="Cav.Core, Version=3.0.0.0">
+                    <HintPath>..\packages\Cav.Core.3.0.0\lib\net45\Cav.Core.dll</HintPath>
                     <SpecificVersion>False</SpecificVersion>
                     <Private>False</Private>
                 </Reference>
@@ -126,8 +93,8 @@
         </When>
         <When Condition="'$(TargetFrameworkVersion)' == 'v4.6.1'">
             <ItemGroup>
-                <Reference Include="Cav.Core, Version=2.4.0.0">
-                    <HintPath>..\packages\Cav.Core.2.4.0\lib\net461\Cav.Core.dll</HintPath>
+                <Reference Include="Cav.Core, Version=3.0.0.0">
+                    <HintPath>..\packages\Cav.Core.3.0.0\lib\net461\Cav.Core.dll</HintPath>
                     <SpecificVersion>False</SpecificVersion>
                     <Private>False</Private>
                 </Reference>
@@ -141,8 +108,7 @@
         </Otherwise>
         -->
     </Choose>
-
-    <ItemGroup >
+    <ItemGroup>
         <Reference Include="System" />
         <Reference Include="System.Core" />
         <Reference Include="System.Drawing" />
@@ -177,9 +143,7 @@
     </ItemGroup>
     <ItemGroup>
         <None Include="Cav.snk" />
-        <None Include="packages.config">
-            <SubType>Designer</SubType>
-        </None>
+        <None Include="packages.config" />
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Include="BaseClases\DialogFormBase.resx">
@@ -203,6 +167,4 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-
-
 </Project>

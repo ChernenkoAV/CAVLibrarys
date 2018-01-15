@@ -154,11 +154,7 @@ namespace Cav.Soap
         {
             foreach (var po in endpoint.Contract.Operations)
             {
-#if NET40
-                po.Behaviors.Add(this);
-#else
                 po.OperationBehaviors.Add(this);
-#endif
             }
         }
 

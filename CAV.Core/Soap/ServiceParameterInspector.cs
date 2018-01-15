@@ -69,11 +69,7 @@ namespace Cav.Soap
 
         public void ApplyClientBehavior(ServiceEndpoint endpoint, ClientRuntime clientRuntime)
         {
-#if NET40
-            foreach (var operation in clientRuntime.Operations)
-#else
             foreach (var operation in clientRuntime.ClientOperations)
-#endif 
             {
                 operation.ParameterInspectors.Add(this);
             }

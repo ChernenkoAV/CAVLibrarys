@@ -68,11 +68,6 @@ namespace Cav.DataAcces
         {
             if (providerFactory != null)
                 return providerFactory;
-#if NET40
-            providerFactory = DbProviderFactories.GetFactory(this.ProviderInvariantName);
-            if (providerFactory == null)
-                throw new InvalidOperationException("Не удалось получить фабрику работы с БД");
-#else
 
             var tran = DbTransactionScope.TransactionGet(ConnectionName);
             if (tran != null)
@@ -91,7 +86,7 @@ namespace Cav.DataAcces
                         }
                         catch { }
             }
-#endif
+
             return providerFactory;
         }
 
@@ -200,13 +195,6 @@ namespace Cav.DataAcces
             throw new ApplicationException("При обработке исключения выполнения команды дальнейшее выполнение невозможно.");
         }
 
-#if NET40
-        /// <summary>
-        /// Имя провайдера БД. Необходимо для получения фабрики, что в свою очередь, необходимо для <see cref="DataAccesBase.FillTable(System.Data.Common.DbCommand)"/>.
-        /// Только для .NET 4.0
-        /// </summary>
-        protected String ProviderInvariantName { get; set; }
-#endif
         /// <summary>
         /// Получение результата в DataTable
         /// </summary>

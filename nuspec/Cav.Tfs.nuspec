@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+<package>
     <metadata>
         <id>Cav.Tfs</id>
         <version>0.0.0</version>
@@ -11,24 +11,18 @@
         <iconUrl>https://raw.githubusercontent.com/ChernenkoAV/CavLibrarys/master/Cav.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Обертка к сборкам TFS в Visual Studio 2013 и 2015</description>
-        <copyright>Copyright 2017</copyright>
+        <copyright>Copyright 2018</copyright>
         <tags>cav tfs tfs2013 tfs2015 wrap</tags>
-        <dependencies> 
-            <group targetFramework="net40">
-                <dependency id="Cav.Core" version="2.5.0" />
-            </group>
+        <dependencies>
             <group targetFramework="net45">
-                <dependency id="Cav.Core" version="2.5.0" />
+                <dependency id="Cav.Core" version="3.0.0" />
             </group>
             <group targetFramework="net461">
-                <dependency id="Cav.Core" version="2.5.0" />
+                <dependency id="Cav.Core" version="3.0.0" />
             </group>
         </dependencies> 
     </metadata>
-    <files>
-        <file src="net40\Cav.Tfs.dll" target="lib\net40\" />
-        <file src="net40\Cav.Tfs.pdb" target="lib\net40\" />
-        <file src="net40\Cav.Tfs.xml" target="lib\net40\" />
+    <files>       
         <file src="net45\Cav.Tfs.dll" target="lib\net45\" />
         <file src="net45\Cav.Tfs.pdb" target="lib\net45\" />
         <file src="net45\Cav.Tfs.xml" target="lib\net45\" />

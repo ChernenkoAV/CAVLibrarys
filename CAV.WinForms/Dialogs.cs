@@ -178,7 +178,7 @@ namespace Cav
         /// <param name="SupportMultiDottedExtensions">Задает условие, поддерживает ли диалоговое окно отображение файлов, которые содержат несколько расширений имени файла.</param>
         /// <param name="InitialDirectory">Задает начальную папку, отображенную диалоговым окном файла.</param>
         /// <param name="FilterIndex">Задает индекс фильтра, выбранного в настоящий момент в диалоговом окне файла.</param>
-        /// <param name="Filter">Задает текущую строку фильтра имен файлов, которая определяет варианты, доступные в поле "Файлы типа" диалогового окна.</param>         
+        /// <param name="Filter">Задает текущую строку фильтра имен файлов, которая определяет варианты, доступные в поле "Файлы типа" диалогового окна.(Text Files (*.txt)|*.txt|All Files (*.*)|*.*)</param>
         /// <param name="FileName">Задает строку, содержащую имя файла, выбранное в диалоговом окне файла.</param>
         /// <param name="DefaultExt">Задает расширение имени файла по умолчанию</param>
         /// <param name="RestoreDirectory"></param>
@@ -203,20 +203,20 @@ namespace Cav
             List<String> res = new List<string>();
 
             OpenFileDialog fd = new OpenFileDialog()
-                {
-                    Title = Title,
-                    Multiselect = Multiselect,
-                    SupportMultiDottedExtensions = SupportMultiDottedExtensions,
-                    InitialDirectory = InitialDirectory,
-                    FilterIndex = FilterIndex,
-                    Filter = Filter,
-                    FileName = FileName,
-                    DefaultExt = DefaultExt,
-                    RestoreDirectory = RestoreDirectory,
-                    CheckPathExists = CheckPathExists,
-                    CheckFileExists = CheckFileExists,
-                    AddExtension = AddExtension,
-                };
+            {
+                Title = Title,
+                Multiselect = Multiselect,
+                SupportMultiDottedExtensions = SupportMultiDottedExtensions,
+                InitialDirectory = InitialDirectory,
+                FilterIndex = FilterIndex,
+                Filter = Filter,
+                FileName = FileName,
+                DefaultExt = DefaultExt,
+                RestoreDirectory = RestoreDirectory,
+                CheckPathExists = CheckPathExists,
+                CheckFileExists = CheckFileExists,
+                AddExtension = AddExtension,
+            };
 
             DialogResult dr;
             if (Owner != null)
@@ -238,7 +238,7 @@ namespace Cav
         /// <param name="SupportMultiDottedExtensions">Задает условие, поддерживает ли диалоговое окно отображение файлов, которые содержат несколько расширений имени файла.</param>
         /// <param name="InitialDirectory">Задает начальную папку, отображенную диалоговым окном файла.</param>
         /// <param name="FilterIndex">Задает индекс фильтра, выбранного в настоящий момент в диалоговом окне файла.</param>
-        /// <param name="Filter">Задает текущую строку фильтра имен файлов, которая определяет варианты, доступные в поле "Файлы типа" диалогового окна.</param>         
+        /// <param name="Filter">Задает текущую строку фильтра имен файлов, которая определяет варианты, доступные в поле "Файлы типа" диалогового окна.(Text Files (*.txt)|*.txt|All Files (*.*)|*.*)</param>
         /// <param name="FileName">Задает строку, содержащую имя файла, выбранное в диалоговом окне файла.</param>
         /// <param name="DefaultExt">Задает расширение имени файла по умолчанию</param>
         /// <param name="RestoreDirectory"></param>

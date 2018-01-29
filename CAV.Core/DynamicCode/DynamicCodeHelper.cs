@@ -21,10 +21,11 @@ namespace Cav.DynamicCode
         /// <summary>
         /// Генерация C# кода из Xsd
         /// </summary>
-        /// <param name="xsd">Исходный xsd. Без import других xsd. Наверное</param>
-        /// <param name="namespaseType">Пространство имен для пулученного типа</param>
+        /// <param name="xsd">Исходный xsd</param>
+        /// <param name="namespaseType">Пространство имен для целевого типа</param>
+        /// <param name="imports">Коллекция необходимых схем (в частности, импорты)</param>
         /// <returns></returns>
-        public static StringBuilder GenerateCodeFromXsd(XDocument xsd, String namespaseType)
+        public static StringBuilder GenerateCodeFromXsd(XDocument xsd, String namespaseType, params XDocument[] imports)
         {
             if (namespaseType.IsNullOrWhiteSpace())
                 throw new ArgumentException("Не указано пространство имен");
@@ -36,8 +37,14 @@ namespace Cav.DynamicCode
 
             using (var xr = xsd.CreateReader())
                 xsdSchema = XmlSchema.Read(xr, null);
+
             XmlSchemas xsdSet = new XmlSchemas();
             xsdSet.Add(xsdSchema);
+
+            foreach (var item in imports)
+                using (var xr = xsd.CreateReader())
+                    xsdSet.Add(XmlSchema.Read(xr, null));
+
             xsdSet.Compile(null, true);
             XmlSchemaImporter importer = new XmlSchemaImporter(xsdSet);
 
@@ -62,7 +69,10 @@ namespace Cav.DynamicCode
             var generator = new CSharpCodeProvider();
 
             StringBuilder codeType = new StringBuilder();
-            var cdg = new CodeGeneratorOptions();
+            var cdg = new CodeGeneratorOptions()
+            {
+                BracingStyle = "C"
+            };
 
 
             using (var tw = new StringWriter(codeType))

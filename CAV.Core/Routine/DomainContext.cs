@@ -331,6 +331,22 @@ namespace Cav
         }
 
         /// <summary>
+        /// Путь к папке в %Documents%\"NameEntryAssembly". Если отсутствует - создается
+        /// </summary>
+        public static String DocumentsPath
+        {
+            get
+            {
+                string path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+                path = Path.Combine(path, NameEntryAssembly);
+                if (!Directory.Exists(path))
+                    Directory.CreateDirectory(path);
+                return path;
+            }
+        }
+
+        /// <summary>
         /// Путь к временной папке в %Temp%\"NameEntryAssembly". Если отсутствует - создается
         /// </summary>
         public static String TempPath

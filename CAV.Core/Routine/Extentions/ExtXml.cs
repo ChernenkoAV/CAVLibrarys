@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -14,6 +15,28 @@ namespace Cav
     /// </summary>
     public static class ExtXml
     {
+
+        // кэш сериализаторов. Ато огромная течка памяти
+        private static ConcurrentDictionary<String, XmlSerializer> cacheXmlSer = new ConcurrentDictionary<string, XmlSerializer>();
+
+        private static XmlSerializer getSerialize(Type type, XmlRootAttribute rootAttrib = null)
+        {
+            var key = type.FullName;
+
+            if (rootAttrib != null)
+                key = $"{key}:{rootAttrib.Namespace}:{rootAttrib.ElementName}";
+
+            XmlSerializer res = null;
+
+            if (!cacheXmlSer.TryGetValue(key, out res))
+            {
+                res = new XmlSerializer(type, rootAttrib);
+                cacheXmlSer.TryAdd(key, res);
+            }
+
+            return res;
+        }
+
         /// <summary>
         /// Сериализатор XML
         /// </summary>
@@ -22,7 +45,7 @@ namespace Cav
         public static void XMLSerialize(this object o, string fileName)
         {
             File.Delete(fileName);
-            XmlSerializer xs = new XmlSerializer(o.GetType());
+            var xs = getSerialize(o.GetType());
 
             using (Stream ms = File.Create(fileName))
                 xs.Serialize(ms, o);
@@ -35,7 +58,7 @@ namespace Cav
         /// <returns>Результат сериализации</returns>
         public static XDocument XMLSerialize(this object o)
         {
-            XmlSerializer xs = new XmlSerializer(o.GetType());
+            var xs = getSerialize(o.GetType());
             StringBuilder sb = new StringBuilder();
 
             using (XmlWriter ms = XmlTextWriter.Create(sb))
@@ -74,9 +97,13 @@ namespace Cav
             if (el == null)
                 return type.GetDefault();
 
-            XmlRootAttribute xra = new XmlRootAttribute(el.Name.LocalName);
-            xra.Namespace = el.Name.Namespace.NamespaceName;
-            XmlSerializer xs = new XmlSerializer(type, xra);
+            XmlRootAttribute xra = new XmlRootAttribute()
+            {
+                ElementName = el.Name.LocalName,
+                Namespace = el.Name.Namespace.NamespaceName
+            };
+
+            var xs = getSerialize(type, xra);
 
             using (StringReader sr = new StringReader(xDoc.ToString()))
                 return xs.Deserialize(sr);

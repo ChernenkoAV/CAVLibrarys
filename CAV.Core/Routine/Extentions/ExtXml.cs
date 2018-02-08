@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
@@ -17,7 +18,7 @@ namespace Cav
     {
 
         // кэш сериализаторов. Ато огромная течка памяти
-        private static ConcurrentDictionary<String, XmlSerializer> cacheXmlSer = new ConcurrentDictionary<string, XmlSerializer>();
+        private static ConcurrentDictionary<String, Lazy<XmlSerializer>> cacheXmlSer = new ConcurrentDictionary<string, Lazy<XmlSerializer>>();
 
         private static XmlSerializer getSerialize(Type type, XmlRootAttribute rootAttrib = null)
         {
@@ -26,7 +27,7 @@ namespace Cav
             if (rootAttrib != null)
                 key = $"{key}:{rootAttrib.Namespace}:{rootAttrib.ElementName}";
 
-            return cacheXmlSer.GetOrAdd(key, new XmlSerializer(type, rootAttrib));
+            return cacheXmlSer.GetOrAdd(key, _ => new Lazy<XmlSerializer>(() => new XmlSerializer(type, rootAttrib), LazyThreadSafetyMode.ExecutionAndPublication)).Value;
         }
 
         /// <summary>

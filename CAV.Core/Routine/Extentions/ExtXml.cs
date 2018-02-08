@@ -26,15 +26,7 @@ namespace Cav
             if (rootAttrib != null)
                 key = $"{key}:{rootAttrib.Namespace}:{rootAttrib.ElementName}";
 
-            XmlSerializer res = null;
-
-            if (!cacheXmlSer.TryGetValue(key, out res))
-            {
-                res = new XmlSerializer(type, rootAttrib);
-                cacheXmlSer.TryAdd(key, res);
-            }
-
-            return res;
+            return cacheXmlSer.GetOrAdd(key, new XmlSerializer(type, rootAttrib));
         }
 
         /// <summary>

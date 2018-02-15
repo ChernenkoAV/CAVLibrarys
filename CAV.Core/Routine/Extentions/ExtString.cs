@@ -195,5 +195,28 @@ namespace Cav
 
             return str.SubString(0, start) + replaceWith + str.SubString(start + length);
         }
+
+        /// <summary>
+        /// Замена символов на указанное значение
+        /// </summary>
+        /// <param name="str">Исходная строка</param>
+        /// <param name="chars">Перечень символов для замены в виде строки</param>
+        /// <param name="newValue">Значение, на которое заменяется символ</param>
+        /// <returns>Измененная строка</returns>
+        public static String Replace2(this String str, string chars, string newValue)
+        {
+            if (chars == null && chars == string.Empty)
+                return str;
+
+            if (str == null)
+                return str;
+
+            String res = null;
+
+            foreach (var charSource in str.ToArray())
+                res = res + (chars.IndexOf(charSource) > -1 ? newValue : charSource.ToString());
+
+            return res;
+        }
     }
 }

@@ -7,7 +7,7 @@ namespace Cav
     /// <summary>
     /// Расширения для работы с объектами
     /// </summary>
-    public static class ExtObjectRoutine
+    public static class ExtObject
     {
         /// <summary>
         /// Получение значения по умолчанию для типа
@@ -33,6 +33,20 @@ namespace Cav
         public static Nullable<T> NullIf<T>(this T exp, T operand) where T : struct
         {
             return exp.Equals(operand) ? (T?)null : exp;
+        }
+
+        /// <summary>
+        /// Повтор IFNULL() из T-SQL для структур
+        /// </summary>
+        /// <typeparam name="T">Тип значения</typeparam>
+        /// <param name="val">Проверяемое значение</param>
+        /// <param name="operand">Значение подстановки</param>
+        /// <returns></returns>
+        public static T IfNull<T>(this T? val, T operand) where T : struct
+        {
+            if (val.HasValue)
+                return val.Value;
+            return operand;
         }
 
         /// <summary>
@@ -65,6 +79,8 @@ namespace Cav
 
             return res;
         }
+
+        #region In
 
         /// <summary>
         /// Проверка вхождения значения в перечень
@@ -105,5 +121,8 @@ namespace Cav
 
             return args.Contains(arg);
         }
+
+        #endregion
+
     }
 }

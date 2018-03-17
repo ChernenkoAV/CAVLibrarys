@@ -120,7 +120,7 @@
     <Compile Include="Routine\Extentions\ExtGZip.cs" />
     <Compile Include="Routine\Extentions\ExtMD5.cs" />
     <Compile Include="Routine\Extentions\ExtNetJSON.cs" />
-    <Compile Include="Routine\Extentions\ExtObjectRoutine.cs" />
+    <Compile Include="Routine\Extentions\ExtObject.cs" />
     <Compile Include="Routine\Extentions\ExtString.cs" />
     <Compile Include="Routine\Extentions\ExtXml.cs" />
     <Compile Include="Routine\PredicateBuilder.cs" />

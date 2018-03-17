@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Web;
+using Cav.ReflectHelpers;
 
 namespace Cav
 {
@@ -75,6 +76,28 @@ namespace Cav
             if (curdep == null)
                 return false;
             return curdep.IsFirstRun;
+        }
+
+        /// <summary>
+        /// Неглубокое клонирование экземпляра класса в тип-наследник.
+        /// </summary>        
+        /// <typeparam name="TAncestorType">Тип предка</typeparam>
+        /// <typeparam name="THeritorType">Тип наследника</typeparam>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static THeritorType CopyTo<TAncestorType, THeritorType>(TAncestorType obj)
+            where TAncestorType : class, new()
+            where THeritorType : class, TAncestorType, new()
+        {
+            if (obj == null)
+                return null;
+
+            THeritorType res = Activator.CreateInstance<THeritorType>();
+
+            foreach (var ancestorProperty in typeof(TAncestorType).GetProperties())
+                res.SetPropertyValue(ancestorProperty.Name, obj.GetPropertyValue(ancestorProperty.Name));
+
+            return res;
         }
 
     }

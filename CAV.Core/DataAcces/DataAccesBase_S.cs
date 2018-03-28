@@ -15,7 +15,7 @@ namespace Cav.DataAcces
     /// <typeparam name="Trow">Класс, на который производится отражение данных из БД</typeparam>
     /// <typeparam name="TselectParams">Клас, типизирующий параметры адаптера на выборку</typeparam>
     public class DataAccesBase<Trow, TselectParams> : DataAccesBase, IDataAcces<Trow, TselectParams>
-        where Trow : class
+        where Trow : class, new()
         where TselectParams : IAdapterParametrs
     {
         /// <summary>
@@ -26,7 +26,7 @@ namespace Cav.DataAcces
         /// <returns>Коллекция объектов типа THeritorType</returns>
         public IEnumerable<THeritorType> Get<THeritorType>(
                 Expression<Action<TselectParams>> selectParams = null)
-                where THeritorType : Trow
+                where THeritorType : Trow, new()
         {
             this.Configured();
             List<THeritorType> res = new List<THeritorType>();

@@ -34,7 +34,7 @@ namespace Cav.DataAcces
     /// Интерфейс для тестирования слоя доступа к данным в нормированной выборкой
     /// </summary>
     public interface IDataAcces<Trow, TselectParams> : IDataAcces
-        where Trow : class, new()
+        where Trow : class
         where TselectParams : IAdapterParametrs
     {
         /// <summary>
@@ -45,7 +45,7 @@ namespace Cav.DataAcces
         /// <returns>Коллекция объектов типа THeritorType</returns>
         IEnumerable<THeritorType> Get<THeritorType>(
                 Expression<Action<TselectParams>> selectParams = null)
-                where THeritorType : Trow, new();
+                where THeritorType : Trow;
 
         /// <summary>
         /// Получение данных из БД с записью в класс Trow
@@ -63,7 +63,7 @@ namespace Cav.DataAcces
     /// <typeparam name="TupdateParams">Клас, типизирующий параметры адаптера на изменение</typeparam>
     /// <typeparam name="TdeleteParams">Клас, типизирующий параметры адаптера на удаление</typeparam>
     public interface IDataAcces<Trow, TselectParams, TupdateParams, TdeleteParams> : IDataAcces<Trow, TselectParams>
-        where Trow : class, new()
+        where Trow : class
         where TselectParams : IAdapterParametrs
         where TupdateParams : IAdapterParametrs
         where TdeleteParams : IAdapterParametrs

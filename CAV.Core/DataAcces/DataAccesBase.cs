@@ -8,7 +8,7 @@ namespace Cav.DataAcces
     /// <summary>
     /// Базовый клас для доступа к функционалу, реализованному в БД. Например, вызову хранимых процедур, возвращающих скалярное значение
     /// </summary>
-    public class DataAccesBase
+    public class DataAccesBase : IDataAcces
     {
         /// <summary>
         /// Обработчик исключения пры запуске <see cref="DbCommand"/>. Должен генерировать новое исключение (Для обертки "страшных" сиключений в "нестрашные")

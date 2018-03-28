@@ -108,6 +108,7 @@
     <Compile Include="DataAcces\DataAccesBase_S.cs" />
     <Compile Include="DataAcces\DbTransactionScope.cs" />
     <Compile Include="DataAcces\HeplerDataAcces.cs" />
+    <Compile Include="DataAcces\IDataAcces.cs" />
     <Compile Include="DigitalSignature\CryptoPro.cs" />
     <Compile Include="DigitalSignature\DSGeneric.cs" />
     <Compile Include="DynamicCode\DynamicCodeHelper.cs" />

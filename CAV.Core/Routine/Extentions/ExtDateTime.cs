@@ -69,6 +69,56 @@ namespace Cav
                     throw new ArgumentException(nameof(resolution));
             }
         }
+
+        #region Возраст
+
+        /// <summary>
+        /// Проверка, есть ли между датами указанное количество полных лет
+        /// </summary>
+        /// <param name="data1">Дата 1</param>
+        /// <param name="data2">Дата 2</param>
+        /// <param name="years">Проверяемое количество полных лет</param>
+        /// <returns></returns>
+        public static bool ExistsAge(this DateTime data1, DateTime data2, int years)
+        {
+            var tdl = data1.Date;
+            var tdg = data2.Date;
+
+            if (tdl > tdg)
+            {
+                tdg = tdl;
+                tdl = data2.Date;
+            }
+
+            return tdl.AddYears(years) < tdg;
+        }
+
+        /// <summary>
+        /// Количество полных лет на дату
+        /// </summary>
+        /// <param name="data1">Дата 1</param>
+        /// <param name="data2">Дата 2</param>
+        /// <returns>Количество полных лет</returns>
+        public static int FullAge(this DateTime data1, DateTime data2)
+        {
+            var tdl = data1.Date;
+            var tdg = data2.Date;
+
+            if (tdl > tdg)
+            {
+                tdg = tdl;
+                tdl = data2.Date;
+            }
+
+            var res = tdg.Year - tdl.Year;
+
+            if (!tdl.ExistsAge(tdg, res))
+                res--;
+
+            return res;
+        }
+
+        #endregion
     }
 
     /// <summary>

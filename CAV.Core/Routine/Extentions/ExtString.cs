@@ -134,30 +134,29 @@ namespace Cav
             return FilePath;
         }
 
-
         /// <summary>
         /// Совпадение(вхождение) строк с реплейсом пробелов (регистронезависимонезависимо)
         /// </summary>
         /// <param name="str"></param>
-        /// <param name="Pattern">Искомый текст</param>
-        /// <param name="FullMatch">Искать полное совпадение</param>
+        /// <param name="testString">Искомый текст</param>
+        /// <param name="fullMatch">Искать полное совпадение</param>
         /// <returns></returns>
-        public static Boolean MatchText(this String str, String Pattern, Boolean FullMatch = false)
+        public static Boolean MatchString(this String str, String testString, Boolean fullMatch = false)
         {
-            if (str == null & Pattern == null)
+            if (str == null & testString == null)
                 return true;
 
-            if (str == null | Pattern == null)
+            if (str == null | testString == null)
                 return false;
 
-            str = str.Replace(" ", "").ToLowerInvariant();
-            Pattern = Pattern.Replace(" ", "").ToLowerInvariant();
+            str = str.ReplaceDoubleSpace().Trim().ToLowerInvariant();
+            testString = testString.ReplaceDoubleSpace().Trim().ToLowerInvariant();
 
             Boolean res;
-            if (FullMatch)
-                res = str.Equals(Pattern);
+            if (fullMatch)
+                res = str.Equals(testString);
             else
-                res = str.Contains(Pattern);
+                res = str.Contains(testString);
 
             return res;
         }

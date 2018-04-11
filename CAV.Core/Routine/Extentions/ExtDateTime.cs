@@ -90,7 +90,7 @@ namespace Cav
                 tdl = data2.Date;
             }
 
-            return tdl.AddYears(years) < tdg;
+            return tdl.AddYears(years) <= tdg;
         }
 
         /// <summary>

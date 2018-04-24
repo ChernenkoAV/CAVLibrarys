@@ -101,7 +101,7 @@ namespace Cav.DynamicCode
             var provider = new CSharpCodeProvider();
 
             var parameters = new CompilerParameters();
-            parameters.GenerateInMemory = true;
+            parameters.GenerateInMemory = outputAssembly.IsNullOrWhiteSpace();
             if (!outputAssembly.IsNullOrWhiteSpace())
                 parameters.OutputAssembly = outputAssembly;
             parameters.ReferencedAssemblies.Add("System.dll");

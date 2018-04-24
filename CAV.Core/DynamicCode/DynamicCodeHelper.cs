@@ -88,8 +88,12 @@ namespace Cav.DynamicCode
         /// </summary>
         /// <param name="code">код</param>
         /// <param name="referencedAssembly">Референсные сборки для компиляции</param>
+        /// <param name="outputAssembly">Путь к имени файла. null - генерация в памяти.</param>
         /// <returns></returns>
-        public static Assembly CompileCode(StringBuilder code, string[] referencedAssembly = null)
+        public static Assembly CompileCode(
+            StringBuilder code,
+            string[] referencedAssembly = null,
+            String outputAssembly = null)
         {
             if (code == null || code.ToString().IsNullOrWhiteSpace())
                 throw new ArgumentNullException("code");
@@ -97,7 +101,9 @@ namespace Cav.DynamicCode
             var provider = new CSharpCodeProvider();
 
             var parameters = new CompilerParameters();
-            parameters.GenerateInMemory = true;
+            parameters.GenerateInMemory = outputAssembly.IsNullOrWhiteSpace();
+            if (!outputAssembly.IsNullOrWhiteSpace())
+                parameters.OutputAssembly = outputAssembly;
             parameters.ReferencedAssemblies.Add("System.dll");
             parameters.ReferencedAssemblies.Add("System.Xml.dll");
             parameters.ReferencedAssemblies.Add("System.Core.dll");

@@ -83,7 +83,7 @@ namespace Cav
         /// </summary>        
         /// <typeparam name="TAncestorType">Тип предка</typeparam>
         /// <typeparam name="THeritorType">Тип наследника</typeparam>
-        /// <param name="obj"></param>
+        /// <param name="obj">Исходный объект</param>
         /// <returns></returns>
         public static THeritorType CopyTo<TAncestorType, THeritorType>(TAncestorType obj)
             where TAncestorType : class, new()
@@ -92,9 +92,30 @@ namespace Cav
             if (obj == null)
                 return null;
 
-            THeritorType res = Activator.CreateInstance<THeritorType>();
+            return (THeritorType)obj.CopyTo(typeof(THeritorType));
+        }
 
-            foreach (var ancestorProperty in typeof(TAncestorType).GetProperties())
+        /// <summary>
+        /// Неглубокое клонирование экземпляра класса в тип-наследник.
+        /// </summary>
+        /// <typeparam name="TAncestorType">Тип предка</typeparam>
+        /// <param name="obj">Исходный объект</param>
+        /// <param name="heritorType">Результирующий тип</param>
+        /// <returns></returns>
+        public static object CopyTo<TAncestorType>(this TAncestorType obj, Type heritorType)
+            where TAncestorType : class, new()
+        {
+            if (heritorType == null)
+                throw new ArgumentNullException(nameof(heritorType));
+
+            var ancestorType = typeof(TAncestorType);
+
+            if (!ancestorType.IsAssignableFrom(heritorType))
+                throw new InvalidCastException($"{heritorType.FullName} не является наследником {ancestorType.FullName}");
+
+            object res = Activator.CreateInstance(heritorType);
+
+            foreach (var ancestorProperty in ancestorType.GetProperties())
                 res.SetPropertyValue(ancestorProperty.Name, obj.GetPropertyValue(ancestorProperty.Name));
 
             return res;

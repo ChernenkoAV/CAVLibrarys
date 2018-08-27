@@ -734,10 +734,10 @@ namespace Cav.Tfs
                     if (folder == null)
                         qin.QueryID = (Guid)itm.GetPropertyValue("Id");
 
+                    List<QueryItemNode> childEls = new List<QueryItemNode>();
+
                     if (qin.IsFolder)
                     {
-                        List<QueryItemNode> childEls = new List<QueryItemNode>();
-
                         foreach (var itemInfolder in folder)
                         {
 
@@ -748,14 +748,14 @@ namespace Cav.Tfs
                             if (childEl != null)
                                 childEls.Add(childEl);
                         }
-
-                        qin.ChildNodes = new ReadOnlyCollection<QueryItemNode>(childEls);
                     }
                     else
                     {
                         if (itm.GetPropertyValue("QueryType").ToString() != "List")
                             return null;
                     }
+
+                    qin.ChildNodes = new ReadOnlyCollection<QueryItemNode>(childEls);
 
                     if (qin.IsFolder && !qin.ChildNodes.Any())
                         return null;
@@ -860,9 +860,10 @@ namespace Cav.Tfs
         /// Получение шельв текущего юзера
         /// </summary>
         /// <returns></returns>
-        public ReadOnlyCollection<ShelveSet> QueryShelvesetsCurrenUser(VersionControlServer vcs)
+        public ReadOnlyCollection<ShelveSet> ShelvesetsCurrenUserLoad(VersionControlServer vcs)
         {
-            var ssts = vcs.VCS.InvokeMethod("QueryShelvesets", (string)null, ".") as IEnumerable;
+            var mi = vcs.VCS.GetType().GetMethod("QueryShelvesets", new[] { typeof(string), typeof(string) });
+            var ssts = mi.Invoke(vcs.VCS, new object[] { null, "." }) as IEnumerable;
 
             var res = new List<ShelveSet>();
 

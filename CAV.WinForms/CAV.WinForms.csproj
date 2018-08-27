@@ -84,8 +84,8 @@
   <Choose>
     <When Condition="'$(TargetFrameworkVersion)' == 'v4.5'">
             <ItemGroup>
-                <Reference Include="Cav.Core, Version=4.0.0.0">
-                    <HintPath>..\packages\Cav.Core.4.0.0\lib\net45\Cav.Core.dll</HintPath>
+                <Reference Include="Cav.Core, Version=4.7.0.0">
+                    <HintPath>..\packages\Cav.Core.4.7.0\lib\net45\Cav.Core.dll</HintPath>
                     <SpecificVersion>False</SpecificVersion>
                     <Private>False</Private>
                 </Reference>
@@ -93,8 +93,8 @@
         </When>
     <When Condition="'$(TargetFrameworkVersion)' == 'v4.6.1'">
       <ItemGroup>
-        <Reference Include="Cav.Core, Version=4.0.0.0">
-          <HintPath>..\packages\Cav.Core.4.0.0\lib\net461\Cav.Core.dll</HintPath>
+        <Reference Include="Cav.Core, Version=4.7.0.0">
+          <HintPath>..\packages\Cav.Core.4.7.0\lib\net461\Cav.Core.dll</HintPath>
           <SpecificVersion>False</SpecificVersion>
           <Private>False</Private>
         </Reference>

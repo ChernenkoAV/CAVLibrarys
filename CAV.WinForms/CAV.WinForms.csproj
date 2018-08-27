@@ -1,88 +1,88 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-    <PropertyGroup>
-        <Configuration Condition=" '$(Configuration)' == '' ">DebugNet45</Configuration>
-        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-        <ProjectGuid>{DC8DBC11-CF98-47B1-9260-EF391E1CE7D3}</ProjectGuid>
-        <OutputType>Library</OutputType>
-        <AppDesignerFolder>Properties</AppDesignerFolder>
-        <RootNamespace>Cav.WinForms</RootNamespace>
-        <AssemblyName>Cav.WinForms</AssemblyName>
-        <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-        <FileAlignment>512</FileAlignment>
-        <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
-        <RestorePackages>true</RestorePackages>
-    </PropertyGroup>    
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugNet45|AnyCPU' ">
-        <DebugSymbols>true</DebugSymbols>
-        <DebugType>full</DebugType>
-        <Optimize>false</Optimize>
-        <OutputPath>..\_Build\</OutputPath>
-        <ErrorReport>prompt</ErrorReport>
-        <WarningLevel>4</WarningLevel>
-        <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-        <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-        <DefineConstants>TRACE;DEBUG;NET45</DefineConstants>
-        <Prefer32Bit>false</Prefer32Bit>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugNet461|AnyCPU'">
-        <DebugSymbols>true</DebugSymbols>
-        <DebugType>full</DebugType>
-        <Optimize>false</Optimize>
-        <OutputPath>..\_Build\</OutputPath>
-        <ErrorReport>prompt</ErrorReport>
-        <WarningLevel>4</WarningLevel>
-        <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-        <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-        <DefineConstants>TRACE;DEBUG;NET461</DefineConstants>
-        <Prefer32Bit>false</Prefer32Bit>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-        <OutputPath>..\_Build\Cav.WinForms\</OutputPath>
-        <DocumentationFile>..\_Build\Cav.WinForms\Cav.WinForms.xml</DocumentationFile>
-        <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-        <DefineConstants>
-        </DefineConstants>
-        <Optimize>true</Optimize>
-        <DebugType>pdbonly</DebugType>
-        <PlatformTarget>AnyCPU</PlatformTarget>
-        <ErrorReport>prompt</ErrorReport>
-        <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-        <Prefer32Bit>false</Prefer32Bit>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseNet45|AnyCPU'">
-        <OutputPath>..\_Build\Cav.WinForms\Net45\</OutputPath>
-        <DocumentationFile>..\_Build\Cav.WinForms\Net45\Cav.WinForms.xml</DocumentationFile>
-        <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-        <DefineConstants>NET45</DefineConstants>
-        <Optimize>true</Optimize>
-        <DebugType>pdbonly</DebugType>
-        <PlatformTarget>AnyCPU</PlatformTarget>
-        <ErrorReport>prompt</ErrorReport>
-        <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-        <Prefer32Bit>false</Prefer32Bit>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseNet461|AnyCPU'">
-        <OutputPath>..\_Build\Cav.WinForms\Net461\</OutputPath>
-        <DocumentationFile>..\_Build\Cav.WinForms\Net461\Cav.WinForms.xml</DocumentationFile>
-        <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-        <DefineConstants>NET461</DefineConstants>
-        <Optimize>true</Optimize>
-        <DebugType>pdbonly</DebugType>
-        <PlatformTarget>AnyCPU</PlatformTarget>
-        <ErrorReport>prompt</ErrorReport>
-        <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-        <Prefer32Bit>false</Prefer32Bit>
-    </PropertyGroup>
-    <PropertyGroup>
-        <SignAssembly>true</SignAssembly>
-    </PropertyGroup>
-    <PropertyGroup>
-        <AssemblyOriginatorKeyFile>Cav.snk</AssemblyOriginatorKeyFile>
-    </PropertyGroup>
-    <Choose>
-        <When Condition="'$(TargetFrameworkVersion)' == 'v4.5'">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">DebugNet45</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DC8DBC11-CF98-47B1-9260-EF391E1CE7D3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Cav.WinForms</RootNamespace>
+    <AssemblyName>Cav.WinForms</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugNet45|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\_Build\</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <DefineConstants>TRACE;DEBUG;NET45</DefineConstants>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugNet461|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\_Build\</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <DefineConstants>TRACE;DEBUG;NET461</DefineConstants>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>..\_Build\Cav.WinForms\</OutputPath>
+    <DocumentationFile>..\_Build\Cav.WinForms\Cav.WinForms.xml</DocumentationFile>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <DefineConstants>
+    </DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseNet45|AnyCPU'">
+    <OutputPath>..\_Build\Cav.WinForms\Net45\</OutputPath>
+    <DocumentationFile>..\_Build\Cav.WinForms\Net45\Cav.WinForms.xml</DocumentationFile>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <DefineConstants>NET45</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseNet461|AnyCPU'">
+    <OutputPath>..\_Build\Cav.WinForms\Net461\</OutputPath>
+    <DocumentationFile>..\_Build\Cav.WinForms\Net461\Cav.WinForms.xml</DocumentationFile>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <DefineConstants>NET461</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>Cav.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <Choose>
+    <When Condition="'$(TargetFrameworkVersion)' == 'v4.5'">
             <ItemGroup>
                 <Reference Include="Cav.Core, Version=4.0.0.0">
                     <HintPath>..\packages\Cav.Core.4.0.0\lib\net45\Cav.Core.dll</HintPath>
@@ -91,76 +91,76 @@
                 </Reference>
             </ItemGroup>
         </When>
-        <When Condition="'$(TargetFrameworkVersion)' == 'v4.6.1'">
-            <ItemGroup>
-                <Reference Include="Cav.Core, Version=4.0.0.0">
-                    <HintPath>..\packages\Cav.Core.4.0.0\lib\net461\Cav.Core.dll</HintPath>
-                    <SpecificVersion>False</SpecificVersion>
-                    <Private>False</Private>
-                </Reference>
-            </ItemGroup>
-        </When>
-        <!--
+    <When Condition="'$(TargetFrameworkVersion)' == 'v4.6.1'">
+      <ItemGroup>
+        <Reference Include="Cav.Core, Version=4.0.0.0">
+          <HintPath>..\packages\Cav.Core.4.0.0\lib\net461\Cav.Core.dll</HintPath>
+          <SpecificVersion>False</SpecificVersion>
+          <Private>False</Private>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <!--
         <Otherwise>
             <ItemGroup>
                 <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
             </ItemGroup>
         </Otherwise>
         -->
-    </Choose>
-    <ItemGroup>
-        <Reference Include="System" />
-        <Reference Include="System.Core" />
-        <Reference Include="System.Drawing" />
-        <Reference Include="System.Windows.Forms" />
-        <Reference Include="System.Xml.Linq" />
-        <Reference Include="System.Data.DataSetExtensions" />
-        <Reference Include="Microsoft.CSharp" />
-        <Reference Include="System.Data" />
-        <Reference Include="System.Xml" />
-    </ItemGroup>
-    <ItemGroup>
-        <Compile Include="BaseClases\DialogFormBase.cs">
-            <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="BaseClases\DialogFormBase.Designer.cs">
-            <DependentUpon>DialogFormBase.cs</DependentUpon>
-        </Compile>
-        <Compile Include="BaseClases\UserControlBase.cs">
-            <SubType>UserControl</SubType>
-        </Compile>
-        <Compile Include="BaseClases\UserControlBase.Designer.cs">
-            <DependentUpon>UserControlBase.cs</DependentUpon>
-        </Compile>
-        <Compile Include="Dialogs.cs" />
-        <Compile Include="InputBoxForm.cs">
-            <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="InputBoxForm.Designer.cs">
-            <DependentUpon>InputBoxForm.cs</DependentUpon>
-        </Compile>
-        <Compile Include="Properties\AssemblyInfo.cs" />
-    </ItemGroup>
-    <ItemGroup>
-        <None Include="Cav.snk" />
-        <None Include="packages.config" />
-    </ItemGroup>
-    <ItemGroup>
-        <EmbeddedResource Include="BaseClases\DialogFormBase.resx">
-            <DependentUpon>DialogFormBase.cs</DependentUpon>
-        </EmbeddedResource>
-        <EmbeddedResource Include="BaseClases\UserControlBase.resx">
-            <DependentUpon>UserControlBase.cs</DependentUpon>
-        </EmbeddedResource>
-        <EmbeddedResource Include="InputBoxForm.resx">
-            <DependentUpon>InputBoxForm.cs</DependentUpon>
-        </EmbeddedResource>
-    </ItemGroup>
-    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-    <PropertyGroup>
-        <PostBuildEvent>if $(ConfigurationName)==Release PowerShell -NoProfile -ExecutionPolicy Bypass -Command "&amp; '$(SolutionDir)nuspec\CreatePackage.ps1' -ProjectPath '$(ProjectPath)' -MSBuid '$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)'</PostBuildEvent>
-    </PropertyGroup>
-    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  </Choose>
+  <ItemGroup>    
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BaseClases\DialogFormBase.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BaseClases\DialogFormBase.Designer.cs">
+      <DependentUpon>DialogFormBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BaseClases\UserControlBase.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="BaseClases\UserControlBase.Designer.cs">
+      <DependentUpon>UserControlBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs.cs" />
+    <Compile Include="InputBoxForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="InputBoxForm.Designer.cs">
+      <DependentUpon>InputBoxForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Cav.snk" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="BaseClases\DialogFormBase.resx">
+      <DependentUpon>DialogFormBase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BaseClases\UserControlBase.resx">
+      <DependentUpon>UserControlBase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InputBoxForm.resx">
+      <DependentUpon>InputBoxForm.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>if $(ConfigurationName)==Release PowerShell -NoProfile -ExecutionPolicy Bypass -Command "&amp; '$(SolutionDir)nuspec\CreatePackage.ps1' -ProjectPath '$(ProjectPath)' -MSBuid '$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)'</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

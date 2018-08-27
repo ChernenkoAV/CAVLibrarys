@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -56,7 +57,7 @@ namespace Cav.Tfs
     /// <summary>
     /// Представление рабочего элемента
     /// </summary>
-    public class WorkItem
+    public sealed class WorkItem
     {
         internal WorkItem() { }
         /// <summary>
@@ -90,10 +91,7 @@ namespace Cav.Tfs
     /// </summary>
     public class QueryItemNode
     {
-        internal QueryItemNode()
-        {
-            ChildNodes = new List<QueryItemNode>();
-        }
+        internal QueryItemNode() { }
 
         /// <summary>
         /// Элемент является каталогом
@@ -113,7 +111,7 @@ namespace Cav.Tfs
         /// <summary>
         /// Дочерние элементы
         /// </summary>
-        public List<QueryItemNode> ChildNodes { get; private set; }
+        public ReadOnlyCollection<QueryItemNode> ChildNodes { get; internal set; }
         internal Guid? QueryID { get; set; }
 
         /// <summary>
@@ -129,49 +127,51 @@ namespace Cav.Tfs
     /// <summary>
     /// Объект, содержащий WorkspaceInfo
     /// </summary>
-    public interface IWorkspaceInfo { }
-    internal class WorkspaceInfo : IWorkspaceInfo
+    public sealed class WorkspaceInfo
     {
+        internal WorkspaceInfo() { }
         internal Object WSI { get; set; }
     }
 
     /// <summary>
     /// Объект, содержащий VersionControlServer
     /// </summary>
-    public interface IVersionControlServer { }
-    internal class VersionControlServer : IVersionControlServer
+    public sealed class VersionControlServer
     {
+        internal VersionControlServer() { }
         internal Object VCS { get; set; }
     }
     /// <summary>
     /// Объект, содержащий Workspace
     /// </summary>
-    public interface IWorkspace { }
-    internal class Workspace : IWorkspace
+    public sealed class Workspace
     {
+        internal Workspace() { }
         internal Object WS { get; set; }
     }
     /// <summary>
     /// Объект, содержащий VersionSpec
-    /// </summary>
-    public interface IVersionSpec { }
-    internal class VersionSpec : IVersionSpec
+    /// </summary>    
+    public sealed class VersionSpec
     {
+        internal VersionSpec() { }
         internal Object VS { get; set; }
     }
     /// <summary>
     /// Объект, содержащий QueryHistoryParameters
     /// </summary>
-    public interface IQueryHistoryParameters { }
-    internal class QueryHistoryParameters : IQueryHistoryParameters
+    public sealed class QueryHistoryParameters
     {
+        internal QueryHistoryParameters() { }
         internal Object QHP { get; set; }
     }
     /// <summary>
     /// Информация об Changeset
     /// </summary>
-    public struct Changeset
+    public sealed class Changeset
     {
+        internal Changeset() { }
+
         /// <summary>
         /// ChangesetId
         /// </summary>
@@ -184,16 +184,18 @@ namespace Cav.Tfs
     /// <summary>
     /// Объект, содержащий PendingChange
     /// </summary>
-    public interface IPendingChange { }
-    internal class PendingChange : IPendingChange
+    public sealed class PendingChange
     {
+        internal PendingChange() { }
         internal Object PC { get; set; }
     }
     /// <summary>
     /// Информация о сопоставлении пути на сервере и локальном пути
     /// </summary>
-    public class WorkingFolder
+    public sealed class WorkingFolder
     {
+        internal WorkingFolder() { }
+
         /// <summary>
         /// Элемент на сервере
         /// </summary>
@@ -207,6 +209,29 @@ namespace Cav.Tfs
         /// </summary>
         public bool IsCloaked { get; internal set; }
     }
+
+    /// <summary>
+    /// Данные шельвы
+    /// </summary>
+    public sealed class ShelveSet
+    {
+        internal ShelveSet() { }
+
+        /// <summary>
+        /// Комментарий
+        /// </summary>
+        public String Comment { get; internal set; }
+        /// <summary>
+        /// Наименование
+        /// </summary>
+        public string Name { get; internal set; }
+
+        /// <summary>
+        /// ID рабочих элементов, ассоциированных с шельвой
+        /// </summary>
+        public ReadOnlyCollection<int> AssociatedWorkItemsIDs { get; internal set; }
+    }
+
 
     #endregion
 
@@ -306,18 +331,18 @@ namespace Cav.Tfs
         /// </summary>
         /// <param name="localFileName">Локальный элемент</param>
         /// <returns>Объект, содержащий информацию о рабочей области</returns>
-        public IWorkspaceInfo WorkspaceInfoGet(String localFileName)
+        public WorkspaceInfo WorkspaceInfoGet(String localFileName)
         {
             return new WorkspaceInfo() { WSI = WorkstationGet().InvokeMethod("GetLocalWorkspaceInfo", localFileName) };
         }
         /// <summary>
         /// Получение экземпляра управления СКВ
         /// </summary>
-        /// <param name="workspaceInfo">Объект, содержащий информацию о рабочей области</param>
+        /// <param name="wsi">Объект, содержащий информацию о рабочей области</param>
         /// <returns>экземпляр СКВ</returns>
-        public IVersionControlServer VersionControlServerGet(IWorkspaceInfo workspaceInfo)
+        public VersionControlServer VersionControlServerGet(WorkspaceInfo wsi)
         {
-            Uri servUri = (Uri)((WorkspaceInfo)workspaceInfo).WSI.GetPropertyValue("ServerUri");
+            Uri servUri = (Uri)wsi.WSI.GetPropertyValue("ServerUri");
             return VersionControlServerGet(servUri);
         }
         /// <summary>
@@ -325,7 +350,7 @@ namespace Cav.Tfs
         /// </summary>
         /// <param name="serverUri">Uri к серверу TFS</param>
         /// <returns>экземпляр СКВ</returns>
-        public IVersionControlServer VersionControlServerGet(Uri serverUri)
+        public VersionControlServer VersionControlServerGet(Uri serverUri)
         {
             var tpc = TeamProjectCollectionGet(serverUri);
             Type vcsType = tfsVersionControlClientAssembly.
@@ -342,10 +367,10 @@ namespace Cav.Tfs
         /// <param name="vcs">СКВ</param>
         /// <param name="wsi">Объект, содержащий информацию о рабочей области</param>
         /// <returns>Рабочая область</returns>
-        public IWorkspace WorkspaceGet(IVersionControlServer vcs, IWorkspaceInfo wsi)
+        public Workspace WorkspaceGet(VersionControlServer vcs, WorkspaceInfo wsi)
         {
             var res = new Workspace();
-            res.WS = ((VersionControlServer)vcs).VCS.InvokeMethod("GetWorkspace", ((WorkspaceInfo)wsi).WSI);
+            res.WS = vcs.VCS.InvokeMethod("GetWorkspace", wsi.WSI);
             return res;
         }
         /// <summary>
@@ -353,10 +378,10 @@ namespace Cav.Tfs
         /// </summary>
         /// <param name="ws">Рабочая область</param>
         /// <returns></returns>
-        public IVersionSpec WorkspaceVersionSpecCreate(IWorkspace ws)
+        public VersionSpec WorkspaceVersionSpecCreate(Workspace ws)
         {
             var res = new VersionSpec();
-            res.VS = tfsVersionControlClientAssembly.CreateInstance("WorkspaceVersionSpec", ((Workspace)ws).WS);
+            res.VS = tfsVersionControlClientAssembly.CreateInstance("WorkspaceVersionSpec", ws.WS);
             return res;
         }
         /// <summary>
@@ -365,13 +390,13 @@ namespace Cav.Tfs
         /// <param name="localFileName">Путь к локальному элементу (файл или папка)</param>
         /// <param name="vs">Объект, содержащий VersionSpec (опеределение конкретной версии)</param>
         /// <returns>Сформированный объект запроса к истории</returns>
-        public IQueryHistoryParameters QueryHistoryParametersCreate(String localFileName, IVersionSpec vs)
+        public QueryHistoryParameters QueryHistoryParametersCreate(String localFileName, VersionSpec vs)
         {
             var RecursionTypeFull = tfsVersionControlClientAssembly.GetEnumValue("RecursionType", "Full");
             var res = new QueryHistoryParameters();
             res.QHP = tfsVersionControlClientAssembly.CreateInstance("QueryHistoryParameters", localFileName, RecursionTypeFull);
-            res.QHP.SetPropertyValue("ItemVersion", ((VersionSpec)vs).VS);
-            res.QHP.SetPropertyValue("VersionEnd", ((VersionSpec)vs).VS);
+            res.QHP.SetPropertyValue("ItemVersion", vs.VS);
+            res.QHP.SetPropertyValue("VersionEnd", vs.VS);
             res.QHP.SetPropertyValue("MaxResults", 1);
             return res;
         }
@@ -381,9 +406,9 @@ namespace Cav.Tfs
         /// <param name="vsc">СКВ</param>
         /// <param name="qhp">Параметры запроса</param>
         /// <returns>Информация о наборе изменений</returns>
-        public Changeset ChangesetGet(IVersionControlServer vsc, IQueryHistoryParameters qhp)
+        public Changeset ChangesetGet(VersionControlServer vsc, QueryHistoryParameters qhp)
         {
-            var cscolobj = ((IEnumerable)((VersionControlServer)vsc).VCS.InvokeMethod("QueryHistory", ((QueryHistoryParameters)qhp).QHP)).GetEnumerator();
+            var cscolobj = ((IEnumerable)vsc.VCS.InvokeMethod("QueryHistory", qhp.QHP)).GetEnumerator();
             object csobj = null;
             if (cscolobj.Current == null)
                 cscolobj.MoveNext();
@@ -402,13 +427,13 @@ namespace Cav.Tfs
         /// <param name="workspaceComment">Комментарий к рабочей области</param>
         /// <param name="workspaceLocationOnServer">Локация рабочей области(сервер либо локально)</param>
         /// <returns></returns>
-        public IWorkspace WorkspaceCreate(
-            IVersionControlServer vcs,
+        public Workspace WorkspaceCreate(
+            VersionControlServer vcs,
             String workspaceName,
             String workspaceComment,
             Boolean workspaceLocationOnServer)
         {
-            var tpc = ((VersionControlServer)vcs).VCS.GetPropertyValue("TeamProjectCollection");
+            var tpc = vcs.VCS.GetPropertyValue("TeamProjectCollection");
             var cwp = tfsVersionControlClientAssembly.CreateInstance("CreateWorkspaceParameters", workspaceName);
             cwp.SetPropertyValue("Comment", workspaceComment);
             cwp.SetPropertyValue("OwnerName", tpc.GetPropertyValue("AuthorizedIdentity").GetPropertyValue("UniqueName"));
@@ -422,7 +447,7 @@ namespace Cav.Tfs
             cwp.SetPropertyValue("Location", localion);
 
             var res = new Workspace();
-            res.WS = ((VersionControlServer)vcs).VCS.InvokeMethod("CreateWorkspace", cwp);
+            res.WS = vcs.VCS.InvokeMethod("CreateWorkspace", cwp);
             return res;
         }
         /// <summary>
@@ -432,20 +457,20 @@ namespace Cav.Tfs
         /// <param name="serverPath">Путь на сервере СКВ</param>
         /// <param name="localPath">Локальный путь</param>
         public void WorkspaceMap(
-            IWorkspace ws,
+            Workspace ws,
             string serverPath,
             string localPath
             )
         {
-            ((Workspace)ws).WS.InvokeMethod("Map", serverPath, localPath);
+            ws.WS.InvokeMethod("Map", serverPath, localPath);
         }
         /// <summary>
         /// Удаление рабочей области
         /// </summary>
         /// <param name="ws">Рабочая область</param>
-        public void WorkspaceDelete(IWorkspace ws)
+        public void WorkspaceDelete(Workspace ws)
         {
-            ((Workspace)ws).WS.InvokeMethod("Delete");
+            ws.WS.InvokeMethod("Delete");
         }
 
 
@@ -454,9 +479,9 @@ namespace Cav.Tfs
         /// </summary>
         /// <param name="ws">Рабочая область</param>
         /// <param name="localPathFile">Полный путь файла, находящийся в папке, замапленой в рабочей области</param>
-        public void WorkspaceAddFile(IWorkspace ws, string localPathFile)
+        public void WorkspaceAddFile(Workspace ws, string localPathFile)
         {
-            ((Workspace)ws).WS.InvokeMethod("PendAdd", localPathFile);
+            ws.WS.InvokeMethod("PendAdd", localPathFile);
         }
 
         /// <summary>
@@ -465,9 +490,9 @@ namespace Cav.Tfs
         /// <param name="ws">Рабояа область</param>
         /// <param name="localPathFile">Полный путь файла, находящийся в папке, замапленой в рабочей области</param>
         /// <returns>true - успешно, false - неуспешно</returns>
-        public bool WorkspaceCheckOut(IWorkspace ws, string localPathFile)
+        public bool WorkspaceCheckOut(Workspace ws, string localPathFile)
         {
-            return (int)((Workspace)ws).WS.InvokeMethod("PendEdit", localPathFile) != 0;
+            return (int)ws.WS.InvokeMethod("PendEdit", localPathFile) != 0;
         }
 
         /// <summary>
@@ -476,13 +501,13 @@ namespace Cav.Tfs
         /// <param name="ws">Рабоча область</param>
         /// <param name="commentOnCheckIn">Комментарий для изменения</param>
         /// <param name="numberTasks">Номера задач для чекина</param>
-        public void WorkspaceCheckIn(IWorkspace ws, string commentOnCheckIn, List<int> numberTasks = null)
+        public void WorkspaceCheckIn(Workspace ws, string commentOnCheckIn, List<int> numberTasks = null)
         {
             var gpc = WorkspaceGetPendingChanges(ws);
             var wscp = tfsVersionControlClientAssembly.CreateInstance("WorkspaceCheckInParameters", gpc.PC, commentOnCheckIn);
             if ((numberTasks ?? new List<int>()).Any())
             {
-                var tpc = ((Workspace)ws).WS
+                var tpc = ws.WS
                     .GetPropertyValue("VersionControlServer")
                     .GetPropertyValue("TeamProjectCollection");
                 Type workItemStoreType = tfsWorkItemTrackingClientAssembly.
@@ -512,36 +537,36 @@ namespace Cav.Tfs
                 wscp.SetPropertyValue("AssociatedWorkItems", associatedWorkItemsArray);
             }
 
-            ((Workspace)ws).WS.InvokeMethod("CheckIn", wscp);
+            ws.WS.InvokeMethod("CheckIn", wscp);
         }
 
-        private PendingChange WorkspaceGetPendingChanges(IWorkspace ws)
+        private PendingChange WorkspaceGetPendingChanges(Workspace ws)
         {
             var res = new PendingChange();
-            res.PC = ((Workspace)ws).WS.InvokeMethod("GetPendingChanges");
+            res.PC = ws.WS.InvokeMethod("GetPendingChanges");
             return res;
         }
         /// <summary>
         /// Отмена изменений в рабочей области
         /// </summary>
         /// <param name="ws">Рабочая область</param>
-        public void WorkspaceUndo(IWorkspace ws)
+        public void WorkspaceUndo(Workspace ws)
         {
             var pc = WorkspaceGetPendingChanges(ws);
             int cnt = (int)pc.PC.GetPropertyValue("Length");
             if (cnt == 0)
                 return;
-            ((Workspace)ws).WS.InvokeMethod("Undo", pc.PC);
+            ws.WS.InvokeMethod("Undo", pc.PC);
         }
         /// <summary>
         /// Получение элементов сопоставления в рабочей области
         /// </summary>
         /// <param name="ws">Опбочая область</param>
         /// <returns>Коллекция, описывающая элементы сопоставления</returns>
-        public List<WorkingFolder> WorkspaceFoldersGet(IWorkspace ws)
+        public ReadOnlyCollection<WorkingFolder> WorkspaceFoldersGet(Workspace ws)
         {
             var res = new List<WorkingFolder>();
-            var flds = ((Workspace)ws).WS.GetPropertyValue("Folders") as IEnumerable;
+            var flds = ws.WS.GetPropertyValue("Folders") as IEnumerable;
             foreach (var crnt in flds)
             {
                 var fi = new WorkingFolder();
@@ -551,7 +576,7 @@ namespace Cav.Tfs
                 res.Add(fi);
             }
 
-            return res;
+            return new ReadOnlyCollection<WorkingFolder>(res);
         }
         /// <summary>
         /// Блокировка элемента
@@ -560,13 +585,13 @@ namespace Cav.Tfs
         /// <param name="serverPathItem">Пусть на сервере СКВ</param>
         /// <param name="lockLevel">Уровенб блокировки</param>
         /// <returns>Успешна ли блокировка</returns>
-        public bool WorkspaceLockFile(IWorkspace ws, string serverPathItem, LockLevel lockLevel)
+        public bool WorkspaceLockFile(Workspace ws, string serverPathItem, LockLevel lockLevel)
         {
             bool res = false;
             try
             {
                 var llenum = tfsVersionControlClientAssembly.GetEnumValue("LockLevel", lockLevel.ToString());
-                res = (int)((Workspace)ws).WS.InvokeMethod("SetLock", serverPathItem, llenum) != 0;
+                res = (int)ws.WS.InvokeMethod("SetLock", serverPathItem, llenum) != 0;
             }
             catch
             {
@@ -580,7 +605,7 @@ namespace Cav.Tfs
         /// <param name="ws">Рабочая область</param>
         /// <param name="serverItemPath">путь(элемент) на сервере СКВ</param>
         /// <returns>Количество полученных элементов</returns>
-        public long WorkspaceGetLastItem(IWorkspace ws, String serverItemPath)
+        public long WorkspaceGetLastItem(Workspace ws, String serverItemPath)
         {
             var RecursionTypeFull = tfsVersionControlClientAssembly.GetEnumValue("RecursionType", "Full");
             var ItemSpec = tfsVersionControlClientAssembly.CreateInstance("ItemSpec", serverItemPath, RecursionTypeFull);
@@ -595,7 +620,7 @@ namespace Cav.Tfs
             int GetOptionsGetAll = (int)tfsVersionControlClientAssembly.GetEnumValue("GetOptions", "GetAll");
             int GetOptionsOverwrit = (int)tfsVersionControlClientAssembly.GetEnumValue("GetOptions", "Overwrite");
             var GetOptionsValue = Enum.ToObject(GetOptionsType, GetOptionsGetAll + GetOptionsOverwrit);
-            var GetLastFile = ((Workspace)ws).WS.InvokeMethod("Get", GetRequest, GetOptionsValue);
+            var GetLastFile = ws.WS.InvokeMethod("Get", GetRequest, GetOptionsValue);
 
             return (long)GetLastFile.GetPropertyValue("NumFiles");
         }
@@ -622,9 +647,9 @@ namespace Cav.Tfs
         /// <param name="vcs">СКВ</param>
         /// <param name="initalPath">Путь для инизиализации диалога</param>
         /// <returns>Выбранный путь на сервере. Иначе null.</returns>
-        public String ShowDialogChooseServerFolder(IWin32Window parentWindow, IVersionControlServer vcs, String initalPath)
+        public String ShowDialogChooseServerFolder(IWin32Window parentWindow, VersionControlServer vcs, String initalPath)
         {
-            var dcsf = tfsVersionControlControlsCommonAssembly.CreateInstance("DialogChooseServerFolder", ((VersionControlServer)vcs).VCS, initalPath);
+            var dcsf = tfsVersionControlControlsCommonAssembly.CreateInstance("DialogChooseServerFolder", vcs.VCS, initalPath);
 
             dcsf.SetPropertyValue("ShowInTaskbar", false);
             var dr = (DialogResult)dcsf.InvokeMethod("ShowDialog", parentWindow);
@@ -639,15 +664,15 @@ namespace Cav.Tfs
         /// <param name="parentWindow">Родительское окно</param>
         /// <param name="vcs">СКВ</param>
         /// <returns>Выбранный элемент сервере. Иначе null.</returns>
-        public SelItem ShowDialogChooseItem(IWin32Window parentWindow, IVersionControlServer vcs)
+        public SelItem ShowDialogChooseItem(IWin32Window parentWindow, VersionControlServer vcs)
         {
             var typeDialog = tfsVersionControlControlsAssembly.GetTypes().Single(x => x.Name == "DialogChooseItem");
             var consInfo = typeDialog.GetConstructor(
                                    BindingFlags.Instance | BindingFlags.NonPublic,
                                    null,
-                                   new Type[] { ((VersionControlServer)vcs).VCS.GetType() },
+                                   new Type[] { vcs.VCS.GetType() },
                                    null);
-            var instDialog = (Form)consInfo.Invoke(new object[] { ((VersionControlServer)vcs).VCS });
+            var instDialog = (Form)consInfo.Invoke(new object[] { vcs.VCS });
             var dr = instDialog.ShowDialog(parentWindow);
             if (dr != DialogResult.OK)
                 return null;
@@ -669,11 +694,11 @@ namespace Cav.Tfs
         /// <param name="serverUri">Uri к TFS</param>
         /// <param name="serverItemPath">Путь к элементу на сервере СКВ</param>
         /// <returns></returns>
-        public List<QueryItemNode> QueryItemsGet(Uri serverUri, String serverItemPath)
+        public ReadOnlyCollection<QueryItemNode> QueryItemsGet(Uri serverUri, String serverItemPath)
         {
             var res = new List<QueryItemNode>();
             var vc = VersionControlServerGet(serverUri);
-            var projectNoServerPath = ((VersionControlServer)vc).VCS.InvokeMethod("GetTeamProjectForServerPath", serverItemPath);
+            var projectNoServerPath = vc.VCS.InvokeMethod("GetTeamProjectForServerPath", serverItemPath);
             String projectName = projectNoServerPath.GetPropertyValue("Name") as String;
 
             var tpc = TeamProjectCollectionGet(serverUri);
@@ -711,6 +736,8 @@ namespace Cav.Tfs
 
                     if (qin.IsFolder)
                     {
+                        List<QueryItemNode> childEls = new List<QueryItemNode>();
+
                         foreach (var itemInfolder in folder)
                         {
 
@@ -719,8 +746,10 @@ namespace Cav.Tfs
                                 continue;
                             var childEl = recSeek(itemInfolder);
                             if (childEl != null)
-                                qin.ChildNodes.Add(childEl);
+                                childEls.Add(childEl);
                         }
+
+                        qin.ChildNodes = new ReadOnlyCollection<QueryItemNode>(childEls);
                     }
                     else
                     {
@@ -745,7 +774,7 @@ namespace Cav.Tfs
                     res.Add(nitmNode);
             }
 
-            return res;
+            return new ReadOnlyCollection<QueryItemNode>(res);
         }
 
         /// <summary>
@@ -754,12 +783,12 @@ namespace Cav.Tfs
         /// <param name="serverUri">Uri сервера TFS</param>
         /// <param name="queryitem">экземпляр запроса</param>
         /// <returns>Коллекция рабочих элементов</returns>
-        public List<WorkItem> WorkItemsFromQueryGet(Uri serverUri, QueryItemNode queryitem)
+        public ReadOnlyCollection<WorkItem> WorkItemsFromQueryGet(Uri serverUri, QueryItemNode queryitem)
         {
             var res = new List<WorkItem>();
 
             if (queryitem.IsFolder)
-                return res;
+                return new ReadOnlyCollection<WorkItem>(res);
 
             var tpc = TeamProjectCollectionGet(serverUri);
             Type workItemStoreType = tfsWorkItemTrackingClientAssembly.
@@ -791,7 +820,7 @@ namespace Cav.Tfs
                 res.Add(wi);
             }
 
-            return res;
+            return new ReadOnlyCollection<WorkItem>(res);
 
         }
 
@@ -822,10 +851,42 @@ namespace Cav.Tfs
         /// <param name="vcs">СКВ</param>
         /// <param name="serverPath">Путь к фойлу на серврере СКВ</param>
         /// <param name="localFile">Путь к локальному расположению файла</param>
-        public void VersionControlServerDownloadFile(IVersionControlServer vcs, String serverPath, String localFile)
+        public void VersionControlServerDownloadFile(VersionControlServer vcs, String serverPath, String localFile)
         {
-            ((VersionControlServer)vcs).VCS.InvokeMethod("DownloadFile", serverPath, localFile);
+            vcs.VCS.InvokeMethod("DownloadFile", serverPath, localFile);
         }
+
+        /// <summary>
+        /// Получение шельв текущего юзера
+        /// </summary>
+        /// <returns></returns>
+        public ReadOnlyCollection<ShelveSet> QueryShelvesetsCurrenUser(VersionControlServer vcs)
+        {
+            var ssts = vcs.VCS.InvokeMethod("QueryShelvesets", (string)null, ".") as IEnumerable;
+
+            var res = new List<ShelveSet>();
+
+            foreach (var item in ssts)
+            {
+                var ss = new ShelveSet();
+                ss.Comment = item.GetPropertyValue("Comment") as String;
+                ss.Name = item.GetPropertyValue("Name") as String;
+
+                var wiids = new List<int>();
+
+                var awis = item.GetPropertyValue("AssociatedWorkItems") as IEnumerable;
+                foreach (var awi in awis)
+                    wiids.Add((int)awi.GetPropertyValue("Id"));
+
+                ss.AssociatedWorkItemsIDs = new ReadOnlyCollection<int>(wiids);
+
+                res.Add(ss);
+            }
+
+            return new ReadOnlyCollection<ShelveSet>(res);
+        }
+
+
     }
 }
 

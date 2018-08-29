@@ -887,6 +887,73 @@ namespace Cav.Tfs
             return new ReadOnlyCollection<ShelveSet>(res);
         }
 
+        /// <summary>
+        /// Положить изменения рабочей область в шельву
+        /// </summary>
+        /// <param name="ws"></param>
+        /// <param name="nameShelvset"></param>
+        /// <param name="commentShelvset"></param>
+        /// <param name="numberTasks"></param>
+        public void WorkspaceCreateShelveset(Workspace ws, string nameShelvset, string commentShelvset, List<int> numberTasks = null)
+        {
+        //    if (nameShelvset.IsNullOrWhiteSpace())
+        //        throw new ArgumentNullException(nameof(nameShelvset));
+
+        //    numberTasks = numberTasks ?? new List<int>();
+
+        //    var pcs = ws.WS.InvokeMethod("GetPendingChanges") as ICollection;
+
+        //    if (pcs.Count == 0)
+        //        return;
+
+        //    var vcs = ws.WS.GetPropertyValue("VersionControlServer");
+        //    var AuthenticatedUser = tfsVersionControlCommonDll.RepositoryConstants.AuthenticatedUser
+
+        //    var newShelveseset = tfsVersionControlClientAssembly.CreateInstance("Shelveset", vcs, nameShelvset,
+
+
+        //var assTask = new List<object>();
+
+        //    if (numberTasks.Count > 0)
+        //    {
+
+        //        var associate = tfsVersionControlClientAssembly.GetEnumValue("WorkItemCheckinAction", "Associate");
+
+        //        Type workItemStoreType = tfsWorkItemTrackingClientAssembly.
+        //           ExportedTypes.Single(x => x.Name == "WorkItemStore");
+
+        //        var wis = vcs.GetPropertyValue("TeamProjectCollection").InvokeMethod("GetService", workItemStoreType);
+
+        //        foreach (var id in numberTasks)
+        //        {
+
+
+        //        }
+        //    }
+
+
+        //    //////////////////////////////////////
+        //    Type workItemCheckinInfoType = tfsVersionControlClientAssembly.
+        //        ExportedTypes.Single(x => x.Name == "WorkItemCheckinInfo");
+
+        //    List<Object> associatedWorkItems = new List<object>();
+        //    foreach (var idTask in numberTasks)
+        //    {
+        //        var wim = wis.InvokeMethod("GetWorkItem", idTask);
+        //        var wici = tfsVersionControlClientAssembly.CreateInstance("WorkItemCheckinInfo", wim, associate);
+        //        associatedWorkItems.Add(wici);
+        //    }
+
+        //    Array associatedWorkItemsArray = Array.CreateInstance(workItemCheckinInfoType, associatedWorkItems.Count);
+
+        //    for (int i = 0; i < associatedWorkItems.Count; i++)
+        //        associatedWorkItemsArray.SetValue(Convert.ChangeType(associatedWorkItems[i], workItemCheckinInfoType), i);
+
+
+        //    wscp.SetPropertyValue("AssociatedWorkItems", associatedWorkItemsArray);
+            ///////////////////////////////////////
+
+        }
 
     }
 }

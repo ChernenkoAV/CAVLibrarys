@@ -20,16 +20,23 @@ namespace Cav.ReflectHelpers
             return obj.GetType().GetProperty(propertyName).GetValue(obj);
         }
         /// <summary>
-        /// Получение значения статического свойства
+        /// Получение значения статического свойства / константного поля
         /// </summary>
         /// <param name="asm">Сборка, сожержащая тип</param>
         /// <param name="className">Имя класса</param>
-        /// <param name="propertyName">Имя свойства</param>
+        /// <param name="namePropertyOrField">Имя свойства или поля</param>
         /// <returns></returns>
-        public static Object GetStaticPropertyValue(this Assembly asm, String className, String propertyName)
+        public static Object GetStaticOrConstPropertyOrFieldValue(this Assembly asm, String className, String namePropertyOrField)
         {
-            return asm.ExportedTypes
-                .Single(x => x.Name == className || x.FullName == className).GetProperty(propertyName).GetValue(null);
+            var type = asm.ExportedTypes.Single(x => x.Name == className || x.FullName == className);
+            Object res = null;
+            var prop = type.GetProperty(namePropertyOrField);
+            if (prop != null)
+                res = prop.GetValue(null);
+            else
+                res = type.GetField(namePropertyOrField).GetValue(null);
+
+            return res;
         }
         /// <summary>
         /// Установка значения свойства

@@ -36,7 +36,7 @@ namespace Cav.DigitalSignature
                 lock (lockObj)
                 {
                     var assly = Assembly.Load("CryptoPro.Sharpei.ServiceModel, Version=1.4.0.1, Culture=neutral, PublicKeyToken=473b8c5086e795f5, processorArchitecture=MSIL");
-                    _criptoProBasicGostObsolete = (SecurityAlgorithmSuite)assly.GetStaticPropertyValue("GostAlgorithmSuite", "BasicGostObsolete");
+                    _criptoProBasicGostObsolete = (SecurityAlgorithmSuite)assly.GetStaticOrConstPropertyOrFieldValue("GostAlgorithmSuite", "BasicGostObsolete");
                 }
 
 

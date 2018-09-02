@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 
@@ -38,6 +40,65 @@ namespace Cav.ReflectHelpers
 
             return res;
         }
+
+        /// <summary>
+        /// Получение значений статических свойств коллекцией
+        /// </summary>
+        /// <param name="type">Просматреваемый тип</param>
+        /// <param name="typeFields">Тип полей для коллекции</param>
+        /// <returns></returns>
+        public static ReadOnlyCollection<Object> GetStaticPropertys(this Type type, Type typeFields)
+        {
+            List<Object> res = new List<object>();
+
+            var flds = type.GetProperties(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+            foreach (var fld in flds)
+                res.Add(fld.GetValue(null));
+
+            return new ReadOnlyCollection<object>(res);
+
+        }
+
+        /// <summary>
+        /// Получение значений статических свойств коллекцией
+        /// </summary>
+        /// <typeparam name="T">Тип полей для коллекции</typeparam>
+        /// <param name="type">Просматреваемый тип</param>
+        /// <returns></returns>
+        public static ReadOnlyCollection<T> GetStaticPropertys<T>(this Type type)
+        {
+            return new ReadOnlyCollection<T>(type.GetStaticPropertys(typeof(T)).Cast<T>().ToArray());
+        }
+
+        /// <summary>
+        /// Получение значений статических полей коллекцией
+        /// </summary>
+        /// <param name="type">Просматреваемый тип</param>
+        /// <param name="typeFields">Тип полей для коллекции</param>
+        /// <returns></returns>
+        public static ReadOnlyCollection<Object> GetStaticFields(this Type type, Type typeFields)
+        {
+            List<Object> res = new List<object>();
+
+            var flds = type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+            foreach (var fld in flds)
+                res.Add(fld.GetValue(null));
+
+            return new ReadOnlyCollection<object>(res);
+
+        }
+
+        /// <summary>
+        /// Получение значений статических полей коллекцией
+        /// </summary>
+        /// <typeparam name="T">Тип полей для коллекции</typeparam>
+        /// <param name="type">Просматреваемый тип</param>
+        /// <returns></returns>
+        public static ReadOnlyCollection<T> GetStaticFields<T>(this Type type)
+        {
+            return new ReadOnlyCollection<T>(type.GetStaticFields(typeof(T)).Cast<T>().ToArray());
+        }
+
         /// <summary>
         /// Установка значения свойства
         /// </summary>

@@ -311,7 +311,7 @@ namespace Cav.Tfs
         {
             if (ws != null)
                 return ws;
-            ws = tfsVersionControlClientAssembly.GetStaticPropertyValue("Workstation", "Current");
+            ws = tfsVersionControlClientAssembly.GetStaticOrConstPropertyOrFieldValue("Workstation", "Current");
             return ws;
         }
         /// <summary>
@@ -610,7 +610,7 @@ namespace Cav.Tfs
             var RecursionTypeFull = tfsVersionControlClientAssembly.GetEnumValue("RecursionType", "Full");
             var ItemSpec = tfsVersionControlClientAssembly.CreateInstance("ItemSpec", serverItemPath, RecursionTypeFull);
 
-            var VersionSpecLatest = tfsVersionControlClientAssembly.GetStaticPropertyValue("VersionSpec", "Latest");
+            var VersionSpecLatest = tfsVersionControlClientAssembly.GetStaticOrConstPropertyOrFieldValue("VersionSpec", "Latest");
 
             var GetRequest = tfsVersionControlClientAssembly.CreateInstance("GetRequest", ItemSpec, VersionSpecLatest);
 

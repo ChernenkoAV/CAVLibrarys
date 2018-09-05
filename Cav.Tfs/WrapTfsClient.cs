@@ -501,7 +501,7 @@ namespace Cav.Tfs
         /// <param name="ws">Рабоча область</param>
         /// <param name="commentOnCheckIn">Комментарий для изменения</param>
         /// <param name="numberTasks">Номера задач для чекина</param>
-        public void WorkspaceCheckIn(Workspace ws, string commentOnCheckIn, List<int> numberTasks = null)
+        public void WorkspaceCheckIn(Workspace ws, string commentOnCheckIn, IEnumerable<int> numberTasks = null)
         {
             var gpc = WorkspaceGetPendingChanges(ws);
             var wscp = tfsVersionControlClientAssembly.CreateInstance("WorkspaceCheckInParameters", gpc.PC, commentOnCheckIn);
@@ -862,8 +862,10 @@ namespace Cav.Tfs
         /// <returns></returns>
         public ReadOnlyCollection<ShelveSet> ShelvesetsCurrenUserLoad(VersionControlServer vcs)
         {
+            var authenticatedUser = tfsVersionControlCommonAssembly.GetStaticOrConstPropertyOrFieldValue("RepositoryConstants", "AuthenticatedUser");
+
             var mi = vcs.VCS.GetType().GetMethod("QueryShelvesets", new[] { typeof(string), typeof(string) });
-            var ssts = mi.Invoke(vcs.VCS, new object[] { null, "." }) as IEnumerable;
+            var ssts = mi.Invoke(vcs.VCS, new object[] { null, authenticatedUser }) as IEnumerable;
 
             var res = new List<ShelveSet>();
 
@@ -887,8 +889,97 @@ namespace Cav.Tfs
             return new ReadOnlyCollection<ShelveSet>(res);
         }
 
+        /// <summary>
+        /// Положить изменения рабочей область в шельву
+        /// </summary>
+        /// <param name="ws">Рабочая область</param>
+        /// <param name="nameShelvset">Наименование шельвы</param>
+        /// <param name="commentShelvset">Коммент к шельве</param>
+        /// <param name="numberTasks">Привязанные рабочие элементы</param>
+        public void WorkspaceShelvesetCreate(Workspace ws, string nameShelvset, string commentShelvset, IEnumerable<int> numberTasks = null)
+        {
+            if (nameShelvset.IsNullOrWhiteSpace())
+                throw new ArgumentNullException(nameof(nameShelvset));
+
+            numberTasks = numberTasks ?? new List<int>();
+
+            var pcs = ws.WS.InvokeMethod("GetPendingChanges") as ICollection;
+
+            if (pcs.Count == 0)
+                return;
+
+            var vcs = ws.WS.GetPropertyValue("VersionControlServer");
+
+            var authenticatedUser = tfsVersionControlCommonAssembly.GetStaticOrConstPropertyOrFieldValue("RepositoryConstants", "AuthenticatedUser");
+
+            var newShelveset = tfsVersionControlClientAssembly.CreateInstance("Shelveset", vcs, nameShelvset, authenticatedUser);
+
+            if (!commentShelvset.IsNullOrWhiteSpace())
+                newShelveset.SetPropertyValue("Comment", commentShelvset);
+
+            var associatedWorkItems = new List<object>();
+
+            if (numberTasks.Any())
+            {
+                var associate = tfsVersionControlClientAssembly.GetEnumValue("WorkItemCheckinAction", "Associate");
+
+                Type workItemStoreType = tfsWorkItemTrackingClientAssembly.
+                   ExportedTypes.Single(x => x.Name == "WorkItemStore");
+
+                var wis = vcs.GetPropertyValue("TeamProjectCollection").InvokeMethod("GetService", workItemStoreType);
+                Type workItemCheckinInfoType = tfsVersionControlClientAssembly.
+                    ExportedTypes.Single(x => x.Name == "WorkItemCheckinInfo");
+
+                foreach (var idTask in numberTasks)
+                {
+                    var wim = wis.InvokeMethod("GetWorkItem", idTask);
+                    var wici = tfsVersionControlClientAssembly.CreateInstance("WorkItemCheckinInfo", wim, associate);
+                    associatedWorkItems.Add(wici);
+                }
+
+                Array associatedWorkItemsArray = Array.CreateInstance(workItemCheckinInfoType, associatedWorkItems.Count);
+
+                for (int i = 0; i < associatedWorkItems.Count; i++)
+                    associatedWorkItemsArray.SetValue(Convert.ChangeType(associatedWorkItems[i], workItemCheckinInfoType), i);
+
+                newShelveset.SetPropertyValue("WorkItemInfo", associatedWorkItemsArray);
+            }
+
+            ws.WS.InvokeMethod("Shelve", newShelveset, pcs, tfsVersionControlClientAssembly.GetEnumValue("ShelvingOptions", "None"));
+
+        }
+
+        /// <summary>
+        /// Удаление шельвы
+        /// </summary>
+        /// <param name="vcs">СКВ</param>
+        /// <param name="nameShelvset">Имя шельвы</param>
+        public void ShelvesetDelete(VersionControlServer vcs, string nameShelvset)
+        {
+            var authenticatedUser = tfsVersionControlCommonAssembly.GetStaticOrConstPropertyOrFieldValue("RepositoryConstants", "AuthenticatedUser");
+
+            var mi = vcs.VCS.GetType().GetMethod("QueryShelvesets", new[] { typeof(string), typeof(string) });
+            var ssts = mi.Invoke(vcs.VCS, new object[] { null, authenticatedUser }) as IEnumerable;
+
+            object shset = null;
+
+            foreach (var item in ssts)
+            {
+                if (item.GetPropertyValue("Name") as string == nameShelvset)
+                {
+                    shset = item;
+                    break;
+                }
+            }
+
+            if (shset != null)
+                vcs.VCS.InvokeMethod("DeleteShelveset", shset);
+        }
 
     }
+
+
 }
+
 
 

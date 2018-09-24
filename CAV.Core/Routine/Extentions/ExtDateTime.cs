@@ -72,42 +72,93 @@ namespace Cav
 
         #region Возраст
 
+        #region ExistsAge
+
         /// <summary>
         /// Проверка, есть ли между датами указанное количество полных лет
         /// </summary>
-        /// <param name="data1">Дата 1</param>
-        /// <param name="data2">Дата 2</param>
+        /// <param name="date1">Дата 1</param>
+        /// <param name="date2">Дата 2</param>
         /// <param name="years">Проверяемое количество полных лет</param>
         /// <returns></returns>
-        public static bool ExistsAge(this DateTime data1, DateTime data2, int years)
+        public static bool ExistsAge(this DateTime date1, DateTime date2, int years)
         {
-            var tdl = data1.Date;
-            var tdg = data2.Date;
+            var tdl = date1.Date;
+            var tdg = date2.Date;
 
             if (tdl > tdg)
             {
                 tdg = tdl;
-                tdl = data2.Date;
+                tdl = date2.Date;
             }
 
             return tdl.AddYears(years) <= tdg;
         }
 
         /// <summary>
+        /// Проверка, есть ли между датами указанное количество полных лет
+        /// </summary>
+        /// <param name="date1">Дата 1</param>
+        /// <param name="date2">Дата 2</param>
+        /// <param name="years">Проверяемое количество полных лет</param>
+        /// <returns>false, если одна из дат = null</returns>
+        public static bool ExistsAge(this DateTime? date1, DateTime date2, int years)
+        {
+            if (!date1.HasValue)
+                return false;
+
+            return date1.Value.ExistsAge(date2, years);
+        }
+
+        /// <summary>
+        /// Проверка, есть ли между датами указанное количество полных лет
+        /// </summary>
+        /// <param name="date1">Дата 1</param>
+        /// <param name="date2">Дата 2</param>
+        /// <param name="years">Проверяемое количество полных лет</param>
+        /// <returns>false, если одна из дат = null</returns>
+        public static bool ExistsAge(this DateTime? date1, DateTime? date2, int years)
+        {
+            if (!date2.HasValue)
+                return false;
+
+            return date1.ExistsAge(date2.Value, years);
+        }
+
+        /// <summary>
+        /// Проверка, есть ли между датами указанное количество полных лет
+        /// </summary>
+        /// <param name="date1">Дата 1</param>
+        /// <param name="date2">Дата 2</param>
+        /// <param name="years">Проверяемое количество полных лет</param>
+        /// <returns>false, если одна из дат = null</returns>
+        public static bool ExistsAge(this DateTime date1, DateTime? date2, int years)
+        {
+            if (!date2.HasValue)
+                return false;
+
+            return date1.ExistsAge(date2.Value, years);
+        }
+
+        #endregion
+
+        #region FullAge
+
+        /// <summary>
         /// Количество полных лет на дату
         /// </summary>
-        /// <param name="data1">Дата 1</param>
-        /// <param name="data2">Дата 2</param>
+        /// <param name="date1">Дата 1</param>
+        /// <param name="date2">Дата 2</param>
         /// <returns>Количество полных лет</returns>
-        public static int FullAge(this DateTime data1, DateTime data2)
+        public static int FullAge(this DateTime date1, DateTime date2)
         {
-            var tdl = data1.Date;
-            var tdg = data2.Date;
+            var tdl = date1.Date;
+            var tdg = date2.Date;
 
             if (tdl > tdg)
             {
                 tdg = tdl;
-                tdl = data2.Date;
+                tdl = date2.Date;
             }
 
             var res = tdg.Year - tdl.Year;
@@ -117,6 +168,50 @@ namespace Cav
 
             return res;
         }
+
+        /// <summary>
+        /// Количество полных лет на дату
+        /// </summary>
+        /// <param name="date1">Дата 1</param>
+        /// <param name="date2">Дата 2</param>
+        /// <returns>Количество полных лет (null, если одна из дат = null)</returns>
+        public static int? FullAge(this DateTime? date1, DateTime date2)
+        {
+            if (!date1.HasValue)
+                return null;
+
+            return date1.Value.FullAge(date2);
+        }
+
+        /// <summary>
+        /// Количество полных лет на дату
+        /// </summary>
+        /// <param name="date1">Дата 1</param>
+        /// <param name="date2">Дата 2</param>
+        /// <returns>Количество полных лет (null, если одна из дат = null)</returns>
+        public static int? FullAge(this DateTime? date1, DateTime? date2)
+        {
+            if (!date2.HasValue)
+                return null;
+
+            return date1.FullAge(date2.Value);
+        }
+
+        /// <summary>
+        /// Количество полных лет на дату
+        /// </summary>
+        /// <param name="date1">Дата 1</param>
+        /// <param name="date2">Дата 2</param>
+        /// <returns>Количество полных лет (null, если одна из дат = null)</returns>
+        public static int? FullAge(this DateTime date1, DateTime? date2)
+        {
+            if (!date2.HasValue)
+                return null;
+
+            return date1.FullAge(date2.Value);
+        }
+
+        #endregion
 
         #endregion
     }

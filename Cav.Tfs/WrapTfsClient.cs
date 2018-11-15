@@ -242,6 +242,8 @@ namespace Cav.Tfs
     {
         private const string tfsClient12 = @"C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\ReferenceAssemblies\v2.0\";
         private const string tfsClient14 = @"C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\";
+        private const string tfsClient15 = @"c:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\";
+        private const string tfsClientServer15 = @"c:\Program Files\Common Files\microsoft shared\Team Foundation Server\15.0\";
         private String pathTfsdll = null;
 
         private const string tfsPrefix = "Microsoft.TeamFoundation.";
@@ -267,7 +269,9 @@ namespace Cav.Tfs
             if (tfsClientAssembly != null)
                 return;
 
-            if (Directory.Exists(tfsClient14))
+            if (Directory.Exists(tfsClient15))
+                pathTfsdll = tfsClient15;
+            if (pathTfsdll == null && Directory.Exists(tfsClient14))
                 pathTfsdll = tfsClient14;
             if (pathTfsdll == null && Directory.Exists(tfsClient12))
                 pathTfsdll = tfsClient12;
@@ -295,6 +299,10 @@ namespace Cav.Tfs
             string assemblyFile = assemblyName.Name + ".dll";
 
             var path = Path.Combine(pathTfsdll, assemblyFile);
+
+            if (!File.Exists(path))
+                path = Path.Combine(tfsClientServer15, assemblyFile);
+
             if (!File.Exists(path))
             {
                 var targetculture = assemblyName.CultureInfo.TwoLetterISOLanguageName;

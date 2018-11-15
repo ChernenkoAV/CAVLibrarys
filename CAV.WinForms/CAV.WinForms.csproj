@@ -83,18 +83,18 @@
   </PropertyGroup>
   <Choose>
     <When Condition="'$(TargetFrameworkVersion)' == 'v4.5'">
-            <ItemGroup>
-                <Reference Include="Cav.Core, Version=5.0.0.0">
-                    <HintPath>..\packages\Cav.Core.5.0.0\lib\net45\Cav.Core.dll</HintPath>
-                    <SpecificVersion>False</SpecificVersion>
-                    <Private>False</Private>
-                </Reference>
-            </ItemGroup>
-        </When>
+      <ItemGroup>
+        <Reference Include="Cav.Core, Version=5.1.0.0">
+          <HintPath>..\packages\Cav.Core.5.1.0\lib\net45\Cav.Core.dll</HintPath>
+          <SpecificVersion>False</SpecificVersion>
+          <Private>False</Private>
+        </Reference>
+      </ItemGroup>
+    </When>
     <When Condition="'$(TargetFrameworkVersion)' == 'v4.6.1'">
       <ItemGroup>
-        <Reference Include="Cav.Core, Version=5.0.0.0">
-          <HintPath>..\packages\Cav.Core.5.0.0\lib\net461\Cav.Core.dll</HintPath>
+        <Reference Include="Cav.Core, Version=5.1.0.0">
+          <HintPath>..\packages\Cav.Core.5.1.0\lib\net461\Cav.Core.dll</HintPath>
           <SpecificVersion>False</SpecificVersion>
           <Private>False</Private>
         </Reference>
@@ -108,7 +108,7 @@
         </Otherwise>
         -->
   </Choose>
-  <ItemGroup>    
+  <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />

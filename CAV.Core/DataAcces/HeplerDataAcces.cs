@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Cav.DataAcces;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq.Expressions;
-using Cav.DataAcces;
 
 namespace Cav
 {
@@ -107,7 +107,7 @@ namespace Cav
             if (val != null && (returnType.IsEnum || (nullable != null && nullable.IsEnum)))
                 val = Enum.ToObject(nullable ?? returnType, val);
 
-            if (conv != null && val != null)
+            if (conv != null && (val != null || returnType.IsArray))
                 val = conv.DynamicInvoke(val);
 
             if (val == null && !HeplerDataAcces.IsCanMappedDbType(nullable ?? returnType))

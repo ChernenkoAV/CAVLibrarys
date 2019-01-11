@@ -196,13 +196,14 @@ namespace Cav.DataAcces
             if (nullableType != null)
                 typeT = nullableType;
 
-            Boolean isCanMapTypwToDb = HeplerDataAcces.IsCanMappedDbType(typeT);
-            if (!isCanMapTypwToDb && convertProperty == null)
-                throw new ArgumentException($"Для типа {typeT.FullName} свойства {paramName}, связываемого с полем {fieldName}, должен быть указан конвертор");
+            if (!HeplerDataAcces.IsCanMappedDbType(typeT))
+            {
+                if (convertProperty == null)
+                    throw new ArgumentException($"Для типа {typeT.FullName} свойства {paramName}, связываемого с полем {fieldName}, должен быть указан конвертор");
 
-            if (!isCanMapTypwToDb && typeT.GetConstructor(new Type[] { }) == null)
-                throw new ArgumentException($"Тип {typeT.FullName} для свойства {paramName} должен иметь открытый конструктор без параметров");
-
+                if (!typeT.IsArray && typeT.GetConstructor(new Type[] { }) == null)
+                    throw new ArgumentException($"Тип {typeT.FullName} для свойства {paramName} должен иметь открытый конструктор без параметров");
+            }
 
             var p_rowObg = property.Parameters.First();
             var p_dbRow = Expression.Parameter(typeof(DataRow));

@@ -41,8 +41,8 @@ namespace Cav.DynamicCode
             XmlSchemas xsdSet = new XmlSchemas();
             xsdSet.Add(xsdSchema);
 
-            foreach (var item in imports)
-                using (var xr = xsd.CreateReader())
+            foreach (var impItem in imports)
+                using (var xr = impItem.CreateReader())
                     xsdSet.Add(XmlSchema.Read(xr, null));
 
             xsdSet.Compile(null, true);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Xml;
@@ -35,13 +36,13 @@ namespace Cav
         /// </summary>
         /// <param name="o">Обьект</param>
         /// <param name="fileName">Файл, куда сохранить</param>
-        public static void XMLSerialize(this object o, string fileName)
+        public static void XMLSerialize<T>(this T o, string fileName)
         {
             File.Delete(fileName);
-            var xs = getSerialize(o.GetType());
+            var xdoc = o.XMLSerialize();
 
-            using (Stream ms = File.Create(fileName))
-                xs.Serialize(ms, o);
+            using (var wr = XmlWriter.Create(fileName))
+                xdoc.WriteTo(wr);
         }
 
         /// <summary>
@@ -49,9 +50,13 @@ namespace Cav
         /// </summary>
         /// <param name="o">Объект</param>
         /// <returns>Результат сериализации</returns>
-        public static XDocument XMLSerialize(this object o)
+        public static XDocument XMLSerialize<T>(this T o)
         {
-            var xs = getSerialize(o.GetType());
+            if (o == null)
+                throw new ArgumentNullException(nameof(o));
+
+            var xmlRoot = typeof(T).GetCustomAttribute<XmlRootAttribute>();
+            var xs = getSerialize(typeof(T), xmlRoot);
             StringBuilder sb = new StringBuilder();
 
             using (XmlWriter ms = XmlTextWriter.Create(sb))

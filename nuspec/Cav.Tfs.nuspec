@@ -6,7 +6,7 @@
         <title>Cav.Tfs</title>
         <authors>ChernenkoAV</authors>
         <owners>ChernenkoAV</owners>
-        <licenseUrl>https://github.com/ChernenkoAV/CavLibrarys/blob/master/LICENSE</licenseUrl>
+        <license type="expression">MIT</license>
         <projectUrl>https://github.com/ChernenkoAV/CavLibrarys</projectUrl>
         <iconUrl>https://raw.githubusercontent.com/ChernenkoAV/CavLibrarys/master/Cav.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>

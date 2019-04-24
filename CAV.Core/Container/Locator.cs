@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 
 namespace Cav.Container
 {
@@ -88,7 +89,7 @@ namespace Cav.Container
                 else
                 {
                     if (typeof(IEnumerable).IsAssignableFrom(paramType))
-                        throw new ArgumentOutOfRangeException("В конструкторе поддерживаются только массивы");
+                        throw new ArgumentOutOfRangeException($"тип {typeInstance.FullName}. в конструкторе поддерживаются только массивы");
                 }
 
                 if (paramType.IsInterface)
@@ -109,43 +110,66 @@ namespace Cav.Container
 
             res = constructor.Invoke(paramConstr.ToArray());
 
-            if (AdditionalSettingsObject != null)
-                AdditionalSettingsObject(res);
+            AdditionalSettingsObject?.Invoke(res);
 
             if (UseCache)
                 PutObjectToCache(res);
+
+            foreach (var propInfo in typeInstance.GetProperties())
+            {
+                if (propInfo.GetCustomAttribute<PropertyInjectAttribute>() == null)
+                    continue;
+
+                if (!propInfo.CanWrite)
+                    throw new InvalidOperationException($"свойство {typeInstance.FullName}.{propInfo.Name} должно быть доступно для записи");
+
+                propSetData.Value.Add(new PropSetDataT() { Property = propInfo, InstatnceObject = res });
+            }
 
             PopStack();
 
             return res;
         }
 
-        [ThreadStatic]
-        private static ConcurrentQueue<Type> sq;
+
+        private static ThreadLocal<Stack<String>> pathDependency = new ThreadLocal<Stack<string>>(() => new Stack<string>());
+        private static ThreadLocal<List<PropSetDataT>> propSetData = new ThreadLocal<List<PropSetDataT>>(() => new List<PropSetDataT>());
 
         private static void PopStack()
         {
-            Type vt = null;
-            sq.TryDequeue(out vt);
+            pathDependency.Value.Pop();
+
+            if (!pathDependency.Value.Any())
+            {
+                var propsetDataCopy = propSetData.Value.ToArray();
+                propSetData.Value.Clear();
+
+                foreach (var prpData in propsetDataCopy)
+                    prpData.Property.SetValue(prpData.InstatnceObject, GetInstance(prpData.Property.PropertyType));
+            }
         }
 
         private static void PuhStackAndCheckRecursion(Type typeInstance)
         {
-            if (sq == null)
-                sq = new ConcurrentQueue<Type>();
-
-            var type = sq.FirstOrDefault(x => x == typeInstance);
+            var type = pathDependency.Value.FirstOrDefault(x => x == typeInstance.FullName);
             if (type != null)
             {
-                Type vt = null;
-                while (sq.TryPeek(out vt) && vt != type && !sq.IsEmpty)
-                    sq.TryDequeue(out vt);
+                var promDep = new List<String>();
+                string parDep = null;
 
-                String msg = sq.Select(x => x.Name).JoinValuesToString(" -> ") + "-> " + typeInstance.Name;
+                do
+                {
+                    parDep = pathDependency.Value.Pop();
+                    promDep.Add(parDep);
+
+                } while (parDep != type);
+
+
+                String msg = $"{promDep.ToArray().Reverse().JoinValuesToString(" -> ")} -> {type}";
                 throw new StackOverflowException("Обнаружена рекурсивная зависимость: " + msg);
             }
 
-            sq.Enqueue(typeInstance);
+            pathDependency.Value.Push(typeInstance.FullName);
         }
         /// <summary>
         /// Получить экземпляры объектов типа - наследника указанного
@@ -207,5 +231,11 @@ namespace Cav.Container
         {
             return Locator.GetInstances(typeof(T)).OfType<T>().ToArray();
         }
+    }
+
+    internal class PropSetDataT
+    {
+        public PropertyInfo Property { get; set; }
+        public Object InstatnceObject { get; set; }
     }
 }

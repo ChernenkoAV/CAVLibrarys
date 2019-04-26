@@ -139,14 +139,13 @@ namespace Cav.Container
         {
             if (pathDependency.Value.Any())
                 pathDependency.Value.Pop();
-            else
-            {
-                var propsetDataCopy = propSetData.Value.ToArray();
-                propSetData.Value.Clear();
 
-                foreach (var prpData in propsetDataCopy)
+            if (!pathDependency.Value.Any())
+                foreach (var prpData in propSetData.Value.ToArray())
+                {
                     prpData.Property.SetValue(prpData.InstatnceObject, GetInstance(prpData.Property.PropertyType));
-            }
+                    propSetData.Value.Remove(prpData);
+                }
         }
 
         private static void PuhStackAndCheckRecursion(Type typeInstance)

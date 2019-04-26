@@ -137,9 +137,9 @@ namespace Cav.Container
 
         private static void PopStack()
         {
-            pathDependency.Value.Pop();
-
-            if (!pathDependency.Value.Any())
+            if (pathDependency.Value.Any())
+                pathDependency.Value.Pop();
+            else
             {
                 var propsetDataCopy = propSetData.Value.ToArray();
                 propSetData.Value.Clear();

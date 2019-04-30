@@ -48,19 +48,20 @@ namespace Cav
         /// <summary>
         /// Сериализатор 
         /// </summary>
-        /// <param name="o">Объект</param>
+        /// <param name="obj">Объект</param>
         /// <returns>Результат сериализации</returns>
-        public static XDocument XMLSerialize<T>(this T o)
+        public static XDocument XMLSerialize(this object obj)
         {
-            if (o == null)
-                throw new ArgumentNullException(nameof(o));
+            if (obj == null)
+                throw new ArgumentNullException(nameof(obj));
 
-            var xmlRoot = typeof(T).GetCustomAttribute<XmlRootAttribute>();
-            var xs = getSerialize(typeof(T), xmlRoot);
+            var type = obj.GetType();
+            var xmlRoot = type.GetCustomAttribute<XmlRootAttribute>();
+            var xs = getSerialize(type, xmlRoot);
             StringBuilder sb = new StringBuilder();
 
             using (XmlWriter ms = XmlTextWriter.Create(sb))
-                xs.Serialize(ms, o);
+                xs.Serialize(ms, obj);
 
             return XDocument.Parse(sb.ToString(), LoadOptions.PreserveWhitespace);
         }

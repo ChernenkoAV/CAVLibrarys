@@ -45,14 +45,14 @@ namespace Cav.ReflectHelpers
         /// Получение значений статических свойств коллекцией
         /// </summary>
         /// <param name="type">Просматреваемый тип</param>
-        /// <param name="typeFields">Тип полей для коллекции</param>
+        /// <param name="typeProperty">Тип свойста</param>
         /// <returns></returns>
-        public static ReadOnlyCollection<Object> GetStaticPropertys(this Type type, Type typeFields)
+        public static ReadOnlyCollection<Object> GetStaticPropertys(this Type type, Type typeProperty)
         {
             List<Object> res = new List<object>();
 
             var flds = type.GetProperties(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
-            foreach (var fld in flds)
+            foreach (var fld in flds.Where(x => x.PropertyType == typeProperty))
                 res.Add(fld.GetValue(null));
 
             return new ReadOnlyCollection<object>(res);
@@ -62,7 +62,7 @@ namespace Cav.ReflectHelpers
         /// <summary>
         /// Получение значений статических свойств коллекцией
         /// </summary>
-        /// <typeparam name="T">Тип полей для коллекции</typeparam>
+        /// <typeparam name="T">Тип свойства для коллекции</typeparam>
         /// <param name="type">Просматреваемый тип</param>
         /// <returns></returns>
         public static ReadOnlyCollection<T> GetStaticPropertys<T>(this Type type)
@@ -81,7 +81,7 @@ namespace Cav.ReflectHelpers
             List<Object> res = new List<object>();
 
             var flds = type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
-            foreach (var fld in flds)
+            foreach (var fld in flds.Where(x => x.FieldType == typeFields))
                 res.Add(fld.GetValue(null));
 
             return new ReadOnlyCollection<object>(res);

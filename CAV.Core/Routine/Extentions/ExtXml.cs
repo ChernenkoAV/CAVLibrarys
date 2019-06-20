@@ -258,9 +258,15 @@ namespace Cav
         /// <returns>Текст реультатов валидации. Если валидация успешна - null</returns>
         public static String XMLValidate(this XDocument xml, XDocument xsd)
         {
-            XmlSchemaSet shs = new XmlSchemaSet();
-            shs.Add("", xsd.CreateReader());
             String res = null;
+            XmlSchema xs = XmlSchema.Read(new StringReader(xsd.ToString()), (a, b) => { res += b.Message + Environment.NewLine; });
+
+            if (!res.IsNullOrWhiteSpace())
+                throw new XmlSchemaException(res);
+
+            XmlSchemaSet shs = new XmlSchemaSet();
+            shs.Add(xs);
+
             xml.Validate(shs, (a, b) => { res += b.Message + Environment.NewLine; });
             return res;
         }

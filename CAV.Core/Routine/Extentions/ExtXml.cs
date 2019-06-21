@@ -261,6 +261,9 @@ namespace Cav
             String res = null;
             XmlSchema xs = XmlSchema.Read(new StringReader(xsd.ToString()), (a, b) => { res += b.Message + Environment.NewLine; });
 
+            if (xml.Root.Name.NamespaceName != (xs.TargetNamespace ?? String.Empty))
+                throw new XmlSchemaException($"пространство имен '{xml.Root.Name.NamespaceName}' элемента '{xml.Root.Name.LocalName}' не не соответствует целевому пространству имен схемы '{(xs.TargetNamespace ?? String.Empty)}'");
+
             if (!res.IsNullOrWhiteSpace())
                 throw new XmlSchemaException(res);
 

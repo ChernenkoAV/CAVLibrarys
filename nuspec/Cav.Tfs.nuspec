@@ -10,7 +10,7 @@
         <projectUrl>https://github.com/ChernenkoAV/CavLibrarys</projectUrl>
         <icon>images\Cav.png</icon>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>Обертка к сборкам TFS в Visual Studio 2013 и 2015</description>
+        <description>Обертка к сборкам TFS в Visual Studio</description>
         <copyright>Copyright 2020</copyright>
         <tags>cav tfs tfs2013 tfs2015 tfs2017 tfs2019 wrap</tags>
         <dependencies>

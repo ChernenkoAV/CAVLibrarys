@@ -109,9 +109,6 @@
       <DependentUpon>InputBoxForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if $(ConfigurationName)==Release PowerShell -NoProfile -ExecutionPolicy Bypass -Command "&amp; '$(SolutionDir)nuspec\CreatePackage.ps1' -ProjectPath '$(ProjectPath)' -MSBuid '$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)'</PostBuildEvent>

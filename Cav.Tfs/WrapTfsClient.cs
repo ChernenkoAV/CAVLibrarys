@@ -240,9 +240,6 @@ namespace Cav.Tfs
     /// </summary>
     public class WrapTfs
     {
-        private const string tfsClient12 = @"C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\ReferenceAssemblies\v2.0\";
-        private const string tfsClient14 = @"C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\";
-        private const string tfsClient15 = @"c:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\";
         private const string tfsClientServer15 = @"c:\Program Files\Common Files\microsoft shared\Team Foundation Server\15.0\";
         private String pathTfsdll = null;
 
@@ -269,14 +266,17 @@ namespace Cav.Tfs
             if (tfsClientAssembly != null)
                 return;
 
-            if (Directory.Exists(tfsClient15))
-                pathTfsdll = tfsClient15;
-            if (pathTfsdll == null && Directory.Exists(tfsClient14))
-                pathTfsdll = tfsClient14;
-            if (pathTfsdll == null && Directory.Exists(tfsClient12))
-                pathTfsdll = tfsClient12;
+            var tfsClients = new[] {
+                @"C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\ReferenceAssemblies\v2.0\",
+                @"C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\",
+                @"c:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\",
+                @"c:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\"
+                };
+
+            pathTfsdll = tfsClients.FirstOrDefault(x => Directory.Exists(x));
+
             if (pathTfsdll == null)
-                throw new FileNotFoundException(String.Format("Not found TFS assemblys on path {0}, {1}.", tfsClient14, tfsClient12));
+                throw new FileNotFoundException($"Not found TFS assemblys on path '{tfsClients.JoinValuesToString(separator: "','")}'");
 
             AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve;
 

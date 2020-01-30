@@ -6,7 +6,7 @@ Write-Host ------ Подготовка к пакетированию $ProjectNam
 
 $MSBuid= "& ""$MSBuid\Bin\MSBuild.exe"" " 
 $MSBuildParams = " /nologo /clp:ErrorsOnly /t:Rebuild /p:Configuration=""Release"
-$Net45 = "Net45"
+
 $Net461 = "Net461"
 
 function Build([string]$ProjectPath, [string]$Config)
@@ -33,7 +33,6 @@ $NugetTarget = [System.IO.Path]::Combine($BuildPath, 'nuget')
 $BuildPath = [System.IO.Path]::Combine([System.IO.Path]::Combine($SolutionPath, '_Build'), $ProjectName)
 $NuGetPath = [System.IO.Path]::Combine($SolutionPath, '.nuget')
 
-Build $ProjectPath $Net45
 Build $ProjectPath $Net461
 
 $VersionFile = Get-Version "$BuildPath\$ProjectName.dll" 

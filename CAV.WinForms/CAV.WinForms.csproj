@@ -2,29 +2,17 @@
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">DebugNet45</Configuration>
+    <Configuration Condition=" '$(Configuration)' == '' ">DebugNet461</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{DC8DBC11-CF98-47B1-9260-EF391E1CE7D3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Cav.WinForms</RootNamespace>
     <AssemblyName>Cav.WinForms</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugNet45|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\_Build\</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <DefineConstants>TRACE;DEBUG;NET45</DefineConstants>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugNet461|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -51,18 +39,6 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseNet45|AnyCPU'">
-    <OutputPath>..\_Build\Cav.WinForms\Net45\</OutputPath>
-    <DocumentationFile>..\_Build\Cav.WinForms\Net45\Cav.WinForms.xml</DocumentationFile>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <DefineConstants>NET45</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseNet461|AnyCPU'">
     <OutputPath>..\_Build\Cav.WinForms\Net461\</OutputPath>
     <DocumentationFile>..\_Build\Cav.WinForms\Net461\Cav.WinForms.xml</DocumentationFile>
@@ -81,34 +57,11 @@
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>Cav.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
-  <Choose>
-    <When Condition="'$(TargetFrameworkVersion)' == 'v4.5'">
-      <ItemGroup>
-        <Reference Include="Cav.Core, Version=5.1.0.0">
-          <HintPath>..\packages\Cav.Core.5.1.0\lib\net45\Cav.Core.dll</HintPath>
-          <SpecificVersion>False</SpecificVersion>
-          <Private>False</Private>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="'$(TargetFrameworkVersion)' == 'v4.6.1'">
-      <ItemGroup>
-        <Reference Include="Cav.Core, Version=5.1.0.0">
-          <HintPath>..\packages\Cav.Core.5.1.0\lib\net461\Cav.Core.dll</HintPath>
-          <SpecificVersion>False</SpecificVersion>
-          <Private>False</Private>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <!--
-        <Otherwise>
-            <ItemGroup>
-                <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
-            </ItemGroup>
-        </Otherwise>
-        -->
-  </Choose>
   <ItemGroup>
+    <Reference Include="Cav.Core, Version=6.0.0.0, Culture=neutral, PublicKeyToken=f136b1fd0b87e3f0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Cav.Core.6.0.0\lib\net461\Cav.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />

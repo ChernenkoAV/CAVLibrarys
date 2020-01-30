@@ -8,7 +8,7 @@
         <owners>ChernenkoAV</owners>
         <license type="expression">MIT</license>
         <projectUrl>https://github.com/ChernenkoAV/CavLibrarys</projectUrl>
-        <iconUrl>https://raw.githubusercontent.com/ChernenkoAV/CavLibrarys/master/Cav.png</iconUrl>
+        <icon>images\Cav.png</icon>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Базовые окна для построения интерфейса на WinForms</description>
         <copyright>Copyright 2020</copyright>
@@ -19,7 +19,8 @@
             </group>
         </dependencies>
     </metadata>
-    <files>        
+    <files>
+        <file src="..\..\Cav.png" target="images\" />
         <file src="net461\Cav.WinForms.dll" target="lib\net461\" />
         <file src="net461\Cav.WinForms.pdb" target="lib\net461\" />
         <file src="net461\Cav.WinForms.xml" target="lib\net461\" />

@@ -241,7 +241,7 @@ namespace Cav.Tfs
     public class WrapTfs
     {
         private const string tfsClientServer15 = @"c:\Program Files\Common Files\microsoft shared\Team Foundation Server\15.0\";
-        private String pathTfsdll = null;
+
 
         private const string tfsPrefix = "Microsoft.TeamFoundation.";
         private const string tfsClientDll = tfsPrefix + "Client.dll";
@@ -251,6 +251,8 @@ namespace Cav.Tfs
         private const string tfsVersionControlControlsDll = tfsPrefix + "VersionControl.Controls.dll";
         private const string tfsWorkItemTrackingClientDll = tfsPrefix + "WorkItemTracking.Client.dll";
 
+        private static String pathTfsdll = null;
+
         private static Assembly tfsClientAssembly = null;
         private static Assembly tfsVersionControlCommonAssembly = null;
         private static Assembly tfsVersionControlClientAssembly = null;
@@ -258,10 +260,7 @@ namespace Cav.Tfs
         private static Assembly tfsVersionControlControlsAssembly = null;
         private static Assembly tfsWorkItemTrackingClientAssembly = null;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public WrapTfs()
+        private void initAssebly()
         {
             if (tfsClientAssembly != null)
                 return;
@@ -277,7 +276,7 @@ namespace Cav.Tfs
             pathTfsdll = tfsClients.FirstOrDefault(x => Directory.Exists(x));
 
             if (pathTfsdll == null)
-                throw new FileNotFoundException($"Not found TFS assemblys on path '{tfsClients.JoinValuesToString(separator: "','")}'");
+                throw new FileNotFoundException($"Не найдены сборки TFS");
 
             AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve;
 
@@ -318,6 +317,8 @@ namespace Cav.Tfs
         private Object ws = null;
         private Object WorkstationGet()
         {
+            initAssebly();
+
             if (ws != null)
                 return ws;
             ws = tfsVersionControlClientAssembly.GetStaticOrConstPropertyOrFieldValue("Workstation", "Current");
@@ -328,11 +329,15 @@ namespace Cav.Tfs
         /// </summary>
         public void WorkstationReloadCache()
         {
+            initAssebly();
+
             WorkstationGet().InvokeMethod("ReloadCache");
         }
 
         private Object TeamProjectCollectionGet(Uri serverUri)
         {
+            initAssebly();
+
             return tfsClientAssembly.InvokeStaticMethod("TfsTeamProjectCollectionFactory", "GetTeamProjectCollection", serverUri);
         }
         /// <summary>
@@ -640,6 +645,8 @@ namespace Cav.Tfs
         /// <returns>Uri выбранного проекта. Иначе null</returns>
         public Uri ShowTeamProjectPicker(IWin32Window parentWindow)
         {
+            initAssebly();
+
             var TeamProjectPickerModeNoProject = tfsClientAssembly.GetEnumValue("TeamProjectPickerMode", "NoProject");
 
             var tpp = tfsClientAssembly.CreateInstance("TeamProjectPicker", TeamProjectPickerModeNoProject, false);

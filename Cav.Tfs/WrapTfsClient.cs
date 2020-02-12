@@ -250,9 +250,7 @@ namespace Cav.Tfs
         private const string tfsVersionControlControlsCommonDll = tfsPrefix + "VersionControl.Controls.Common.dll";
         private const string tfsVersionControlControlsDll = tfsPrefix + "VersionControl.Controls.dll";
         private const string tfsWorkItemTrackingClientDll = tfsPrefix + "WorkItemTracking.Client.dll";
-
-        private static String pathTfsdll = null;
-
+        
         private static Assembly tfsClientAssembly = null;
         private static Assembly tfsVersionControlCommonAssembly = null;
         private static Assembly tfsVersionControlClientAssembly = null;
@@ -262,28 +260,41 @@ namespace Cav.Tfs
 
         private void initAssebly()
         {
-            if (tfsClientAssembly != null)
+            if (tfsVersionControlControlsAssembly != null)
                 return;
 
-            var tfsClients = new[] {
-                @"C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\ReferenceAssemblies\v2.0\",
-                @"C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\",
-                @"c:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\",
-                @"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\",
-                @"c:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\"
-                };
+            var vsDirs = Directory.EnumerateDirectories(@"C:\Program Files (x86)", "Microsoft Visual Studi*", SearchOption.TopDirectoryOnly);
 
-            pathTfsdll = tfsClients.FirstOrDefault(x => Directory.Exists(x));
+            if (!vsDirs.Any())
+                throw new InvalidOperationException("Не найдено установленной Visual Studio");
 
-            if (pathTfsdll == null)
-                throw new FileNotFoundException($"Не найдены сборки TFS");
+            var teDirs = vsDirs
+                .SelectMany(x => Directory.GetFiles(x, tfsVersionControlControlsDll, SearchOption.AllDirectories))
+                .ToList();
+
+            if (!teDirs.Any())
+                throw new InvalidOperationException("Не найдено расширение 'Team Explorer' в Visual Studio");
+
+            var pathTfsdll = teDirs.OrderBy(x => x).Last();
+
+            pathTfsdll = Path.GetDirectoryName(pathTfsdll);
 
             AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve;
 
             tfsClientAssembly = Assembly.LoadFile(Path.Combine(pathTfsdll, tfsClientDll));
             tfsVersionControlClientAssembly = Assembly.LoadFile(Path.Combine(pathTfsdll, tfsVersionControlClientDll));
-            tfsVersionControlControlsCommonAssembly = Assembly.LoadFile(Path.Combine(pathTfsdll, tfsVersionControlControlsCommonDll));
             tfsVersionControlControlsAssembly = Assembly.LoadFile(Path.Combine(pathTfsdll, tfsVersionControlControlsDll));
+
+            try
+            {
+                tfsVersionControlControlsCommonAssembly = Assembly.LoadFile(Path.Combine(pathTfsdll, tfsVersionControlControlsCommonDll));
+            }
+            catch
+            {
+                //В 2019 студии объединили сборки.
+                tfsVersionControlControlsCommonAssembly = tfsVersionControlControlsAssembly;
+            }
+
             tfsVersionControlCommonAssembly = Assembly.LoadFile(Path.Combine(pathTfsdll, tfsVersionControlCommonDll));
             tfsWorkItemTrackingClientAssembly = Assembly.LoadFile(Path.Combine(pathTfsdll, tfsWorkItemTrackingClientDll));
         }
@@ -294,6 +305,8 @@ namespace Cav.Tfs
             var asly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName == args.Name);
             if (asly != null)
                 return asly;
+
+            var pathTfsdll = Path.GetDirectoryName(args.RequestingAssembly.Location);
 
             var assemblyName = new AssemblyName(args.Name);
             string assemblyFile = assemblyName.Name + ".dll";
@@ -682,7 +695,7 @@ namespace Cav.Tfs
         /// <returns>Выбранный элемент сервере. Иначе null.</returns>
         public SelItem ShowDialogChooseItem(IWin32Window parentWindow, VersionControlServer vcs)
         {
-            var typeDialog = tfsVersionControlControlsAssembly.GetTypes().Single(x => x.Name == "DialogChooseItem");
+            var typeDialog = tfsVersionControlControlsAssembly.GetType("Microsoft.TeamFoundation.VersionControl.Controls.DialogChooseItem");
             var consInfo = typeDialog.GetConstructor(
                                    BindingFlags.Instance | BindingFlags.NonPublic,
                                    null,

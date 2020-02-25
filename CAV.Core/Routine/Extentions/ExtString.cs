@@ -217,5 +217,29 @@ namespace Cav
 
             return res;
         }
+
+        /// <summary>
+        /// Выражение "null если" для строк
+        /// </summary>
+        /// <param name="exp">Проверяемое выражение</param>
+        /// <param name="operand">Операнд сравнения</param>
+        /// <returns></returns>
+        public static String NullIf(this String exp, String operand)
+        {
+            return exp == operand ? null : exp;
+        }
+
+        /// <summary>
+        /// Повтор IFNULL() из T-SQL для строки
+        /// </summary>
+        /// <param name="val">Проверяемое значение. Проверка производится c помощью <see cref="ExtString.IsNullOrWhiteSpace"/></param>
+        /// <param name="operand">Значение подстановки</param>
+        /// <returns></returns>
+        public static String IfNull(this String val, String operand)
+        {
+            if (val.IsNullOrWhiteSpace())
+                return operand;
+            return val;
+        }
     }
 }

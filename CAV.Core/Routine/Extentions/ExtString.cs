@@ -115,23 +115,23 @@ namespace Cav
         /// <summary>
         /// Замена символов, запрещенных в пути и имени файла, на указанный символ.
         /// </summary>
-        /// <param name="FilePath">Путь, имя файла, путь файла</param>
-        /// <param name="ReplasmentChar">Символ для замены. Если символ является запрещенным, то он приводится в подчеркиванию: "_"</param>
+        /// <param name="filePath">Путь, имя файла, путь файла</param>
+        /// <param name="replasmentChar">Символ для замены. Если символ является запрещенным, то он приводится в подчеркиванию: "_"</param>
         /// <returns></returns>
-        public static String ReplaceInvalidPathChars(this String FilePath, char ReplasmentChar = '_')
+        public static String ReplaceInvalidPathChars(this String filePath, char replasmentChar = '_')
         {
-            if (FilePath.IsNullOrWhiteSpace())
+            if (filePath.IsNullOrWhiteSpace())
                 return null;
 
             char[] invchars = Path.GetInvalidFileNameChars().Concat(Path.GetInvalidPathChars()).ToArray();
 
-            if (invchars.Contains(ReplasmentChar))
-                ReplasmentChar = '_';
+            if (invchars.Contains(replasmentChar))
+                replasmentChar = '_';
 
             foreach (char ic in invchars)
-                FilePath = FilePath.Replace(ic, '_');
+                filePath = filePath.Replace(ic, '_');
 
-            return FilePath;
+            return filePath;
         }
 
         /// <summary>

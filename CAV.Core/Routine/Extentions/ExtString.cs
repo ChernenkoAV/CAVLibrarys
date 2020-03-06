@@ -52,7 +52,7 @@ namespace Cav
         }
 
         /// <summary>
-        /// Усечение начальных и конечных пробелов. Если строка null или состояла из пробелов - вернет null.
+        /// Усечение начальных и конечных пробелов и преводов кареток. Если строка null или состояла из пробелов и/или переводов кареток - вернет null.
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
@@ -60,7 +60,7 @@ namespace Cav
         {
             if (str == null)
                 return null;
-            str = str.Trim();
+            str = str.Trim(new[] { ' ', '\r', '\n' });
             return str.GetNullIfIsNullOrWhiteSpace();
         }
 

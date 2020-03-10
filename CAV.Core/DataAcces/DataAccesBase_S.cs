@@ -64,20 +64,19 @@ namespace Cav.DataAcces
                 String paramValKey = item.Key.Replace(key + " ", String.Empty);
 
                 if (paramValues.TryGetValue(paramValKey, out val))
+                {
                     paramValues.Remove(paramValKey);
+
+                    if (item.Value.ConvetProperty != null)
+                        val = item.Value.ConvetProperty(val);
+                }
 
                 if (val != null)
                 {
-                    if (item.Value.ConvetProperty != null)
-                        val = item.Value.ConvetProperty(val);
-
-                    if (val != null)
-                    {
-                        var valType = val.GetType();
-                        valType = Nullable.GetUnderlyingType(valType) ?? valType;
-                        if (valType == typeof(DateTime))
-                            val = new DateTimeOffset((DateTime)val).LocalDateTime;
-                    }
+                    var valType = val.GetType();
+                    valType = Nullable.GetUnderlyingType(valType) ?? valType;
+                    if (valType == typeof(DateTime))
+                        val = new DateTimeOffset((DateTime)val).LocalDateTime;
 
                     prmCmd.Value = val;
                 }

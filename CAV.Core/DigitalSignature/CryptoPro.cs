@@ -18,9 +18,9 @@ namespace Cav.DigitalSignature
     sealed public class CryptoProRutine
     {
         #region Алгоритмы для ЭЦП
-        
+
         private static object lockObj = new object();
-        
+        private static Assembly cryptoProSharpeiServiceModel = null;
         /// <summary>
         /// Получение GostAlgorithmSuite.BasicGostObsolete из КриптоПрошной сборки с отложенной загрузкой.
         /// </summary>
@@ -37,8 +37,9 @@ namespace Cav.DigitalSignature
 
                 lock (lockObj)
                 {
-                    var assly = Assembly.Load("CryptoPro.Sharpei.ServiceModel, Version=1.4.0.1, Culture=neutral, PublicKeyToken=473b8c5086e795f5, processorArchitecture=MSIL");
-                    criptoProBasicGostObsolete = (SecurityAlgorithmSuite)assly.GetStaticOrConstPropertyOrFieldValue("GostAlgorithmSuite", "BasicGostObsolete");
+                    if (cryptoProSharpeiServiceModel == null)
+                        cryptoProSharpeiServiceModel = Assembly.Load("CryptoPro.Sharpei.ServiceModel, Version=1.4.0.1, Culture=neutral, PublicKeyToken=473b8c5086e795f5, processorArchitecture=MSIL");
+                    criptoProBasicGostObsolete = (SecurityAlgorithmSuite)cryptoProSharpeiServiceModel.GetStaticOrConstPropertyOrFieldValue("GostAlgorithmSuite", "BasicGostObsolete");
                 }
 
 
@@ -55,17 +56,19 @@ namespace Cav.DigitalSignature
         /// CryptoPro.Sharpei.ServiceModel должен быть в GAC.
         /// Используется CryptoPro.Sharpei.ServiceModel, Version=1.4.0.1, Culture=neutral, PublicKeyToken=473b8c5086e795f5, processorArchitecture=MSIL
         /// </remarks>
-        public static SecurityAlgorithmSuite CriptoProGost2012BasicGost
+        public static SecurityAlgorithmSuite CriptoProGost2012_256BasicGost
         {
             get
             {
-                if (criptoProGost2012BasicGost != null)
-                    return criptoProGost2012BasicGost;
+                if (criptoProGost2012_256BasicGost != null)
+                    return criptoProGost2012_256BasicGost;
 
                 lock (lockObj)
                 {
-                    var assly = Assembly.Load("CryptoPro.Sharpei.ServiceModel, Version=1.4.0.1, Culture=neutral, PublicKeyToken=473b8c5086e795f5, processorArchitecture=MSIL");
-                    criptoProGost2012BasicGost = (SecurityAlgorithmSuite)assly.GetStaticOrConstPropertyOrFieldValue("Gost2012_256AlgorithmSuite", "BasicGost");
+                    if (cryptoProSharpeiServiceModel == null)
+                        cryptoProSharpeiServiceModel = Assembly.Load("CryptoPro.Sharpei.ServiceModel, Version=1.4.0.1, Culture=neutral, PublicKeyToken=473b8c5086e795f5, processorArchitecture=MSIL");
+
+                    criptoProGost2012_256BasicGost = (SecurityAlgorithmSuite)cryptoProSharpeiServiceModel.GetStaticOrConstPropertyOrFieldValue("Gost2012_256AlgorithmSuite", "BasicGost");
                 }
 
 
@@ -73,7 +76,36 @@ namespace Cav.DigitalSignature
             }
         }
 
-        private static SecurityAlgorithmSuite criptoProGost2012BasicGost;
+        private static SecurityAlgorithmSuite criptoProGost2012_256BasicGost;
+
+        /// <summary>
+        /// Получение Gost2012_512AlgorithmSuite.BasicGost из КриптоПрошной сборки с отложенной загрузкой.
+        /// </summary>
+        /// <remarks>
+        /// CryptoPro.Sharpei.ServiceModel должен быть в GAC.
+        /// Используется CryptoPro.Sharpei.ServiceModel, Version=1.4.0.1, Culture=neutral, PublicKeyToken=473b8c5086e795f5, processorArchitecture=MSIL
+        /// </remarks>
+        public static SecurityAlgorithmSuite CriptoProGost2012_512BasicGost
+        {
+            get
+            {
+                if (criptoProGost2012_512BasicGost != null)
+                    return criptoProGost2012_512BasicGost;
+
+                lock (lockObj)
+                {
+                    if (cryptoProSharpeiServiceModel == null)
+                        cryptoProSharpeiServiceModel = Assembly.Load("CryptoPro.Sharpei.ServiceModel, Version=1.4.0.1, Culture=neutral, PublicKeyToken=473b8c5086e795f5, processorArchitecture=MSIL");
+
+                    criptoProGost2012_512BasicGost = (SecurityAlgorithmSuite)cryptoProSharpeiServiceModel.GetStaticOrConstPropertyOrFieldValue("Gost2012_512AlgorithmSuite", "BasicGost");
+                }
+
+
+                return criptoProBasicGostObsolete;
+            }
+        }
+
+        private static SecurityAlgorithmSuite criptoProGost2012_512BasicGost;
 
 
         #endregion

@@ -26,7 +26,7 @@ namespace Cav.DigitalSignature
             if (thumbprintOrBase64Cert.IsNullOrWhiteSpace())
                 return null;
 
-            thumbprintOrBase64Cert = new String(thumbprintOrBase64Cert.ToCharArray().Where(x => Char.IsLetterOrDigit(x) || x == '=').ToArray());
+            thumbprintOrBase64Cert = new String(thumbprintOrBase64Cert.ToCharArray().Where(x => Char.IsLetterOrDigit(x) || x.In('+', '/', '=')).ToArray());
 
             X509Certificate2 cert = null;
             X509Store store = null;

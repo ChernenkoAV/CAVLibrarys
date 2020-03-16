@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
@@ -17,20 +18,22 @@ namespace Cav.DigitalSignature
         /// <summary>
         /// Получение сертификата по отпечатоку или из строки. (+ невалидные)
         /// </summary>
-        /// <param name="ThumbprintOrBase64Cert">Отперчаток или сертификат в BASE64</param>
-        /// <param name="LocalMachine">Хранилище. null - смотреть везде, true - локальный компьютер, false - пользователь</param>
+        /// <param name="thumbprintOrBase64Cert">Отперчаток или сертификат в BASE64</param>
+        /// <param name="localMachine">Хранилище. null - смотреть везде, true - локальный компьютер, false - пользователь</param>
         /// <returns></returns>
-        public static X509Certificate2 FindCertByThumbprint(String ThumbprintOrBase64Cert, Boolean? LocalMachine = null)
+        public static X509Certificate2 FindCertByThumbprint(String thumbprintOrBase64Cert, Boolean? localMachine = null)
         {
-            if (ThumbprintOrBase64Cert.IsNullOrWhiteSpace())
+            if (thumbprintOrBase64Cert.IsNullOrWhiteSpace())
                 return null;
+
+            thumbprintOrBase64Cert = new String(thumbprintOrBase64Cert.ToCharArray().Where(x => Char.IsLetterOrDigit(x) || x == '=').ToArray());
 
             X509Certificate2 cert = null;
             X509Store store = null;
 
             try
             {
-                cert = new X509Certificate2(Convert.FromBase64String(ThumbprintOrBase64Cert));
+                cert = new X509Certificate2(Convert.FromBase64String(thumbprintOrBase64Cert));
                 if (cert != null)
                     return cert;
             }
@@ -38,11 +41,11 @@ namespace Cav.DigitalSignature
             {
             }
 
-            if (!LocalMachine.HasValue || LocalMachine.Value == true)
+            if (!localMachine.HasValue || localMachine.Value == true)
             {
                 store = new X509Store(StoreLocation.LocalMachine);
                 store.Open(OpenFlags.ReadOnly);
-                var cc = store.Certificates.Find(X509FindType.FindByThumbprint, ThumbprintOrBase64Cert, false);
+                var cc = store.Certificates.Find(X509FindType.FindByThumbprint, thumbprintOrBase64Cert, false);
                 if (cc.Count != 0)
                     cert = cc[0];
             }
@@ -50,11 +53,11 @@ namespace Cav.DigitalSignature
             if (cert != null)
                 return cert;
 
-            if (!LocalMachine.HasValue || LocalMachine.Value == false)
+            if (!localMachine.HasValue || localMachine.Value == false)
             {
                 store = new X509Store(StoreLocation.CurrentUser);
                 store.Open(OpenFlags.ReadOnly);
-                var cc = store.Certificates.Find(X509FindType.FindByThumbprint, ThumbprintOrBase64Cert, false);
+                var cc = store.Certificates.Find(X509FindType.FindByThumbprint, thumbprintOrBase64Cert, false);
                 if (cc.Count != 0)
                     cert = cc[0];
             }
@@ -65,28 +68,28 @@ namespace Cav.DigitalSignature
         /// <summary>
         /// Выбор сертификата(ов)
         /// </summary>
-        /// <param name="SingleCertificate">true - выбор одного сертификата(по умолчанию)</param>
-        /// <param name="NameCertificate">Имя сертификата, по которому будет осуществлен поиск в хранилище</param>
+        /// <param name="singleCertificate">true - выбор одного сертификата(по умолчанию)</param>
+        /// <param name="nameCertificate">Имя сертификата, по которому будет осуществлен поиск в хранилище</param>
         /// <returns>Коллекция сертификатов</returns>
-        public static X509Certificate2Collection SelectCertificate(bool SingleCertificate = true, String NameCertificate = null)
+        public static X509Certificate2Collection SelectCertificate(bool singleCertificate = true, String nameCertificate = null)
         {
             //X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
             X509Store store = new X509Store(StoreLocation.CurrentUser);
             store.Open(OpenFlags.OpenExistingOnly | OpenFlags.ReadOnly);
             X509Certificate2Collection scollection = null;
-            if (String.IsNullOrEmpty(NameCertificate))
+            if (String.IsNullOrEmpty(nameCertificate))
             {
                 scollection = X509Certificate2UI.SelectFromCollection(
                     store.Certificates,
                     "Выбор сертификата",
                     "Выберите сертификат.",
-                    SingleCertificate ? X509SelectionFlag.SingleSelection : X509SelectionFlag.MultiSelection);
+                    singleCertificate ? X509SelectionFlag.SingleSelection : X509SelectionFlag.MultiSelection);
             }
             else
             {
                 scollection = store.Certificates.Find(
                     X509FindType.FindBySubjectName,
-                    NameCertificate,
+                    nameCertificate,
                     true);
             }
             return scollection;
@@ -95,24 +98,24 @@ namespace Cav.DigitalSignature
         /// <summary>
         /// Подписывание сообщения в виде массива байт
         /// </summary>
-        /// <param name="Certificate">Сертификат</param>
-        /// <param name="Message">Сообщение в виде массива байт</param>
-        /// <param name="Detached">Подпись откреплена от сообщения(по умолчанию)</param>
-        /// <param name="FileSignBASE64">Путь к файлу для записи результата подписания(кодирование в Base64) (null - запись в файл не производится) </param>
+        /// <param name="certificate">Сертификат</param>
+        /// <param name="message">Сообщение в виде массива байт</param>
+        /// <param name="detached">Подпись откреплена от сообщения(по умолчанию)</param>
+        /// <param name="fileSignBASE64">Путь к файлу для записи результата подписания(кодирование в Base64) (null - запись в файл не производится) </param>
         /// <returns>Результат подписания</returns>
-        public static byte[] SignPKCS7(X509Certificate2 Certificate, byte[] Message, bool Detached = true, String FileSignBASE64 = null)
+        public static byte[] SignPKCS7(X509Certificate2 certificate, byte[] message, bool detached = true, String fileSignBASE64 = null)
         {
-            SignedCms signedCms = new SignedCms(new ContentInfo(Message), Detached);
-            signedCms.ComputeSignature(new CmsSigner(Certificate), false);
+            SignedCms signedCms = new SignedCms(new ContentInfo(message), detached);
+            signedCms.ComputeSignature(new CmsSigner(certificate), false);
             byte[] sign = signedCms.Encode();
 
-            if (!String.IsNullOrWhiteSpace(FileSignBASE64))
+            if (!String.IsNullOrWhiteSpace(fileSignBASE64))
             {
                 String signbase64 =
                         "-----BEGIN PKCS7-----" + Environment.NewLine +
                         Convert.ToBase64String(sign) + Environment.NewLine +
                         "-----END PKCS7-----";
-                File.WriteAllText(FileSignBASE64, signbase64);
+                File.WriteAllText(fileSignBASE64, signbase64);
             }
 
             return sign;

@@ -32,15 +32,13 @@ namespace Cav.DigitalSignature
         {
             get
             {
-                if (criptoProBasicGostObsolete != null)
-                    return criptoProBasicGostObsolete;
-
-                lock (lockObj)
-                {
-                    if (cryptoProSharpeiServiceModel == null)
-                        cryptoProSharpeiServiceModel = Assembly.Load("CryptoPro.Sharpei.ServiceModel, Version=1.4.0.1, Culture=neutral, PublicKeyToken=473b8c5086e795f5, processorArchitecture=MSIL");
-                    criptoProBasicGostObsolete = (SecurityAlgorithmSuite)cryptoProSharpeiServiceModel.GetStaticOrConstPropertyOrFieldValue("GostAlgorithmSuite", "BasicGostObsolete");
-                }
+                if (criptoProBasicGostObsolete == null)
+                    lock (lockObj)
+                    {
+                        if (cryptoProSharpeiServiceModel == null)
+                            cryptoProSharpeiServiceModel = Assembly.Load("CryptoPro.Sharpei.ServiceModel, Version=1.4.0.1, Culture=neutral, PublicKeyToken=473b8c5086e795f5, processorArchitecture=MSIL");
+                        criptoProBasicGostObsolete = (SecurityAlgorithmSuite)cryptoProSharpeiServiceModel.GetStaticOrConstPropertyOrFieldValue("GostAlgorithmSuite", "BasicGostObsolete");
+                    }
 
 
                 return criptoProBasicGostObsolete;
@@ -60,16 +58,14 @@ namespace Cav.DigitalSignature
         {
             get
             {
-                if (criptoProGost2012_256BasicGost != null)
-                    return criptoProGost2012_256BasicGost;
+                if (criptoProGost2012_256BasicGost == null)
+                    lock (lockObj)
+                    {
+                        if (cryptoProSharpeiServiceModel == null)
+                            cryptoProSharpeiServiceModel = Assembly.Load("CryptoPro.Sharpei.ServiceModel, Version=1.4.0.1, Culture=neutral, PublicKeyToken=473b8c5086e795f5, processorArchitecture=MSIL");
 
-                lock (lockObj)
-                {
-                    if (cryptoProSharpeiServiceModel == null)
-                        cryptoProSharpeiServiceModel = Assembly.Load("CryptoPro.Sharpei.ServiceModel, Version=1.4.0.1, Culture=neutral, PublicKeyToken=473b8c5086e795f5, processorArchitecture=MSIL");
-
-                    criptoProGost2012_256BasicGost = (SecurityAlgorithmSuite)cryptoProSharpeiServiceModel.GetStaticOrConstPropertyOrFieldValue("Gost2012_256AlgorithmSuite", "BasicGost");
-                }
+                        criptoProGost2012_256BasicGost = (SecurityAlgorithmSuite)cryptoProSharpeiServiceModel.GetStaticOrConstPropertyOrFieldValue("Gost2012_256AlgorithmSuite", "BasicGost");
+                    }
 
 
                 return criptoProBasicGostObsolete;
@@ -89,16 +85,14 @@ namespace Cav.DigitalSignature
         {
             get
             {
-                if (criptoProGost2012_512BasicGost != null)
-                    return criptoProGost2012_512BasicGost;
+                if (criptoProGost2012_512BasicGost == null)
+                    lock (lockObj)
+                    {
+                        if (cryptoProSharpeiServiceModel == null)
+                            cryptoProSharpeiServiceModel = Assembly.Load("CryptoPro.Sharpei.ServiceModel, Version=1.4.0.1, Culture=neutral, PublicKeyToken=473b8c5086e795f5, processorArchitecture=MSIL");
 
-                lock (lockObj)
-                {
-                    if (cryptoProSharpeiServiceModel == null)
-                        cryptoProSharpeiServiceModel = Assembly.Load("CryptoPro.Sharpei.ServiceModel, Version=1.4.0.1, Culture=neutral, PublicKeyToken=473b8c5086e795f5, processorArchitecture=MSIL");
-
-                    criptoProGost2012_512BasicGost = (SecurityAlgorithmSuite)cryptoProSharpeiServiceModel.GetStaticOrConstPropertyOrFieldValue("Gost2012_512AlgorithmSuite", "BasicGost");
-                }
+                        criptoProGost2012_512BasicGost = (SecurityAlgorithmSuite)cryptoProSharpeiServiceModel.GetStaticOrConstPropertyOrFieldValue("Gost2012_512AlgorithmSuite", "BasicGost");
+                    }
 
 
                 return criptoProBasicGostObsolete;

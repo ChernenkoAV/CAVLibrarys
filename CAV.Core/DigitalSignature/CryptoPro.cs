@@ -68,7 +68,7 @@ namespace Cav.DigitalSignature
                     }
 
 
-                return criptoProBasicGostObsolete;
+                return criptoProGost2012_256BasicGost;
             }
         }
 
@@ -95,7 +95,7 @@ namespace Cav.DigitalSignature
                     }
 
 
-                return criptoProBasicGostObsolete;
+                return criptoProGost2012_512BasicGost;
             }
         }
 

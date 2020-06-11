@@ -347,9 +347,9 @@ namespace Cav
         }
 
         /// <summary>
-        /// Путь к временной папке в %Temp%\"NameEntryAssembly". Если отсутствует - создается
+        /// Путь к временной папке в %Temp%\"NameEntryAssembly" пользователя. Если отсутствует - создается
         /// </summary>
-        public static String TempPath
+        public static String TempPathUser
         {
             get
             {
@@ -359,6 +359,22 @@ namespace Cav
                 return tempPath;
             }
         }
+
+        /// <summary>
+        /// Путь к временной папке в %Temp%\"NameEntryAssembly" в системе. Если отсутствует - создается
+        /// </summary>
+        public static String TempPath
+        {
+            get
+            {
+                String tempPath = Path.Combine(Environment.GetEnvironmentVariable("TEMP", EnvironmentVariableTarget.Machine), NameEntryAssembly);
+                if (!Directory.Exists(tempPath))
+                    Directory.CreateDirectory(tempPath);
+                return tempPath;
+            }
+        }
+
+
 
         /// <summary>
         /// Имя сборки, из которого запущенно приложение (имя exe файла) (ТОЛЬКО ЕСЛИ ЭТО НЕ COM!!!)

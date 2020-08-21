@@ -1,27 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<package>
-    <metadata>
-        <id>Cav.Core</id>
-        <version>0.0.0</version>
-        <title>Cav.Core</title>
-        <authors>ChernenkoAV</authors>
-        <owners>ChernenkoAV</owners>
-        <license type="expression">MIT</license>
-        <projectUrl>https://github.com/ChernenkoAV/CavLibrarys</projectUrl>
-        <icon>images\Cav.png</icon>
-        <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>A set of utilities that facilitate routine operations</description>
-        <copyright>Copyright 2020</copyright>
-        <releaseNotes></releaseNotes>
-        <tags>Cav utils soap смев smev</tags>
-        <dependencies>
-            <group targetFramework="net461"></group>
-        </dependencies> 
-    </metadata>
-    <files>
-        <file src="..\..\Cav.png" target="images\" />
-        <file src="net461\Cav.Core.dll" target="lib\net461\" />
-        <file src="net461\Cav.Core.pdb" target="lib\net461\" />
-        <file src="net461\Cav.Core.xml" target="lib\net461\" />
-    </files>	
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+	<metadata>
+		<id>Cav.Core</id>
+		<version>0.0.0</version>
+		<title>Cav.Core</title>
+		<authors>ChernenkoAV</authors>
+		<owners>ChernenkoAV</owners>
+		<license type="expression">MIT</license>
+		<projectUrl>https://github.com/ChernenkoAV/CavLibrarys</projectUrl>
+		<icon>images\Cav.png</icon>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>A set of utilities that facilitate routine operations</description>
+		<copyright>Copyright 2020</copyright>
+		<releaseNotes/>
+		<tags>Cav utils soap смев smev</tags>
+		<dependencies>
+			<group targetFramework="net461"/>
+		</dependencies>
+		<repository type="git" url="https://github.com/ChernenkoAV/CavLibrarys"/>
+	</metadata>
+	<files>
+		<file src="..\..\Cav.png" target="images\"/>
+		<file src="net461\Cav.Core.dll" target="lib\net461\"/>
+		<file src="net461\Cav.Core.pdb" target="lib\net461\"/>
+		<file src="net461\Cav.Core.xml" target="lib\net461\"/>
+	</files>
 </package>

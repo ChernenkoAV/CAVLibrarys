@@ -21,6 +21,9 @@ namespace Cav
         /// <param name="Path">Полный путь для удаления</param>
         public static void DeleteDirectory(String Path)
         {
+            if (!Directory.Exists(Path))
+                return;
+
             var directory = new DirectoryInfo(Path) { Attributes = FileAttributes.Normal };
 
             foreach (var info in directory.GetFileSystemInfos("*", SearchOption.AllDirectories))

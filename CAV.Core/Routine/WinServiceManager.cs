@@ -117,6 +117,11 @@ namespace Cav.WinService
         public static void AddEventView(String source, String nameView, String descriptionView)
         {
             String filepath = Path.Combine(@"c:\ProgramData\Microsoft\Event Viewer\Views\", source.ReplaceInvalidPathChars() + ".xml");
+
+            var pathViews = Path.GetDirectoryName(filepath);
+            if (!Directory.Exists(pathViews))
+                Directory.CreateDirectory(pathViews);
+
             if (File.Exists(filepath))
                 File.Delete(filepath);
 

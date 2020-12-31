@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Threading;
 
 namespace Cav
 {
@@ -25,17 +26,15 @@ namespace Cav
             if (connectionName.IsNullOrWhiteSpace())
                 connectionName = DomainContext.defaultNameConnection;
 
-            if (!rootTran.HasValue)
-                rootTran = currentTran;
+            if (!rootTran.Value.HasValue)
+                rootTran.Value = currentTran;
 
-            if (rootTran != currentTran)
+            if (rootTran.Value != currentTran)
                 return;
 
             if (TransactionGet(connectionName) == null)
             {
-                if (transactions == null)
-                    transactions = new Dictionary<string, DbTransaction>();
-                transactions.Add(connectionName, DbTransactionScope.Connection(connectionName).BeginTransaction());
+                transactions.Value.Add(connectionName, DbTransactionScope.Connection(connectionName).BeginTransaction());
                 this.connName = connectionName;
             }
 
@@ -43,12 +42,10 @@ namespace Cav
 
         private Boolean complete = false;
         private String connName = null;
+        private static ThreadLocal<Guid?> rootTran = new ThreadLocal<Guid?>(() => null);
 
-        [ThreadStatic]
-        private static Guid? rootTran = null;
-
-        [ThreadStatic]
-        private static Dictionary<String, DbTransaction> transactions;
+        private static ThreadLocal<Dictionary<String, DbTransaction>> transactions =
+            new ThreadLocal<Dictionary<string, DbTransaction>>(() => new Dictionary<string, DbTransaction>());
 
         private readonly Guid currentTran;
 
@@ -69,10 +66,7 @@ namespace Cav
                 connectionName = DomainContext.defaultNameConnection;
 
             DbTransaction tran = null;
-            if (transactions == null)
-                transactions = new Dictionary<string, DbTransaction>();
-
-            transactions.TryGetValue(connectionName, out tran);
+            transactions.Value.TryGetValue(connectionName, out tran);
             return tran;
         }
 
@@ -100,7 +94,7 @@ namespace Cav
 
             if (tran != null && !complete)
             {
-                transactions.Remove(connName);
+                transactions.Value.Remove(connName);
                 rootTran = null;
 
                 var conn = tran.Connection;
@@ -117,13 +111,13 @@ namespace Cav
                 }
             }
 
-            if (rootTran != currentTran)
+            if (rootTran.Value != currentTran)
                 return;
 
             tran = TransactionGet(connName);
             if (tran != null)
             {
-                transactions.Remove(connName);
+                transactions.Value.Remove(connName);
                 rootTran = null;
 
                 var conn = tran.Connection;

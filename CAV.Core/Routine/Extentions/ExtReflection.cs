@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace Cav.ReflectHelpers
     /// <summary>
     /// Расширения упрощения вызовов рефлексии
     /// </summary>
-    public static class ReflectHelpers
+    public static class ExtReflection
     {
         /// <summary>
         /// Получения значения свойства у объекта
@@ -166,5 +167,14 @@ namespace Cav.ReflectHelpers
             var mi = rtType.GetMethod(methodName, args.Select(x => x.GetType()).ToArray());
             return mi.Invoke(null, args);
         }
+
+        /// <summary>
+        /// Получение генерик-типа из генерик-коллекции или массива. 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns>Первый генерик-тип в перечеслении</returns>
+        public static Type GetEnumeratedType(this Type type) =>
+            type.GetElementType() ??
+            (typeof(IEnumerable).IsAssignableFrom(type) ? type.GenericTypeArguments.FirstOrDefault() : null);
     }
 }

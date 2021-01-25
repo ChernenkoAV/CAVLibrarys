@@ -12,7 +12,7 @@
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
-  </PropertyGroup> 
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugNet461|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -95,6 +95,7 @@
     <Compile Include="Routine\Extentions\ExtDateTime.cs" />
     <Compile Include="Routine\Extentions\ExtEnum.cs" />
     <Compile Include="Routine\Extentions\ExtException.cs" />
+    <Compile Include="Routine\Extentions\ExtExpressionTree.cs" />
     <Compile Include="Routine\Extentions\ExtGZip.cs" />
     <Compile Include="Routine\Extentions\ExtMD5.cs" />
     <Compile Include="Routine\Extentions\ExtNetJSON.cs" />
@@ -104,7 +105,7 @@
     <Compile Include="Routine\PredicateBuilder.cs" />
     <Compile Include="Routine\ProductionCalendar.cs" />
     <Compile Include="Routine\ProgramSettingsBase.cs" />
-    <Compile Include="Routine\ReflectHelpers.cs" />
+    <Compile Include="Routine\Extentions\ExtReflection.cs" />
     <Compile Include="Routine\WinServiceManager.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Routine\DomainContext.cs" />

@@ -95,7 +95,7 @@ namespace Cav
             if (tran != null && !complete)
             {
                 transactions.Value.Remove(connName);
-                rootTran = null;
+                rootTran.Value = null;
 
                 var conn = tran.Connection;
                 if (conn != null)
@@ -118,7 +118,7 @@ namespace Cav
             if (tran != null)
             {
                 transactions.Value.Remove(connName);
-                rootTran = null;
+                rootTran.Value = null;
 
                 var conn = tran.Connection;
                 if (conn != null)

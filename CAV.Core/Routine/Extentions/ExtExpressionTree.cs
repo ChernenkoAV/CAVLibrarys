@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using System.Xml.Linq;
 using Cav.ReflectHelpers;
 
-namespace Cav.Routine.Extentions
+namespace Cav
 {
     /// <summary>
     /// Расширения-хелперы для построения деревьев выражений

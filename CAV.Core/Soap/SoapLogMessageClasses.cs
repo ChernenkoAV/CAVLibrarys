@@ -96,21 +96,18 @@ namespace Cav.Soap
 
     internal class SoapMessageInspector : IDispatchMessageInspector, IClientMessageInspector
     {
-        [ThreadStatic]
-        public static Correlation Headers;
-
-        internal SoapMessageInspector(ServiceHostBase ServiceHost)
+        internal SoapMessageInspector(ServiceHostBase serviceHost)
         {
             try // на тот случай, если умудрились сделать конструктор службы с параметрами...
             {
-                implementationLog = Activator.CreateInstance(ServiceHost.Description.ServiceType) as ISoapPackageLog;
+                implementationLog = Activator.CreateInstance(serviceHost.Description.ServiceType) as ISoapPackageLog;
             }
             catch { }
         }
 
-        internal SoapMessageInspector(ISoapPackageLog LoggerInstanse)
+        internal SoapMessageInspector(ISoapPackageLog loggerInstanse)
         {
-            implementationLog = LoggerInstanse;
+            implementationLog = loggerInstanse;
         }
 
         ISoapPackageLog implementationLog = null;
@@ -119,21 +116,26 @@ namespace Cav.Soap
 
         public object AfterReceiveRequest(ref Message request, IClientChannel channel, InstanceContext instanceContext)
         {
-            //File.AppendAllText(@"d:\br.txt", " request != null" + (request != null).ToString() + Environment.NewLine);
 
+            var corObj = new Correlation();
 
-            Headers = new Correlation();
-            Headers.Action = request.Headers.Action;
-            Headers.To = request.Headers.To;
+            // посмотреть, что за хост в instanceContext.
+            // если WebServiceHost, то вытянуть тип операции (GET, POST и тд.), а также uri запроса
+            // Иначе выдернуть в ServiceHost имя орепации.
+
+            // Тело Message получить через GetBody<String>()
+
+            corObj.Action = request.Headers.Action;
+            corObj.To = request.Headers.To;
             try
             {
-                Headers.From = ((RemoteEndpointMessageProperty)OperationContext.Current.IncomingMessageProperties["RemoteEndpointMessageProperty.Name"]).Address;
+                corObj.From = ((RemoteEndpointMessageProperty)OperationContext.Current.IncomingMessageProperties["RemoteEndpointMessageProperty.Name"]).Address;
             }
             catch // Не получилось.. Ну и ладно. а жаль...
             { }
 
             //if (implementationLog == null)
-            return null;
+            return corObj;
 
             //Correlation CorrelationObject = Headers;
             //MessageBuffer buff = null;
@@ -225,42 +227,38 @@ namespace Cav.Soap
             if (implementationLog == null)
                 return null;
 
-            Correlation CorrelationObject = new Correlation();
-            MessageBuffer buff = null;
+            Correlation correlationObject = new Correlation();
+            var buff = request.CreateBufferedCopy(int.MaxValue);
+            request = buff.CreateMessage();
+            var prRequest = buff.CreateMessage();
+            buff.Close();
 
             try
             {
-
-                buff = request.CreateBufferedCopy(int.MaxValue);
-
-                CorrelationObject.MessageID = Guid.NewGuid();
-                CorrelationObject.Action = OperationAction.Action;
-                CorrelationObject.To = channel.RemoteAddress.Uri;
-                CorrelationObject.From = "Client";
+                correlationObject.MessageID = Guid.NewGuid();
+                correlationObject.Action = OperationAction.Action;
+                correlationObject.To = channel.RemoteAddress.Uri;
+                correlationObject.From = "Client";
 
                 StringBuilder sb = new StringBuilder();
 
                 using (var sw = new StringWriter(sb))
                 using (var xtw = new XmlTextWriter(sw))
-                    buff.CreateMessage().WriteMessage(xtw);
+                    prRequest.WriteMessage(xtw);
 
                 var sp = new SoapPackage(
-                    Action: CorrelationObject.Action,
+                    Action: correlationObject.Action,
                     Message: sb.ToString(),
                     Direction: DirectionMessage.Send,
-                    To: CorrelationObject.To,
-                    From: CorrelationObject.From,
-                    MessageID: CorrelationObject.MessageID);
+                    To: correlationObject.To,
+                    From: correlationObject.From,
+                    MessageID: correlationObject.MessageID);
 
                 ExecLogThreadHelper.WriteLog(implementationLog, sp);
             }
             catch { }
-            finally
-            {
-                request = buff.CreateMessage();
-            }
 
-            return CorrelationObject;
+            return correlationObject;
         }
 
         public void AfterReceiveReply(ref Message reply, object correlationState)
@@ -269,18 +267,18 @@ namespace Cav.Soap
                 return;
 
             Correlation CorrelationObject = (Correlation)correlationState;
-            MessageBuffer buff = null;
+            MessageBuffer buff = reply.CreateBufferedCopy(int.MaxValue);
+            reply = buff.CreateMessage();
+            var prRelpy = buff.CreateMessage();
+            buff.Close();
 
             try
             {
-
-                buff = reply.CreateBufferedCopy(int.MaxValue);
-
                 StringBuilder sb = new StringBuilder();
 
                 using (var sw = new StringWriter(sb))
                 using (var xtw = new XmlTextWriter(sw))
-                    buff.CreateMessage().WriteMessage(xtw);
+                    prRelpy.WriteMessage(xtw);
 
                 var sp = new SoapPackage(
                         Action: CorrelationObject.Action,
@@ -293,10 +291,6 @@ namespace Cav.Soap
                 ExecLogThreadHelper.WriteLog(implementationLog, sp);
             }
             catch { }
-            finally
-            {
-                reply = buff.CreateMessage();
-            }
         }
 
         #endregion

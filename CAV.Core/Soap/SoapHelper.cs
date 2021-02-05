@@ -294,7 +294,7 @@ namespace Cav.Soap
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="client"></param>
-        [Obsolete("Deprecated. Will be deleted. Use WrapClient<T>", true)]
+        [Obsolete("Deprecated. Will be deleted. Use WrapClient<T>")]
         public static void CloseClient<T>(this T client) where T : class, ICommunicationObject, IDisposable
         {
             if (client == null)

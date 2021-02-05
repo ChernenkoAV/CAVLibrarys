@@ -109,7 +109,6 @@
     <Compile Include="Routine\WinServiceManager.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Routine\DomainContext.cs" />
-    <Compile Include="Routine\ErrorCatcher.cs" />
     <Compile Include="Routine\Utils.cs" />
     <Compile Include="Soap\FixatePrefixNamespace.cs" />
     <Compile Include="Soap\ServiceErrorHandler.cs" />

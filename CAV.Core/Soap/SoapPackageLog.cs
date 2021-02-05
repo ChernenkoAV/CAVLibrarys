@@ -49,7 +49,7 @@ namespace Cav.Soap
         /// </summary>
         public DirectionMessage Direction { get; private set; }
         /// <summary>
-        /// Целевая конечная точа сообщения
+        /// Целевая конечная точка сообщения
         /// </summary>
         public Uri To { get; private set; }
         /// <summary>

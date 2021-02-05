@@ -24,7 +24,7 @@ namespace Cav.Soap
         /// <summary>
         /// Экземпляр клиента
         /// </summary>
-        public T Client { get { return client; } }
+        public T Client => client;
 
         #region Члены IDisposable
 
@@ -33,7 +33,19 @@ namespace Cav.Soap
         /// </summary>
         public void Dispose()
         {
-            client.CloseClient();
+            if (client == null)
+                return;
+
+            if (client.State == CommunicationState.Faulted)
+            {
+                client.Abort();
+            }
+            else if (client.State != CommunicationState.Closed)
+            {
+                client.Close();
+            }
+
+            client.Dispose();
         }
 
         #endregion

@@ -85,6 +85,4 @@ namespace Cav.Soap
         /// </summary> 
         Send
     }
-
-
 }

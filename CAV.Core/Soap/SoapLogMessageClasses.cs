@@ -6,8 +6,8 @@ using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
+using Cav.Wcf;
 
 namespace Cav.Soap
 {
@@ -28,30 +28,6 @@ namespace Cav.Soap
         Hz = 0,
         ClientDirection = 1,
         ServiceDirection = 2
-    }
-
-    /// <summary>
-    /// Хелпер для запуска метода логирования в потоке
-    /// </summary>
-    internal static class ExecLogThreadHelper
-    {
-        public static void WriteLog(ISoapPackageLog logger, SoapPackage p)
-        {
-            if (logger == null)
-                return;
-            (new Task(ac, Tuple.Create(logger, p))).Start();
-        }
-
-        private static void ac(Object a)
-        {
-            try
-            {
-                var par = (Tuple<ISoapPackageLog, SoapPackage>)a;
-                par.Item1.ActionLog(par.Item2);
-            }
-            catch
-            { }
-        }
     }
 
     internal class OperationAction : IParameterInspector

@@ -4,7 +4,7 @@ using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
 
-namespace Cav.Soap
+namespace Cav.Wcf
 {
     internal class ServiceInstanceProvider : IServiceBehavior
     {

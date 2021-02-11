@@ -6,13 +6,12 @@ using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
 using System.Xml;
 
-namespace Cav.Soap
+namespace Cav.Wcf
 {
     internal class FixatePrefixMessage : Message
     {
         private readonly Message message;
         private readonly FixatePrefixMessageFormatter formatter;
-
         public FixatePrefixMessage(Message message, FixatePrefixMessageFormatter formatter)
         {
             this.message = message;
@@ -33,13 +32,13 @@ namespace Cav.Soap
 
         protected override void OnWriteStartBody(XmlDictionaryWriter writer)
         {
-            var soapNS = this.formatter.Namespaces.FirstOrDefault(x => x.Value == SoapHelper.Soap11Namespace);
+            var soapNS = this.formatter.Namespaces.FirstOrDefault(x => x.Value == WcfHelpers.Soap11Namespace);
             if (soapNS.Value.IsNullOrWhiteSpace())
-                soapNS = new KeyValuePair<string, string>("s", SoapHelper.Soap11Namespace);
+                soapNS = new KeyValuePair<string, string>("s", WcfHelpers.Soap11Namespace);
 
             writer.WriteStartElement(soapNS.Key, "Body", soapNS.Value);
 
-            foreach (var item in this.formatter.Namespaces.Where(x => x.Value != SoapHelper.Soap11Namespace).ToArray())
+            foreach (var item in this.formatter.Namespaces.Where(x => x.Value != WcfHelpers.Soap11Namespace).ToArray())
                 writer.WriteAttributeString("xmlns", item.Key, null, item.Value);
         }
         protected override void OnWriteBodyContents(XmlDictionaryWriter writer)
@@ -48,13 +47,13 @@ namespace Cav.Soap
         }
         protected override void OnWriteStartEnvelope(XmlDictionaryWriter writer)
         {
-            var soapNS = this.formatter.Namespaces.FirstOrDefault(x => x.Value == SoapHelper.Soap11Namespace);
+            var soapNS = this.formatter.Namespaces.FirstOrDefault(x => x.Value == WcfHelpers.Soap11Namespace);
             if (soapNS.Value.IsNullOrWhiteSpace())
-                soapNS = new KeyValuePair<string, string>("s", SoapHelper.Soap11Namespace);
+                soapNS = new KeyValuePair<string, string>("s", WcfHelpers.Soap11Namespace);
 
             writer.WriteStartElement(soapNS.Key, "Envelope", soapNS.Value);
 
-            foreach (var item in this.formatter.Namespaces.Where(x => x.Value != SoapHelper.Soap11Namespace).ToArray())
+            foreach (var item in this.formatter.Namespaces.Where(x => x.Value != WcfHelpers.Soap11Namespace).ToArray())
                 writer.WriteAttributeString("xmlns", item.Key, null, item.Value);
         }
     }

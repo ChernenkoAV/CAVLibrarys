@@ -8,7 +8,7 @@ using System.ServiceModel.Security;
 using System.Text;
 using System.Xml;
 using Cav.ReflectHelpers;
-using Cav.Soap;
+using Cav.Wcf;
 
 namespace Cav.DigitalSignature
 {
@@ -225,6 +225,7 @@ namespace Cav.DigitalSignature
         /// </summary>
         /// <param name="Xml"></param>
         /// <returns></returns>
+        [Obsolete("Будет удалено. Альтернативы нет, сами кодте")]
         public static String ViewDSigSMEV(String Xml)
         {
             if (String.IsNullOrWhiteSpace(Xml))
@@ -280,7 +281,7 @@ namespace Cav.DigitalSignature
                         continue;
                     }
 
-                    if (areasign.NamespaceURI.Contains(SoapHelper.Soap11Namespace) & areasign.LocalName == "Body")
+                    if (areasign.NamespaceURI.Contains(WcfHelpers.Soap11Namespace) & areasign.LocalName == "Body")
                     {
                         ResText.AppendLine("  Тело сообщения");
                         continue;
@@ -385,200 +386,6 @@ namespace Cav.DigitalSignature
 
         #endregion
 
-
-        //TODO причесать GostAlgorithmSuite относительно CPSignedXml
-
-        ///// <summary>
-        /////  Набор алгоритмов безопасности по российским ГОСТ. Продублировано(вырезано) для исключения подключения сборок КриптоПро
-        ///// </summary>
-        //public class GostAlgorithmSuite : SecurityAlgorithmSuite
-        //{
-        //    private static SecurityAlgorithmSuite _basicGost;
-        //    private static SecurityAlgorithmSuite _basicGostObsolete;
-
-        //    private bool useOldAlgorithSuite;
-
-        //    protected GostAlgorithmSuite()
-        //    {
-        //    }
-
-        //    protected GostAlgorithmSuite(bool useOldAlgorithmSuite)
-        //    {
-        //        this.useOldAlgorithSuite = useOldAlgorithmSuite;
-        //    }
-
-        //    public override bool IsAsymmetricKeyLengthSupported(int length)
-        //    {
-        //        return (length == 0x200);
-        //    }
-
-        //    public override bool IsAsymmetricKeyWrapAlgorithmSupported(string algorithm)
-        //    {
-        //        return (algorithm == this.DefaultAsymmetricKeyWrapAlgorithm);
-        //    }
-
-        //    public override bool IsAsymmetricSignatureAlgorithmSupported(string algorithm)
-        //    {
-        //        return (algorithm == this.DefaultAsymmetricSignatureAlgorithm);
-        //    }
-
-        //    public override bool IsDigestAlgorithmSupported(string algorithm)
-        //    {
-        //        return (algorithm == this.DefaultDigestAlgorithm);
-        //    }
-
-        //    public override bool IsEncryptionAlgorithmSupported(string algorithm)
-        //    {
-        //        return (algorithm == this.DefaultEncryptionAlgorithm);
-        //    }
-
-        //    public override bool IsEncryptionKeyDerivationAlgorithmSupported(string algorithm)
-        //    {
-        //        return (algorithm == "urn:ietf:params:xml:ns:cpxmlsec:algorithms:dk-p-gostr3411");
-        //    }
-
-        //    public override bool IsSignatureKeyDerivationAlgorithmSupported(string algorithm)
-        //    {
-        //        return (algorithm == "urn:ietf:params:xml:ns:cpxmlsec:algorithms:dk-p-gostr3411");
-        //    }
-
-        //    public override bool IsSymmetricKeyLengthSupported(int length)
-        //    {
-        //        return (length == this.DefaultSymmetricKeyLength);
-        //    }
-
-        //    public override bool IsSymmetricKeyWrapAlgorithmSupported(string algorithm)
-        //    {
-        //        return (algorithm == this.DefaultSymmetricKeyWrapAlgorithm);
-        //    }
-
-        //    public override bool IsSymmetricSignatureAlgorithmSupported(string algorithm)
-        //    {
-        //        return (algorithm == this.DefaultSymmetricSignatureAlgorithm);
-        //    }
-
-        //    public static SecurityAlgorithmSuite BasicGost
-        //    {
-        //        get
-        //        {
-        //            if (_basicGost == null)
-        //            {
-        //                SecurityAlgorithmSuite suite = new GostAlgorithmSuite();
-        //                Interlocked.CompareExchange<SecurityAlgorithmSuite>(ref _basicGost, suite, null);
-        //            }
-        //            return _basicGost;
-        //        }
-        //    }
-
-        //    public static SecurityAlgorithmSuite BasicGostObsolete
-        //    {
-        //        get
-        //        {
-        //            if (_basicGostObsolete == null)
-        //            {
-        //                SecurityAlgorithmSuite suite = new GostAlgorithmSuite(true);
-        //                Interlocked.CompareExchange<SecurityAlgorithmSuite>(ref _basicGostObsolete, suite, null);
-        //            }
-        //            return _basicGostObsolete;
-        //        }
-        //    }
-
-        //    public override string DefaultAsymmetricKeyWrapAlgorithm
-        //    {
-        //        get
-        //        {
-        //            return "urn:ietf:params:xml:ns:cpxmlsec:algorithms:transport-gost2001";
-        //        }
-        //    }
-
-        //    public override string DefaultAsymmetricSignatureAlgorithm
-        //    {
-        //        get
-        //        {
-        //            if (this.useOldAlgorithSuite)
-        //            {
-        //                return "http://www.w3.org/2001/04/xmldsig-more#gostr34102001-gostr3411";
-        //            }
-        //            return "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34102001-gostr3411";
-        //        }
-        //    }
-
-        //    public override string DefaultCanonicalizationAlgorithm
-        //    {
-        //        get
-        //        {
-        //            return SecurityAlgorithmSuite.Default.DefaultCanonicalizationAlgorithm;
-        //        }
-        //    }
-
-        //    public override string DefaultDigestAlgorithm
-        //    {
-        //        get
-        //        {
-        //            if (this.useOldAlgorithSuite)
-        //            {
-        //                return "http://www.w3.org/2001/04/xmldsig-more#gostr3411";
-        //            }
-        //            return "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr3411";
-        //        }
-        //    }
-
-        //    public override string DefaultEncryptionAlgorithm
-        //    {
-        //        get
-        //        {
-        //            return "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gost28147";
-        //        }
-        //    }
-
-        //    public override int DefaultEncryptionKeyDerivationLength
-        //    {
-        //        get
-        //        {
-        //            return this.DefaultSymmetricKeyLength;
-        //        }
-        //    }
-
-        //    public override int DefaultSignatureKeyDerivationLength
-        //    {
-        //        get
-        //        {
-        //            return this.DefaultSymmetricKeyLength;
-        //        }
-        //    }
-
-        //    public override int DefaultSymmetricKeyLength
-        //    {
-        //        get
-        //        {
-        //            return 0x100;
-        //        }
-        //    }
-
-        //    public override string DefaultSymmetricKeyWrapAlgorithm
-        //    {
-        //        get
-        //        {
-        //            return "urn:ietf:params:xml:ns:cpxmlsec:algorithms:kw-cp";
-        //        }
-        //    }
-
-        //    public override string DefaultSymmetricSignatureAlgorithm
-        //    {
-        //        get
-        //        {
-        //            return "urn:ietf:params:xml:ns:cpxmlsec:algorithms:hmac-gostr3411";
-        //        }
-        //    }
-        //    public bool IsObsoleteAlgorithSuite
-        //    {
-        //        get
-        //        {
-        //            return this.useOldAlgorithSuite;
-        //        }
-        //    }
-
-        //}
 
     }
 }

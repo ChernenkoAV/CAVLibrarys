@@ -4,11 +4,11 @@ using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
 using System.Threading.Tasks;
 
-namespace Cav.Soap
+namespace Cav.Wcf
 {
-    internal class SoapParameterInspector : IParameterInspector, IEndpointBehavior
+    internal class ServiceParameterInspector : IParameterInspector, IEndpointBehavior
     {
-        public SoapParameterInspector(Func<object[], object> beforeCall, Action<string, object> afterCall)
+        public ServiceParameterInspector(Func<object[], object> beforeCall, Action<string, object> afterCall)
         {
             this.beforeCall = beforeCall;
             this.afterCall = afterCall;

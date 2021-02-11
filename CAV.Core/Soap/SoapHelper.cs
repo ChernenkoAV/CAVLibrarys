@@ -10,6 +10,7 @@ using System.ServiceModel.Security;
 using System.Xml.Linq;
 using Cav.DigitalSignature;
 using Cav.ReflectHelpers;
+using Cav.Wcf;
 
 namespace Cav.Soap
 {
@@ -23,6 +24,7 @@ namespace Cav.Soap
         /// </summary>
         /// <param name="communicationObject">Объект коомуникации</param>
         /// <param name="xmlNamespaces">Набор значений "префикс - пространство имен"</param>
+        //[Obsolete("Deprecated. Will be deleted. Use namespace Cav.Wcf")]
         public static void FixatePrefixNamespace<T>(
                 this T communicationObject,
                 Dictionary<String, XNamespace> xmlNamespaces)
@@ -67,6 +69,7 @@ namespace Cav.Soap
         /// </summary>
         /// <param name="servhost">Хост службы</param>
         /// <param name="errorHandler">Обработчик ошибок</param>
+        //[Obsolete("Deprecated. Will be deleted. Use namespace Cav.Wcf")]
         public static void AddErrorHandler(this ServiceHostBase servhost, Action<Exception> errorHandler)
         {
             if (errorHandler == null)
@@ -84,6 +87,7 @@ namespace Cav.Soap
         /// <param name="communicationObject">Экземпляр объекта комуникации</param>
         /// <param name="beforeCall">Функтор. Выполняется снхронно. Принимает входные параметры вызываемого метода. Должен вернуть объект кореляции между вызовами BeforeCall и AfterCall (correlationState) </param>
         /// <param name="afterCall">Делегат обработки, вызываемый после отработки метода сервиса. Принимает имя метода и объект кореляции (correlationState)</param>
+        //[Obsolete("Deprecated. Will be deleted. Use namespace Cav.Wcf")]
         public static void AddOperationInspector<T>(
             this T communicationObject,
             Func<object[], object> beforeCall,
@@ -95,7 +99,7 @@ namespace Cav.Soap
             if (beforeCall == null & afterCall == null)
                 throw new ArgumentNullException("Parametrs 'beforeCall' and 'afterCall' is null ");
 
-            var psi = new SoapParameterInspector(beforeCall, afterCall);
+            var psi = new ServiceParameterInspector(beforeCall, afterCall);
 
             if ((communicationObject as ServiceHostBase) != null)
             {
@@ -115,6 +119,7 @@ namespace Cav.Soap
         /// </summary>
         /// <param name="servHost">Хост службы</param>
         /// <param name="instanceProvider">Экземпляр провайдера</param>
+        //[Obsolete("Deprecated. Will be deleted. Use namespace Cav.Wcf")]
         public static void AddInstanceProvider(this ServiceHostBase servHost, IInstanceProvider instanceProvider)
         {
             if (servHost == null)
@@ -130,13 +135,6 @@ namespace Cav.Soap
 
         #endregion
 
-        ///// <summary>
-        ///// Для клиентов, написаных на базе System.Web.Services.Protocols.SoapHttpClientProtocol
-        ///// </summary>
-        //public static void Add(SoapHttpClientProtocol InstanseClient, Type TypeLogger)
-        //{ 
-
-        //}      
 
         /// <summary>
         /// Создание клиента в обертке в котором сообщение подписывается(На базе биндинга для СМЭВ)
@@ -154,7 +152,7 @@ namespace Cav.Soap
         /// <param name="proxy">Прокси для клиента</param>
         /// <param name="sendTimeout">Таймаут работы клиента</param>
         /// <param name="allowInsecureTransport">Можно ли отправлять сообщения в смешанном режиме безопасности</param>
-        /// <returns>Обертка с клиентом</returns>
+        /// <returns>Обертка с клиентом</returns>        
         public static WrapClient<T> CreateSmevClient<T>(
             String uri,
             X509Certificate2 clientSert,
@@ -237,7 +235,7 @@ namespace Cav.Soap
         /// <param name="sendTimeout">Таймаут посыла сообщения</param>
         /// <param name="credentialsUserName">Логин</param>
         /// <param name="credentialsUserPass">Пароль</param>
-        /// <returns></returns>
+        /// <returns></returns>        
         public static WrapClient<T> CreateBasicClient<T>(
             String uri,
             String proxy = null,
@@ -323,7 +321,7 @@ namespace Cav.Soap
         /// <param name="recipientActor">Актор клиента</param>
         /// <param name="algorithmSuite">Если null, то берется <see cref="CryptoProRutine.CriptoProBasicGostObsolete"/></param>
         /// <param name="loggerInstance">Экземпляр объекта, реализующего <see cref="ISoapPackageLog"/> для логирования</param>
-        /// <returns></returns>
+        /// <returns></returns>        
         public static ServiceHost CreateSmevHost(
             Type implementType,
             Uri endpointUri,

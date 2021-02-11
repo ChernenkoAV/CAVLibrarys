@@ -67,6 +67,7 @@
     <Reference Include="System.Security" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceModel.Activation" />
+    <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
@@ -110,20 +111,24 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Routine\DomainContext.cs" />
     <Compile Include="Routine\Utils.cs" />
-    <Compile Include="Soap\FixatePrefixNamespace.cs" />
-    <Compile Include="Soap\ServiceErrorHandler.cs" />
-    <Compile Include="Soap\ServiceInstanceProvider.cs" />
-    <Compile Include="Soap\ServiceParameterInspector.cs" />
     <Compile Include="Soap\SmevClientBinding.cs" />
+    <Compile Include="Soap\WrapClient.cs" />
+    <Compile Include="Wcf\ExecLogThreadHelper.cs" />
+    <Compile Include="Wcf\FixatePrefixNamespace.cs" />
+    <Compile Include="Wcf\LogMessageCaller.cs" />
+    <Compile Include="Wcf\ServiceErrorHandler.cs" />
+    <Compile Include="Wcf\ServiceInstanceProvider.cs" />
+    <Compile Include="Wcf\ServiceParameterInspector.cs" />
     <Compile Include="Soap\SoapHelper.cs" />
     <Compile Include="Soap\SoapLogMessageClasses.cs" />
     <Compile Include="Soap\SoapPackageLog.cs" />
-    <Compile Include="Soap\WrapClient.cs" />
-    <Compile Include="Soap\разобраться.cs" />
+    <Compile Include="Wcf\MessageLogData.cs" />
+    <Compile Include="Wcf\WcfHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Cav.snk" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if $(ConfigurationName)==Release PowerShell -NoProfile -ExecutionPolicy Bypass -Command "&amp; '$(SolutionDir)nuspec\CreatePackage.ps1' -ProjectPath '$(ProjectPath)' -MSBuid '$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)'</PostBuildEvent>

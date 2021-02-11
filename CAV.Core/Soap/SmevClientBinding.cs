@@ -12,6 +12,7 @@ using System.ServiceModel.Security.Tokens;
 using System.Text;
 using System.Xml;
 using Cav.DigitalSignature;
+using Cav.Wcf;
 
 namespace Cav.Soap
 {

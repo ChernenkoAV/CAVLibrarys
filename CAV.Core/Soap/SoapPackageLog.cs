@@ -7,6 +7,7 @@ namespace Cav.Soap
     /// Реализовывать: в сервисе - в реализации интерфеса контракта
     /// 
     /// </summary>
+    [Obsolete("Deprecated. Will be deleted")]
     public interface ISoapPackageLog
     {
         /// <summary>
@@ -18,6 +19,7 @@ namespace Cav.Soap
     /// <summary>
     /// Инкапсуляция параметров пакета
     /// </summary>
+    [Obsolete("Deprecated. Will be deleted.")]
     public class SoapPackage
     {
         internal SoapPackage(
@@ -74,6 +76,7 @@ namespace Cav.Soap
     /// <summary>
     /// Направление сообщения
     /// </summary>
+    [Obsolete("Deprecated. Will be deleted")]
     public enum DirectionMessage
     {
         /// <summary>

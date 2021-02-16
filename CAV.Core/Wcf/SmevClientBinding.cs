@@ -12,15 +12,13 @@ using System.ServiceModel.Security.Tokens;
 using System.Text;
 using System.Xml;
 using Cav.DigitalSignature;
-using Cav.Wcf;
 
-namespace Cav.Soap
+namespace Cav.Wcf
 {
     #region Биндинг для СМЭВ
     /// <summary>
     /// Инкапсуляция настроек биндинга для СМЭВ
     /// </summary>
-    [Obsolete("Deprecated. Will be deleted. Use namespace Cav.Wcf")]
     public sealed class SmevBinding : CustomBinding
     {
         private SmevBinding() { }
@@ -35,17 +33,14 @@ namespace Cav.Soap
         /// <param name="proxy">Прокси для клиента</param>
         /// <param name="senderActor">Actor отправителя (по умолчанию <code>http://smev.gosuslugi.ru/actors/smev</code>)</param>
         /// <param name="recipientActor">Actor получателя (по умолчанию <code>http://smev.gosuslugi.ru/actors/recipient</code>)</param>
-        /// <param name="loggerInstance">Экземпляр объекта, реализующего <see cref="ISoapPackageLog"/> для логирования</param>
         /// <param name="enableUnsecuredResponse">Задает значение, указывающее, может ли отправлять и получать небезопасные ответы или безопасные запросы.</param>        
         /// <param name="allowInsecureTransport">Можно ли отправлять сообщения в смешанном режиме безопасности</param>
         /// <returns></returns>
-        [Obsolete("Deprecated. Will be deleted. Use namespace Cav.Wcf")]
         public static SmevBinding Create(
             SecurityAlgorithmSuite algorithmSuite,
             String proxy = null,
             String senderActor = null,
             String recipientActor = null,
-            ISoapPackageLog loggerInstance = null,
             Boolean enableUnsecuredResponse = false,
             Boolean allowInsecureTransport = false)
         {
@@ -63,12 +58,11 @@ namespace Cav.Soap
             basicHttpBinding.Security.Message.AlgorithmSuite = algorithmSuite;
 
             SmevBinding binding = new SmevBinding(basicHttpBinding);
-            binding.Name = "SmevBinding";
+            binding.Name = "SmevBinding_" + Guid.NewGuid().ToShortString();
 
             binding.Elements.Remove<TextMessageEncodingBindingElement>();
             binding.Elements.Insert(0, new SMEVMessageEncodingBindingElement()
             {
-                LoggerInstance = loggerInstance,
                 SenderActor = senderActor,
                 RecipientActor = recipientActor
             });
@@ -124,7 +118,7 @@ namespace Cav.Soap
             this.innerBindingElement = innerBindingElement;
         }
 
-        public ISoapPackageLog LoggerInstance { get; set; }
+
 
         private MessageEncodingBindingElement innerBindingElement;
         private MessageVersion messageVer = MessageVersion.Soap11;
@@ -146,8 +140,14 @@ namespace Cav.Soap
 
         public override MessageEncoderFactory CreateMessageEncoderFactory()
         {
-            SMEVMessageEncoderFactory sef = new SMEVMessageEncoderFactory("text/xml", "utf-8", messageVer, innerBindingElement.CreateMessageEncoderFactory(), this.SenderActor, this.RecipientActor);
-            sef.SetEvents(LoggerInstance);
+            SMEVMessageEncoderFactory sef =
+                new SMEVMessageEncoderFactory(
+                    "text/xml",
+                    "utf-8",
+                    messageVer,
+                    innerBindingElement.CreateMessageEncoderFactory(),
+                    this.SenderActor,
+                    this.RecipientActor);
             return sef;
         }
 
@@ -157,7 +157,6 @@ namespace Cav.Soap
             clone.MessageVersion = this.MessageVersion;
             clone.RecipientActor = this.RecipientActor;
             clone.SenderActor = this.SenderActor;
-            clone.LoggerInstance = this.LoggerInstance;
             return (clone);
         }
 
@@ -237,8 +236,6 @@ namespace Cav.Soap
             this.theContentType = string.Format("{0}; charset={1}", this.factory.MediaType, this.writerSettings.Encoding.HeaderName);
         }
 
-        public ISoapPackageLog LoggerInstance { get; set; }
-
         private string theContentType;
         private SMEVMessageEncoderFactory factory;
         private XmlWriterSettings writerSettings;
@@ -267,8 +264,6 @@ namespace Cav.Soap
             }
         }
 
-        private Correlation CorrelationObject = null;
-
         #region ReadMessage
 
         public override Message ReadMessage(ArraySegment<byte> buffer, BufferManager bufferManager, string contentType)
@@ -286,55 +281,14 @@ namespace Cav.Soap
             xmlDocument.PreserveWhitespace = true;
             xmlDocument.Load(stream);
 
-            #region Логирование
-
-            if (LoggerInstance != null)
-                try
-                {
-
-                    if (CorrelationObject == null)
-                    {
-                        CorrelationObject = new Correlation();
-                        CorrelationObject.Direction = Dir.ServiceDirection;
-                        CorrelationObject.MessageID = Guid.NewGuid();
-
-                        //CorrelationObject.Action = SoapMessageInspector.Headers.Action;
-                        //CorrelationObject.From = SoapMessageInspector.Headers.From;
-                        //CorrelationObject.To = SoapMessageInspector.Headers.To;
-                    }
-
-                    StringBuilder sb = new StringBuilder();
-                    using (var xw = XmlWriter.Create(sb, this.writerSettings))
-                        xmlDocument.WriteTo(xw);
-
-
-                    var sp = new SoapPackage(
-                        Action: CorrelationObject.Action,
-                        Message: sb.ToString(),
-                        Direction: DirectionMessage.Receive,
-                        To: CorrelationObject.To,
-                        From: CorrelationObject.From,
-                        MessageID: CorrelationObject.MessageID);
-
-                    ExecLogThreadHelper.WriteLog(LoggerInstance, sp);
-                }
-                catch { }
-                finally
-                {
-                    if (CorrelationObject != null && CorrelationObject.Direction == Dir.ClientDirection)
-                        CorrelationObject = null;
-                }
-
-            #endregion
-
             XmlNodeList secNodeList = xmlDocument.GetElementsByTagName("Security", CPSignedXml.WSSecurityWSSENamespaceUrl);
             foreach (XmlNode secNode in secNodeList)
             {
-                XmlAttribute actorAttrib = secNode.Attributes["actor", SoapHelper.Soap11Namespace];
+                XmlAttribute actorAttrib = secNode.Attributes["actor", WcfHelpers.Soap11Namespace];
                 if (actorAttrib != null && actorAttrib.Value == factory.RecipientActor)
                     secNode.Attributes.Remove(actorAttrib);
 
-                secNode.Attributes.RemoveNamedItem("mustUnderstand", SoapHelper.Soap11Namespace);
+                secNode.Attributes.RemoveNamedItem("mustUnderstand", WcfHelpers.Soap11Namespace);
             }
 
             Message res = null;
@@ -387,50 +341,11 @@ namespace Cav.Soap
             XmlNodeList SecurityXmlNodeList = xmlDocument.GetElementsByTagName("Security", CPSignedXml.WSSecurityWSSENamespaceUrl);
             foreach (XmlNode SecurityXmlNode in SecurityXmlNodeList)
             {
-                XmlAttribute actorXmlAttribute = xmlDocument.CreateAttribute("actor", SoapHelper.Soap11Namespace);
+                XmlAttribute actorXmlAttribute = xmlDocument.CreateAttribute("actor", WcfHelpers.Soap11Namespace);
                 actorXmlAttribute.Value = factory.SenderActor;
 
                 SecurityXmlNode.Attributes.Append(actorXmlAttribute);
             }
-
-            #region логирование
-
-            if (LoggerInstance != null)
-                try
-                {
-
-                    if (CorrelationObject == null)
-                    {
-                        CorrelationObject = new Correlation();
-                        CorrelationObject.Direction = Dir.ClientDirection;
-                        CorrelationObject.MessageID = Guid.NewGuid();
-                        CorrelationObject.From = "Client";
-                        CorrelationObject.To = message.Properties.Via;
-                        CorrelationObject.Action = OperationAction.Action;
-                    }
-
-                    StringBuilder sb = new StringBuilder();
-                    using (var xw = XmlWriter.Create(sb, this.writerSettings))
-                        xmlDocument.WriteTo(xw);
-
-                    var sp = new SoapPackage(
-                        Action: CorrelationObject.Action,
-                        Message: sb.ToString(),
-                        Direction: DirectionMessage.Send,
-                        To: CorrelationObject.To,
-                        From: CorrelationObject.From,
-                        MessageID: CorrelationObject.MessageID);
-
-                    ExecLogThreadHelper.WriteLog(LoggerInstance, sp);
-                }
-                catch { }
-                finally
-                {
-                    if (CorrelationObject != null && CorrelationObject.Direction == Dir.ServiceDirection)
-                        CorrelationObject = null;
-                }
-
-            #endregion
 
             using (XmlWriter xwr = XmlWriter.Create(stream, writerSettings))
                 xmlDocument.WriteTo(xwr);
@@ -480,11 +395,6 @@ namespace Cav.Soap
             this.SenderActor = senderActor;
             this.RecipientActor = recipientActor;
             theEncoder = new SMEVMessageEncoder(this);
-        }
-
-        public void SetEvents(ISoapPackageLog LoggerInstance)
-        {
-            theEncoder.LoggerInstance = LoggerInstance;
         }
 
         private MessageEncoderFactory theFactory;
@@ -544,7 +454,6 @@ namespace Cav.Soap
     /// <summary>
     /// Фабрика создания хоста в IIS. Дабы не писать всякие расширения...
     /// </summary>
-    [Obsolete("Deprecated. Will be deleted. Use namespace Cav.Wcf")]
     public abstract class SmevServiceHostFactoryBase : ServiceHostFactory
     {
         /// <summary>
@@ -647,26 +556,15 @@ namespace Cav.Soap
         {
             List<ServiceEndpoint> lse = new List<ServiceEndpoint>();
 
-            var cd = this.ImplementedContracts.Values.First();
-
-            ISoapPackageLog logger = null;
-            try
-            {
-                // TODO Переделать определение наследования интерфейса.
-                if (this.Description.ServiceType.GetInterfaces().Any(x => x == typeof(ISoapPackageLog)))
-                    logger = (ISoapPackageLog)Activator.CreateInstance(this.Description.ServiceType);
-            }
-            catch { } // Ну, не судьба....
-
             foreach (var item in this.BaseAddresses)
             {
-                var sep = this.AddServiceEndpoint(cd.ContractType, SmevBinding.Create(
-                    algorithmSuite: algorithmSuite,
-                    loggerInstance: logger,
-                    senderActor: senderActor,
-                    recipientActor: recipientActor), "");
+                var sep = this.AddServiceEndpoint(
+                    this.ImplementedContracts.Values.First().ContractType,
+                    SmevBinding.Create(
+                        algorithmSuite: algorithmSuite,
+                        senderActor: senderActor,
+                        recipientActor: recipientActor), "");
                 sep.Contract.ProtectionLevel = System.Net.Security.ProtectionLevel.Sign;
-                sep.Behaviors.Add(new SoapLogEndpointBehavior());
                 lse.Add(sep);
             }
 

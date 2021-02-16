@@ -97,6 +97,7 @@
     <Compile Include="Routine\Extentions\ExtEnum.cs" />
     <Compile Include="Routine\Extentions\ExtException.cs" />
     <Compile Include="Routine\Extentions\ExtExpressionTree.cs" />
+    <Compile Include="Routine\Extentions\ExtGuid.cs" />
     <Compile Include="Routine\Extentions\ExtGZip.cs" />
     <Compile Include="Routine\Extentions\ExtMD5.cs" />
     <Compile Include="Routine\Extentions\ExtNetJSON.cs" />
@@ -123,7 +124,9 @@
     <Compile Include="Soap\SoapLogMessageClasses.cs" />
     <Compile Include="Soap\SoapPackageLog.cs" />
     <Compile Include="Wcf\MessageLogData.cs" />
+    <Compile Include="Wcf\SmevClientBinding.cs" />
     <Compile Include="Wcf\WcfHelpers.cs" />
+    <Compile Include="Wcf\WrapClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Cav.snk" />

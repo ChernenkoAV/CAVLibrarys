@@ -34,7 +34,7 @@ namespace Cav.Wcf
 
         void IEndpointBehavior.ApplyClientBehavior(ServiceEndpoint endpoint, ClientRuntime clientRuntime)
         {
-            clientRuntime.ClientMessageInspectors.Add(this);
+            clientRuntime.MessageInspectors.Add(this);
         }
 
         void IEndpointBehavior.Validate(ServiceEndpoint endpoint) { }
@@ -213,73 +213,165 @@ namespace Cav.Wcf
 
         public object BeforeSendRequest(ref Message request, IClientChannel channel)
         {
-            //if (implementationLog == null)
-            return null;
+            var buff = request.CreateBufferedCopy(int.MaxValue);
+            request = buff.CreateMessage();
+            var msg = buff.CreateMessage();
+            buff.Close();
 
-            //Correlation correlationObject = new Correlation();
-            //var buff = request.CreateBufferedCopy(int.MaxValue);
-            //request = buff.CreateMessage();
-            //var prRequest = buff.CreateMessage();
-            //buff.Close();
+            string msgBody = null;
 
-            //try
-            //{
-            //    correlationObject.MessageID = Guid.NewGuid();
-            //    correlationObject.Action = OperationAction.Action;
-            //    correlationObject.To = channel.RemoteAddress.Uri;
-            //    correlationObject.From = "Client";
+            if (!msg.IsEmpty)
+            {
+                WebBodyFormatMessageProperty wbfmp = null;
 
-            //    StringBuilder sb = new StringBuilder();
+                if (msg.Properties.ContainsKey(WebBodyFormatMessageProperty.Name))
+                    wbfmp = (WebBodyFormatMessageProperty)msg.Properties[WebBodyFormatMessageProperty.Name];
 
-            //    using (var sw = new StringWriter(sb))
-            //    using (var xtw = new XmlTextWriter(sw))
-            //        prRequest.WriteMessage(xtw);
+                WebContentFormat format = WebContentFormat.Xml;
 
-            //    var sp = new SoapPackage(
-            //        Action: correlationObject.Action,
-            //        Message: sb.ToString(),
-            //        Direction: DirectionMessage.Send,
-            //        To: correlationObject.To,
-            //        From: correlationObject.From,
-            //        MessageID: correlationObject.MessageID);
+                if (wbfmp != null)
+                    format = wbfmp.Format;
 
-            //    ExecLogThreadHelper.WriteLog(implementationLog, sp);
-            //}
-            //catch { }
+                switch (format)
+                {
+                    case WebContentFormat.Default:
+                        msgBody = msg.ToString();
+                        break;
+                    case WebContentFormat.Xml:
+                        var sb = new StringBuilder();
+                        using (var sw = new StringWriter(sb))
+                        using (var xtw = new XmlTextWriter(sw))
+                            msg.WriteMessage(xtw);
 
-            //return correlationObject;
+                        msgBody = sb.ToString();
+                        break;
+                    case WebContentFormat.Json:
+                        using (MemoryStream ms = new MemoryStream())
+                        using (var writer = JsonReaderWriterFactory.CreateJsonWriter(ms))
+                        {
+                            msg.WriteMessage(writer);
+                            writer.Flush();
+                            msgBody = Encoding.UTF8.GetString(ms.ToArray());
+                        }
+                        break;
+                    case WebContentFormat.Raw:
+                        msgBody = Encoding.UTF8.GetString(msg.GetBody<byte[]>());
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            msg.Close();
+
+            var mID = Guid.NewGuid();
+
+            var ch = channel;
+            var ff = ch.RemoteAddress;
+
+
+            /*
+            var serviceName = curOpContext.Host.Description.Name;
+            var method = ((HttpRequestMessageProperty)curOpContext.IncomingMessageProperties[HttpRequestMessageProperty.Name])?.Method;
+
+            string action = curOpContext.IncomingMessageHeaders.Action;
+
+            string operationName = null;
+            if (curOpContext.IncomingMessageProperties.Keys.Contains("HttpOperationName"))
+                operationName = ((String)curOpContext.IncomingMessageProperties["HttpOperationName"]);
+            else
+            {
+                var operations = curOpContext.EndpointDispatcher.DispatchRuntime.Operations;
+                operationName = operations.FirstOrDefault(x => x.Action == action)?.Name;
+            }
+
+            var remp = (RemoteEndpointMessageProperty)OperationContext.Current.IncomingMessageProperties[RemoteEndpointMessageProperty.Name];
+            var from = $"{remp.Address}:{remp.Port}";
+
+            var actionFull = $"[{method}] ({serviceName}/{operationName})";
+
+            if (!action.IsNullOrWhiteSpace())
+                actionFull += $" \"{action}\"";
+
+            var sp = new MessageLogData()
+            {
+                Action = actionFull,
+                Message = msgBody,
+                MessageID = mID,
+                To = to,
+                From = from,
+                Direction = Direction.Incoming
+            };
+
+            ExecLogThreadHelper.WriteLog(logger, sp);
+            
+            */
+
+            return mID;
         }
 
         public void AfterReceiveReply(ref Message reply, object correlationState)
         {
-            //if (implementationLog == null || correlationState == null)
-            //    return;
+            var buff = reply.CreateBufferedCopy(int.MaxValue);
+            reply = buff.CreateMessage();
+            var msg = buff.CreateMessage();
 
-            //Correlation CorrelationObject = (Correlation)correlationState;
-            //MessageBuffer buff = reply.CreateBufferedCopy(int.MaxValue);
-            //reply = buff.CreateMessage();
-            //var prRelpy = buff.CreateMessage();
-            //buff.Close();
+            Guid mID = (Guid)correlationState;
 
-            //try
-            //{
-            //    StringBuilder sb = new StringBuilder();
+            string msgBody = null;
 
-            //    using (var sw = new StringWriter(sb))
-            //    using (var xtw = new XmlTextWriter(sw))
-            //        prRelpy.WriteMessage(xtw);
+            if (!msg.IsEmpty)
+            {
+                WebBodyFormatMessageProperty wbfmp = null;
 
-            //    var sp = new SoapPackage(
-            //            Action: CorrelationObject.Action,
-            //            Message: sb.ToString(),
-            //            Direction: DirectionMessage.Receive,
-            //            To: CorrelationObject.To,
-            //            From: CorrelationObject.From,
-            //            MessageID: CorrelationObject.MessageID);
+                if (msg.Properties.ContainsKey(WebBodyFormatMessageProperty.Name))
+                    wbfmp = (WebBodyFormatMessageProperty)msg.Properties[WebBodyFormatMessageProperty.Name];
 
-            //    ExecLogThreadHelper.WriteLog(implementationLog, sp);
-            //}
-            //catch { }
+                WebContentFormat format = WebContentFormat.Xml;
+
+                if (wbfmp != null)
+                    format = wbfmp.Format;
+
+                switch (format)
+                {
+                    case WebContentFormat.Default:
+                        msgBody = msg.ToString();
+                        break;
+                    case WebContentFormat.Xml:
+                        var sb = new StringBuilder();
+                        using (var sw = new StringWriter(sb))
+                        using (var xtw = new XmlTextWriter(sw))
+                            msg.WriteMessage(xtw);
+
+                        msgBody = sb.ToString();
+                        break;
+                    case WebContentFormat.Json:
+                        using (MemoryStream ms = new MemoryStream())
+                        using (var writer = JsonReaderWriterFactory.CreateJsonWriter(ms))
+                        {
+                            msg.WriteMessage(writer);
+                            writer.Flush();
+                            msgBody = Encoding.UTF8.GetString(ms.ToArray());
+                        }
+                        break;
+                    case WebContentFormat.Raw:
+                        msgBody = Encoding.UTF8.GetString(msg.GetBody<byte[]>());
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            msg.Close();
+
+            var sp = new MessageLogData()
+            {
+                Message = msgBody,
+                MessageID = mID,
+                Direction = Direction.Incoming
+            };
+
+            ExecLogThreadHelper.WriteLog(logger, sp);
         }
 
         #endregion

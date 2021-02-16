@@ -1,13 +1,12 @@
 ﻿using System;
 using System.ServiceModel;
 
-namespace Cav.Soap
+namespace Cav.Wcf
 {
     /// <summary>
     /// Обертка для клиентов на базе ICommunicationObject для корректного закрытия канала.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    [Obsolete("Deprecated. Will be deleted. Use namespace Cav.Wcf")]
     public class WrapClient<T> : IDisposable
         where T : class, ICommunicationObject, IDisposable
     {

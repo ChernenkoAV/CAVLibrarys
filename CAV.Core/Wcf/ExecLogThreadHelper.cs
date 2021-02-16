@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Cav.Soap;
 
 namespace Cav.Wcf
 {
@@ -9,24 +8,6 @@ namespace Cav.Wcf
     /// </summary>
     internal static class ExecLogThreadHelper
     {
-        public static void WriteLog(ISoapPackageLog logger, SoapPackage p)
-        {
-            if (logger == null)
-                return;
-
-            Task.Factory.StartNew(o =>
-            {
-                try
-                {
-                    var par = (Tuple<Action<SoapPackage>, SoapPackage>)o;
-                    par.Item1(par.Item2);
-                }
-                catch
-                { }
-            },
-            Tuple.Create<Action<SoapPackage>, SoapPackage>(logger.ActionLog, p));
-        }
-
         public static void WriteLog(Action<MessageLogData> logger, MessageLogData p)
         {
             Task.Factory.StartNew(o =>

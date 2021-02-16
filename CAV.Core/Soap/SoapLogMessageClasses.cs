@@ -275,6 +275,7 @@ namespace Cav.Soap
     /// <summary>
     /// Выполняет привязку инспектора сообщений к конкретной реализации сервиса
     /// </summary>
+    [Obsolete("Deprecated. Will be deleted")]
     public class SoapPackageLoggingBehaviorAttribute : Attribute, IServiceBehavior
     {
         #region IServiceBehavior

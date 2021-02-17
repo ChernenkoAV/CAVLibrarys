@@ -23,7 +23,19 @@ namespace Cav.Wcf
     public sealed class MessageLogData
     {
         /// <summary>
-        /// Вызываемый метод
+        /// Имя операции
+        /// </summary>
+        public string OperationName { get; set; }
+        /// <summary>
+        /// Имя сервиса (Имя контракта или имя имплементирующего класса).
+        /// </summary>
+        public String ServiceName { get; set; }
+        /// <summary>
+        /// Http метод
+        /// </summary>
+        public string Method { get; set; }
+        /// <summary>
+        /// Вызываемый метод контракта
         /// </summary>
         public String Action { get; set; }
         /// <summary>

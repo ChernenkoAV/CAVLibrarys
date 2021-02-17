@@ -47,56 +47,9 @@ namespace Cav.Wcf
         {
             var buff = request.CreateBufferedCopy(int.MaxValue);
             request = buff.CreateMessage();
-            var msg = buff.CreateMessage();
+
+            string msgBody = getBodyMessage(buff);
             buff.Close();
-
-            var to = msg.Headers.To;
-
-            string msgBody = null;
-
-            if (!msg.IsEmpty)
-            {
-                WebBodyFormatMessageProperty wbfmp = null;
-
-                if (msg.Properties.ContainsKey(WebBodyFormatMessageProperty.Name))
-                    wbfmp = (WebBodyFormatMessageProperty)msg.Properties[WebBodyFormatMessageProperty.Name];
-
-                WebContentFormat format = WebContentFormat.Xml;
-
-                if (wbfmp != null)
-                    format = wbfmp.Format;
-
-                switch (format)
-                {
-                    case WebContentFormat.Default:
-                        msgBody = msg.ToString();
-                        break;
-                    case WebContentFormat.Xml:
-                        var sb = new StringBuilder();
-                        using (var sw = new StringWriter(sb))
-                        using (var xtw = new XmlTextWriter(sw))
-                            msg.WriteMessage(xtw);
-
-                        msgBody = sb.ToString();
-                        break;
-                    case WebContentFormat.Json:
-                        using (MemoryStream ms = new MemoryStream())
-                        using (var writer = JsonReaderWriterFactory.CreateJsonWriter(ms))
-                        {
-                            msg.WriteMessage(writer);
-                            writer.Flush();
-                            msgBody = Encoding.UTF8.GetString(ms.ToArray());
-                        }
-                        break;
-                    case WebContentFormat.Raw:
-                        msgBody = Encoding.UTF8.GetString(msg.GetBody<byte[]>());
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            msg.Close();
 
             var curOpContext = OperationContext.Current;
 
@@ -104,6 +57,7 @@ namespace Cav.Wcf
             var method = ((HttpRequestMessageProperty)curOpContext.IncomingMessageProperties[HttpRequestMessageProperty.Name])?.Method;
 
             string action = curOpContext.IncomingMessageHeaders.Action;
+            var to = curOpContext.IncomingMessageProperties.Via;
 
             string operationName = null;
             if (curOpContext.IncomingMessageProperties.Keys.Contains("HttpOperationName"))
@@ -119,14 +73,12 @@ namespace Cav.Wcf
 
             var mID = Guid.NewGuid();
 
-            var actionFull = $"[{method}] ({serviceName}/{operationName})";
-
-            if (!action.IsNullOrWhiteSpace())
-                actionFull += $" \"{action}\"";
-
             var sp = new MessageLogData()
             {
-                Action = actionFull,
+                OperationName = operationName,
+                ServiceName = serviceName,
+                Method = method,
+                Action = action,
                 Message = msgBody,
                 MessageID = mID,
                 To = to,
@@ -143,57 +95,9 @@ namespace Cav.Wcf
         {
             var buff = reply.CreateBufferedCopy(int.MaxValue);
             reply = buff.CreateMessage();
-            var msg = buff.CreateMessage();
+
+            string msgBody = getBodyMessage(buff);
             buff.Close();
-
-            string msgBody = null;
-
-            if (!msg.IsEmpty)
-            {
-                WebBodyFormatMessageProperty wbfmp = null;
-
-                if (msg.Properties.ContainsKey(WebBodyFormatMessageProperty.Name))
-                    wbfmp = (WebBodyFormatMessageProperty)msg.Properties[WebBodyFormatMessageProperty.Name];
-
-                WebContentFormat format = WebContentFormat.Xml;
-
-                if (wbfmp != null)
-                    format = wbfmp.Format;
-
-                switch (format)
-                {
-                    case WebContentFormat.Default:
-                        msgBody = msg.ToString();
-                        break;
-                    case WebContentFormat.Xml:
-                        var sb = new StringBuilder();
-                        using (var sw = new StringWriter(sb))
-                        using (var xtw = new XmlTextWriter(sw))
-                            msg.WriteMessage(xtw);
-
-                        msgBody = sb.ToString();
-                        break;
-                    case WebContentFormat.Json:
-                        using (MemoryStream ms = new MemoryStream())
-                        using (var writer = JsonReaderWriterFactory.CreateJsonWriter(ms))
-                        {
-                            msg.WriteMessage(writer);
-                            writer.Flush();
-                            msgBody = Encoding.UTF8.GetString(ms.ToArray());
-                        }
-                        break;
-                    case WebContentFormat.Raw:
-                        msgBody = Encoding.UTF8.GetString(msg.GetBody<byte[]>());
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            msg.Close();
-
-            if (!msgBody.IsNullOrWhiteSpace())
-                msgBody = msgBody.Replace(@"\u000d\u000a", Environment.NewLine);
 
             var mID = (Guid)correlationState;
 
@@ -215,54 +119,8 @@ namespace Cav.Wcf
         {
             var buff = request.CreateBufferedCopy(int.MaxValue);
             request = buff.CreateMessage();
-            var msg = buff.CreateMessage();
+            string msgBody = getBodyMessage(buff);
             buff.Close();
-
-            string msgBody = null;
-
-            if (!msg.IsEmpty)
-            {
-                WebBodyFormatMessageProperty wbfmp = null;
-
-                if (msg.Properties.ContainsKey(WebBodyFormatMessageProperty.Name))
-                    wbfmp = (WebBodyFormatMessageProperty)msg.Properties[WebBodyFormatMessageProperty.Name];
-
-                WebContentFormat format = WebContentFormat.Xml;
-
-                if (wbfmp != null)
-                    format = wbfmp.Format;
-
-                switch (format)
-                {
-                    case WebContentFormat.Default:
-                        msgBody = msg.ToString();
-                        break;
-                    case WebContentFormat.Xml:
-                        var sb = new StringBuilder();
-                        using (var sw = new StringWriter(sb))
-                        using (var xtw = new XmlTextWriter(sw))
-                            msg.WriteMessage(xtw);
-
-                        msgBody = sb.ToString();
-                        break;
-                    case WebContentFormat.Json:
-                        using (MemoryStream ms = new MemoryStream())
-                        using (var writer = JsonReaderWriterFactory.CreateJsonWriter(ms))
-                        {
-                            msg.WriteMessage(writer);
-                            writer.Flush();
-                            msgBody = Encoding.UTF8.GetString(ms.ToArray());
-                        }
-                        break;
-                    case WebContentFormat.Raw:
-                        msgBody = Encoding.UTF8.GetString(msg.GetBody<byte[]>());
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            msg.Close();
 
             var mID = Guid.NewGuid();
 
@@ -314,9 +172,27 @@ namespace Cav.Wcf
         {
             var buff = reply.CreateBufferedCopy(int.MaxValue);
             reply = buff.CreateMessage();
-            var msg = buff.CreateMessage();
 
             Guid mID = (Guid)correlationState;
+
+            string msgBody = getBodyMessage(buff);
+            buff.Close();
+
+            var sp = new MessageLogData()
+            {
+                Message = msgBody,
+                MessageID = mID,
+                Direction = Direction.Incoming
+            };
+
+            ExecLogThreadHelper.WriteLog(logger, sp);
+        }
+
+        #endregion
+
+        private string getBodyMessage(MessageBuffer buff)
+        {
+            var msg = buff.CreateMessage();
 
             string msgBody = null;
 
@@ -327,7 +203,7 @@ namespace Cav.Wcf
                 if (msg.Properties.ContainsKey(WebBodyFormatMessageProperty.Name))
                     wbfmp = (WebBodyFormatMessageProperty)msg.Properties[WebBodyFormatMessageProperty.Name];
 
-                WebContentFormat format = WebContentFormat.Xml;
+                WebContentFormat format = WebContentFormat.Default;
 
                 if (wbfmp != null)
                     format = wbfmp.Format;
@@ -364,16 +240,10 @@ namespace Cav.Wcf
 
             msg.Close();
 
-            var sp = new MessageLogData()
-            {
-                Message = msgBody,
-                MessageID = mID,
-                Direction = Direction.Incoming
-            };
+            if (!msgBody.IsNullOrWhiteSpace())
+                msgBody = msgBody.Replace(@"\u000d\u000a", Environment.NewLine);
 
-            ExecLogThreadHelper.WriteLog(logger, sp);
+            return msgBody;
         }
-
-        #endregion
     }
 }

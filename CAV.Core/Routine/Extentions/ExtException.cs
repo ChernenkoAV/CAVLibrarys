@@ -57,6 +57,11 @@ namespace Cav
             if (ex.InnerException != null)
                 res += $"{Environment.NewLine.PadLeft(20, '-')}InnerException->{Environment.NewLine}{ex.InnerException.Expand()}";
 
+            var agrEx = ex as AggregateException;
+            if (agrEx != null && agrEx.InnerExceptions != null)
+                foreach (var inEx in agrEx.InnerExceptions)
+                    res += $"{Environment.NewLine.PadLeft(20, '-')}InnerException->{Environment.NewLine}{inEx.Expand()}";
+
             return res;
         }
     }

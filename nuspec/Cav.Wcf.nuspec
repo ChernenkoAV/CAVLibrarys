@@ -1,28 +1,30 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
-		<id>Cav.Core</id>
+		<id>Cav.Wcf</id>
 		<version>0.0.0</version>
-		<title>Cav.Core</title>
+		<title>Cav.Wcf</title>
 		<authors>ChernenkoAV</authors>
 		<owners>ChernenkoAV</owners>
 		<license type="expression">MIT</license>
 		<projectUrl>https://github.com/ChernenkoAV/CavLibrarys</projectUrl>
 		<icon>images\Cav.png</icon>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<description>A set of utilities that facilitate routine operations</description>
+		<description>A set of utilities for using Wcf</description>
 		<copyright>Copyright 2021</copyright>
 		<releaseNotes/>
-		<tags>Cav utils</tags>
+		<tags>Cav utils soap смев smev</tags>
 		<dependencies>
-			<group targetFramework="net461"/>
+			<group targetFramework="net461">
+				<dependency id="Cav.Core" version="7.0.0" />
+			</group>
 		</dependencies>
 		<repository type="git" url="https://github.com/ChernenkoAV/CavLibrarys"/>
 	</metadata>
 	<files>
 		<file src="..\..\Cav.png" target="images\"/>
-		<file src="net461\Cav.Core.dll" target="lib\net461\"/>
-		<file src="net461\Cav.Core.pdb" target="lib\net461\"/>
-		<file src="net461\Cav.Core.xml" target="lib\net461\"/>
+		<file src="net461\Cav.Wcf.dll" target="lib\net461\"/>
+		<file src="net461\Cav.Wcf.pdb" target="lib\net461\"/>
+		<file src="net461\Cav.Wcf.xml" target="lib\net461\"/>
 	</files>
 </package>

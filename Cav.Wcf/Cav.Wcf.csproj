@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">DebugNet461</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{4F15EE08-31C8-45FD-9F6B-5FEC2E9F09A7}</ProjectGuid>
+    <ProjectGuid>{B292E9A8-4141-447D-AFB4-1878944C9DEF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Cav</RootNamespace>
-    <AssemblyName>Cav.Core</AssemblyName>
+    <RootNamespace>Cav.Wcf</RootNamespace>
+    <AssemblyName>Cav.Wcf</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -26,8 +26,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <OutputPath>..\_Build\Cav.Core\</OutputPath>
-    <DocumentationFile>..\_Build\Cav.Core\Cav.Core.xml</DocumentationFile>
+    <OutputPath>..\_Build\Cav.Wcf\</OutputPath>
+    <DocumentationFile>..\_Build\Cav.Wcf\Cav.Wcf.xml</DocumentationFile>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <DefineConstants>
     </DefineConstants>
@@ -39,8 +39,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseNet461|AnyCPU'">
-    <OutputPath>..\_Build\Cav.Core\Net461\</OutputPath>
-    <DocumentationFile>..\_Build\Cav.Core\Net461\Cav.Core.xml</DocumentationFile>
+    <OutputPath>..\_Build\Cav.Wcf\Net461\</OutputPath>
+    <DocumentationFile>..\_Build\Cav.Wcf\Net461\Cav.Wcf.xml</DocumentationFile>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <DefineConstants>NET461</DefineConstants>
     <Optimize>true</Optimize>
@@ -57,6 +57,10 @@
     <AssemblyOriginatorKeyFile>Cav.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Cav.Core, Version=7.0.0.0, Culture=neutral, PublicKeyToken=f136b1fd0b87e3f0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Cav.Core.7.0.0\lib\net461\Cav.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
@@ -79,43 +83,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Container\Locator.cs" />
-    <Compile Include="Container\PropertyInjectAttribute.cs" />
-    <Compile Include="DataAcces\DataAccesBase.cs" />
-    <Compile Include="DataAcces\DataAccesBase_IUD.cs" />
-    <Compile Include="DataAcces\DataAccesBase_S.cs" />
-    <Compile Include="DataAcces\DbTransactionScope.cs" />
-    <Compile Include="DataAcces\HeplerDataAcces.cs" />
-    <Compile Include="DataAcces\IDataAcces.cs" />
-    <Compile Include="DigitalSignature\DSGeneric.cs" />
-    <Compile Include="DynamicCode\DynamicCodeHelper.cs" />
-    <Compile Include="Routine\Extentions\ExtAes.cs" />
-    <Compile Include="Routine\Extentions\ExtCollection.cs" />
-    <Compile Include="Routine\Extentions\ExtDataRow.cs" />
-    <Compile Include="Routine\Extentions\ExtDateTime.cs" />
-    <Compile Include="Routine\Extentions\ExtEnum.cs" />
-    <Compile Include="Routine\Extentions\ExtException.cs" />
-    <Compile Include="Routine\Extentions\ExtExpressionTree.cs" />
-    <Compile Include="Routine\Extentions\ExtGuid.cs" />
-    <Compile Include="Routine\Extentions\ExtGZip.cs" />
-    <Compile Include="Routine\Extentions\ExtMD5.cs" />
-    <Compile Include="Routine\Extentions\ExtNetJSON.cs" />
-    <Compile Include="Routine\Extentions\ExtObject.cs" />
-    <Compile Include="Routine\Extentions\ExtString.cs" />
-    <Compile Include="Routine\Extentions\ExtXml.cs" />
-    <Compile Include="Routine\PredicateBuilder.cs" />
-    <Compile Include="Routine\ProductionCalendar.cs" />
-    <Compile Include="Routine\ProgramSettingsBase.cs" />
-    <Compile Include="Routine\Extentions\ExtReflection.cs" />
-    <Compile Include="Routine\WinServiceManager.cs" />
+    <Compile Include="DigitalSignature\CryptoPro.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Routine\DomainContext.cs" />
-    <Compile Include="Routine\Utils.cs" />
+    <Compile Include="Wcf\ExecLogThreadHelper.cs" />
+    <Compile Include="Wcf\FixatePrefixNamespace.cs" />
+    <Compile Include="Wcf\LogMessageCaller.cs" />
+    <Compile Include="Wcf\ServiceErrorHandler.cs" />
+    <Compile Include="Wcf\ServiceInstanceProvider.cs" />
+    <Compile Include="Wcf\ServiceParameterInspector.cs" />
+    <Compile Include="Wcf\MessageLogData.cs" />
+    <Compile Include="Wcf\SmevClientBinding.cs" />
+    <Compile Include="Wcf\WcfHelpers.cs" />
+    <Compile Include="Wcf\WrapClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Cav.snk" />
+    <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if $(ConfigurationName)==Release PowerShell -NoProfile -ExecutionPolicy Bypass -Command "&amp; '$(SolutionDir)nuspec\CreatePackage.ps1' -ProjectPath '$(ProjectPath)' -MSBuid '$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)'</PostBuildEvent>

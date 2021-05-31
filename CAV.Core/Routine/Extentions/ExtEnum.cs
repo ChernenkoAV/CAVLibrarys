@@ -44,5 +44,37 @@ namespace Cav
                                  .Cast<Enum>()
                                  .Where(m => Convert.ToUInt64(m) != 0L && flag.HasFlag(m));
         }
+
+        /// <summary>
+        /// Получение коллекции значений-описаний (атрибут <see cref="DescriptionAttribute"/>) для типа перечесления.
+        /// </summary>        
+        /// <param name="enumType">Тип перечисления</param>
+        /// <param name="skipEmptyDescription">Пропускать значения с незаполненым описанием</param>
+        /// <returns>Словарь значений и описаний перечисления</returns>
+        public static IDictionary<Enum, String> GetEnumValueDescriptions(this Type enumType, bool skipEmptyDescription = true)
+        {
+            if (enumType == null)
+                throw new ArgumentNullException(nameof(enumType));
+
+            if (!enumType.IsEnum)
+                throw new InvalidOperationException($"{enumType.FullName} is not Enum");
+
+            var res = new Dictionary<Enum, String>();
+
+            foreach (Enum enVal in enumType.GetEnumValues())
+            {
+                var fi = enumType.GetField(enVal.ToString());
+
+                string description = fi.GetCustomAttribute<DescriptionAttribute>()?.Description;
+
+                if (description.IsNullOrWhiteSpace() && skipEmptyDescription)
+                    continue;
+
+                res[enVal] = description;
+            }
+
+            return res;
+
+        }
     }
 }

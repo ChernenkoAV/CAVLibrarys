@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Data.SqlClient;
+using System.Linq;
+using System.Reflection;
 using System.ServiceModel;
 
 namespace Cav
@@ -34,7 +36,7 @@ namespace Cav
             if (!ex.StackTrace.IsNullOrWhiteSpace())
                 res += $"StackTrace->{ex.StackTrace}{Environment.NewLine}";
 
-            FaultException commEx = ex as FaultException;
+            var commEx = ex as FaultException;
             if (commEx != null)
             {
                 ExceptionDetail exdetail = commEx.GetPropertyValueNestedObject("Detail") as ExceptionDetail;
@@ -52,6 +54,14 @@ namespace Cav
                         res += $"***{Environment.NewLine}Detail InnerException->{Environment.NewLine}";
                     exdetail = exdetail.InnerException;
                 }
+            }
+
+            var reflectEx = ex as ReflectionTypeLoadException;
+            if (reflectEx != null && reflectEx.LoaderExceptions != null)
+            {
+                res += $"{Environment.NewLine.PadLeft(20, '-')}LoaderExceptions ->";
+                foreach (var rEx in reflectEx.LoaderExceptions.Where(x => x != null))
+                    res += Environment.NewLine + rEx.Expand();
             }
 
             if (ex.InnerException != null)

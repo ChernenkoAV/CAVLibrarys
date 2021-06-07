@@ -13,10 +13,12 @@ namespace Cav.Container
     /// </summary>
     public static class Locator
     {
-        /// <summary>
-        /// Дополнительные действия с объектом после создания
-        /// </summary>
-        public static Action<Object> AdditionalSettingsObject { get; set; }
+        private class PropSetDataT
+        {
+            public PropertyInfo Property { get; set; }
+            public Object InstatnceObject { get; set; }
+        }
+
         static Locator()
         {
             UseCache = true;
@@ -36,10 +38,17 @@ namespace Cav.Container
             Type typrObj = inst.GetType();
             cacheObjects.TryAdd(typrObj, inst);
         }
+
+        /// <summary>
+        /// Дополнительные действия с объектом после создания
+        /// </summary>
+        public static Action<Object> AdditionalSettingsObject { get; set; }
+
         /// <summary>
         /// Использовать кэш объектов (false - объект и зависимости создаются заново)
         /// </summary>
         public static Boolean UseCache { get; set; }
+
         /// <summary>
         ///Получить экземпляр указанного типа 
         /// </summary>
@@ -48,16 +57,16 @@ namespace Cav.Container
         public static object GetInstance(Type typeInstance)
         {
             if (typeInstance == null)
-                throw new ArgumentNullException("typeInstance");
+                throw new ArgumentNullException(nameof(typeInstance));
 
-            if (typeInstance.IsValueType)
-                return Activator.CreateInstance(typeInstance);
+            if ((Nullable.GetUnderlyingType(typeInstance) ?? typeInstance).IsValueType || typeInstance == typeof(string))
+                return typeInstance.GetDefault();
 
             if (!typeInstance.IsClass)
-                throw new ArgumentException("typeInstance должен быть класс или интерфейс");
+                throw new ArgumentException($"{nameof(typeInstance)} {typeInstance.FullName} должен быть класс или интерфейс");
 
             if (typeInstance.IsAbstract)
-                throw new ArgumentException("typeInstance не может бать абстрактным классом");
+                throw new ArgumentException($"{nameof(typeInstance)} {typeInstance.FullName}  не может бать абстрактным классом");
 
             object res = null;
 
@@ -72,7 +81,7 @@ namespace Cav.Container
 
             var constructor = typeInstance.GetConstructors().OrderBy(x => x.GetParameters().Length).FirstOrDefault();
             if (constructor == null)
-                throw new ArgumentOutOfRangeException(String.Format("у типа {0} нет открытого конструктора", typeInstance.FullName));
+                throw new ArgumentOutOfRangeException($"У типа {typeInstance.FullName} нет открытого конструктора");
 
             List<object> paramConstr = new List<object>();
 
@@ -96,9 +105,9 @@ namespace Cav.Container
                 {
                     var instsesInterface = Locator.GetInstances(paramType);
                     if (instsesInterface.Length > 1)
-                        throw new ArgumentException(String.Format("Интерфейс {0} имеет более одной реализации", paramType.FullName));
+                        throw new ArgumentException($"Интерфейс {paramType.FullName} имеет более одной реализации");
                     if (instsesInterface.Length == 0)
-                        throw new ArgumentException(String.Format("Интерфейс {0} не имеет реализаций", paramType.FullName));
+                        throw new ArgumentException($"Интерфейс {paramType.FullName} не имеет реализаций");
                     paramInstance = instsesInterface.GetValue(0);
                 }
 
@@ -179,9 +188,7 @@ namespace Cav.Container
         {
             List<Type> typeForCreate = new List<Type>();
 
-            TypeInfo[] allTypeInDomain = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.DefinedTypes).ToArray();
-
-            Func<TypeInfo, bool> predicat = null;
+            Func<Type, bool> predicat = null;
 
             if (typeParent.IsClass)
                 predicat = (t) => t.IsSubclassOf(typeParent);
@@ -192,9 +199,8 @@ namespace Cav.Container
             if (predicat == null)
                 throw new ArgumentException("в качестве типа-родителя необходимо указать тип класса либо интерфейса");
 
-            var typeImplemented = allTypeInDomain
+            var typeImplemented = Helper.AllCreatedTypeInDomain()
                 .Where(predicat)
-                .Select(x => x.AsType())
                 .ToArray();
 
             typeForCreate.AddRange(typeImplemented);
@@ -203,7 +209,7 @@ namespace Cav.Container
                 typeForCreate.Add(typeParent);
 
             if (typeForCreate.Count == 0)
-                throw new ArgumentException(String.Format("Из типа {0} нельзя получить экземпляр объекта", typeParent.FullName));
+                throw new ArgumentException($"Из типа {typeParent.FullName} нельзя получить экземпляр объекта");
 
             var res = Array.CreateInstance(typeParent, typeForCreate.Count);
 
@@ -230,11 +236,114 @@ namespace Cav.Container
         {
             return Locator.GetInstances(typeof(T)).OfType<T>().ToArray();
         }
-    }
 
-    internal class PropSetDataT
-    {
-        public PropertyInfo Property { get; set; }
-        public Object InstatnceObject { get; set; }
+        /// <summary>
+        /// Хелпер для локатора
+        /// </summary>
+        internal static class Helper
+        {
+            private class AslyLoadsT
+            {
+                public Assembly Assembly { get; set; }
+                public Boolean DefTypes { get; set; }
+            }
+
+            private static List<Type> cashTypes = new List<Type>();
+            /// <summary>
+            /// Получение всех типов (DefineTypes), которые присутствуют в текущем домене приложения. 
+            /// За исключением сборок из GAC и сборок с ошибкой загрузки зависимости. Для них берется ExportedTypes 
+            /// </summary>
+            /// <returns></returns>
+            public static ICollection<Type> AllCreatedTypeInDomain()
+            {
+                lock (cashTypes)
+                {
+                    if (cashTypes.Any())
+                        return cashTypes;
+
+                    var types = new List<Type>();
+
+                    var aslyDom = AppDomain.CurrentDomain.GetAssemblies();
+
+                    var excludeAssemblyNames = new List<AssemblyName>();
+                    excludeAssemblyNames.AddRange(aslyDom.Where(x => x.GlobalAssemblyCache).Select(x => x.GetName()).ToArray());
+
+                    var assemblyes = new List<AslyLoadsT>();
+                    assemblyes.AddRange(aslyDom
+                        .Where(x => !x.GlobalAssemblyCache)
+                        .Select(x => new AslyLoadsT() { Assembly = x, DefTypes = true })
+                        .ToArray());
+
+                    var stop = false;
+                    do
+                    {
+                        stop = true;
+                        var referAss = assemblyes
+                            .Where(x => x.DefTypes)
+                            .Select(x => new { TAL = x, Assbl = x.Assembly, RefAss = x.Assembly.GetReferencedAssemblies() }).ToArray();
+
+                        foreach (var ras in referAss)
+                            foreach (var ras_item in ras.RefAss)
+                            {
+                                if (assemblyes.Any(x => AssemblyName.ReferenceMatchesDefinition(x.Assembly.GetName(), ras_item)))
+                                    continue;
+
+                                if (excludeAssemblyNames.Any(x => AssemblyName.ReferenceMatchesDefinition(x, ras_item)))
+                                    continue;
+
+                                var domAss = AppDomain.CurrentDomain.GetAssemblies();
+
+                                var da = domAss.FirstOrDefault(x => AssemblyName.ReferenceMatchesDefinition(x.GetName(), ras_item));
+                                if (da == null)
+                                {
+                                    try
+                                    {
+                                        da = Assembly.Load(ras_item);
+                                    }
+                                    catch
+                                    {
+                                        ras.TAL.DefTypes = false;
+                                    }
+                                }
+
+                                if (da != null)
+                                {
+                                    if (da.GlobalAssemblyCache)
+                                        excludeAssemblyNames.Add(da.GetName());
+                                    else
+                                        assemblyes.Add(new AslyLoadsT() { Assembly = da, DefTypes = true });
+                                }
+
+                                stop = false;
+                            }
+                    }
+                    while (!stop);
+
+                    types.AddRange(
+                        assemblyes
+                            .Where(x => x.DefTypes)
+                            .SelectMany(x => x.Assembly.DefinedTypes.Select(y => y.AsType()))
+                            .ToArray());
+
+                    types.AddRange(
+                        assemblyes
+                            .Where(x => !x.DefTypes)
+                            .SelectMany(x => x.Assembly.ExportedTypes)
+                            .ToArray());
+
+                    cashTypes = types
+                        .Where(x => !x.IsAbstract)
+                        .Where(x => !x.IsInterface)
+                        .Where(x => !typeof(Delegate).IsAssignableFrom(x))
+                        .Where(x => !typeof(Attribute).IsAssignableFrom(x))
+                        .Where(x => !x.GenericTypeArguments.Any())
+                        .Where(x => !x.GetTypeInfo().GenericTypeParameters.Any())
+                        .Where(x => x.GetConstructors().Any())
+                        .ToList();
+
+                    return cashTypes;
+                }
+            }
+        }
     }
 }

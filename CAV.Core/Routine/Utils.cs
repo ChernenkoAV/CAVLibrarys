@@ -2,10 +2,6 @@
 using System.Collections.Generic;
 using System.Deployment.Application;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Web;
 using Cav.ReflectHelpers;
 
 namespace Cav
@@ -39,38 +35,17 @@ namespace Cav
         /// </summary>
         /// <param name="GoogleForm">url формы вида "https://docs.google.com/forms/d/ХэшФормы/formResponse"</param>
         /// <param name="ParamValueForm">Словарь с параметрами полей формы вида "имяполя","значение"</param>
+        [Obsolete("Будет удалено", true)]
         public static void SendInfo(
             String GoogleForm,
             Dictionary<String, String> ParamValueForm)
         {
-            if (ParamValueForm == null || ParamValueForm.Count == 0)
-                throw new ArgumentNullException("Словарь полей-значений не задан или пуст");
-
-            if (GoogleForm.IsNullOrWhiteSpace())
-                throw new ArgumentNullException("Не указанна ссылка на форму");
-
-            var request = WebRequest.Create(GoogleForm);
-
-            String postData = ParamValueForm.Select(x => x.Key + "=" + x.Value).ToArray().JoinValuesToString("&");
-            postData = HttpUtility.UrlPathEncode(postData);
-            var data = Encoding.UTF8.GetBytes(postData);
-
-            request.Method = "POST";
-            request.ContentType = "application/x-www-form-urlencoded";
-            request.ContentLength = data.Length;
-
-            using (var srt = request.GetRequestStream())
-                srt.Write(data, 0, data.Length);
-
-            try
-            {
-                request.GetResponse();
-            }
-            catch { }
+            throw new NotImplementedException();
         }
 
         /// <summary>   Флаг первого запуска приложения ClickOnce </summary>
         /// <returns>true - ели приложение ClickOnce и выполняется впервые. в остальных случаях - false </returns>
+        [Obsolete("Будет удалено. Используйте иные маханизмы обновления вместо ClickOnce")]
         public static Boolean ClickOnceFirstRun()
         {
             if (!ApplicationDeployment.IsNetworkDeployed)
@@ -88,6 +63,7 @@ namespace Cav
         /// <typeparam name="THeritorType">Тип наследника</typeparam>
         /// <param name="obj">Исходный объект</param>
         /// <returns></returns>
+        [Obsolete("Будет удалено. Используйте копирование через json-сериализацию/десериализацию Copy<>()")]
         public static THeritorType CopyTo<TAncestorType, THeritorType>(TAncestorType obj)
             where TAncestorType : class, new()
             where THeritorType : class, TAncestorType, new()
@@ -105,6 +81,7 @@ namespace Cav
         /// <param name="obj">Исходный объект</param>
         /// <param name="heritorType">Результирующий тип</param>
         /// <returns></returns>
+        [Obsolete("Будет удалено. Используйте копирование через json-сериализацию/десериализацию Copy<>()")]
         public static object CopyTo<TAncestorType>(this TAncestorType obj, Type heritorType)
             where TAncestorType : class, new()
         {

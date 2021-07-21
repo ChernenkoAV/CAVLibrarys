@@ -1,12 +1,8 @@
-﻿
-
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Web.Script.Serialization;
 
 namespace Cav.Configuration
 {
@@ -134,7 +130,7 @@ namespace Cav.Configuration
         private String fileNameUserLocal = null;
         private String fileNameAppCommon = null;
 
-        private void FromJsonDeserialize(String fileName, PropertyInfo[] prinfs)
+        private void fromJsonDeserialize(String fileName, PropertyInfo[] prinfs)
         {
             if (!prinfs.Any())
                 return;
@@ -142,7 +138,18 @@ namespace Cav.Configuration
             if (!File.Exists(fileName))
                 return;
 
-            var pvl = File.ReadAllText(fileName).JSONDeserialize<Dictionary<String, String>>();
+            var filebody = File.ReadAllText(fileName);
+
+            Dictionary<String, String> pvl = null;
+
+            try
+            {
+                pvl = fileName.JsonDeserealizeFromFile<Dictionary<String, String>>();
+            }
+            catch
+            {
+                pvl = filebody.JSONDeserialize<Dictionary<String, String>>();
+            }
 
             if (pvl == null)
             {
@@ -156,11 +163,25 @@ namespace Cav.Configuration
                 if (pi == null)
                     continue;
 
-                pi.SetValue(this, pv.Value.JSONDeserialize(pi.PropertyType));
+                var val = pv.Value;
+
+                object targetObj = null;
+
+                try
+                {
+                    targetObj = val.JsonDeserealize(pi.PropertyType);
+                }
+                catch
+                {
+                    targetObj = val.JSONDeserialize(pi.PropertyType);
+                }
+
+
+                pi.SetValue(this, targetObj);
             }
         }
 
-        private void ToJsonSerialize(String fileName, Dictionary<String, String> props)
+        private void toJsonSerialize(String fileName, Dictionary<String, String> props)
         {
             if (File.Exists(fileName))
                 File.Delete(fileName);
@@ -168,7 +189,7 @@ namespace Cav.Configuration
             if (!props.Any())
                 return;
 
-            File.WriteAllText(fileName, props.JSONSerialize());
+            File.WriteAllText(fileName, props.JsonSerialize());
         }
         /// <summary>
         /// Перезагрузить настройки
@@ -182,28 +203,28 @@ namespace Cav.Configuration
                 foreach (var pinfo in prinfs)
                     pinfo.SetValue(this, pinfo.PropertyType.GetDefault());
 
-                FromJsonDeserialize(fileNameApp,
+                fromJsonDeserialize(fileNameApp,
                     prinfs
                     .Where(pinfo =>
                         pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>() != null && pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>().Value == Area.App
                         ).ToArray()
                     );
 
-                FromJsonDeserialize(fileNameAppCommon,
+                fromJsonDeserialize(fileNameAppCommon,
                     prinfs
                     .Where(pinfo =>
                         pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>() != null && pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>().Value == Area.CommonApp
                         ).ToArray()
                     );
 
-                FromJsonDeserialize(fileNameUserRoaming,
+                fromJsonDeserialize(fileNameUserRoaming,
                     prinfs
                     .Where(pinfo =>
                         pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>() == null || pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>().Value == Area.UserRoaming
                         ).ToArray()
                     );
 
-                FromJsonDeserialize(fileNameUserLocal,
+                fromJsonDeserialize(fileNameUserLocal,
                 prinfs
                 .Where(pinfo =>
                         pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>() == null || pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>().Value == Area.UserLocal
@@ -228,7 +249,6 @@ namespace Cav.Configuration
                 Dictionary<String, String> userRoamingVal = new Dictionary<String, String>();
                 Dictionary<String, String> userLocalVal = new Dictionary<String, String>();
 
-                var jss = new JavaScriptSerializer();
 
                 foreach (var pinfo in prinfs)
                 {
@@ -239,29 +259,30 @@ namespace Cav.Configuration
 
                     var psatr = pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>() ?? new ProgramSettingsAreaAttribute(Area.UserLocal);
 
+                    var jOVal = val.JsonSerialize();
                     switch (psatr.Value)
                     {
                         case Area.UserLocal:
-                            userLocalVal.Add(pinfo.Name, jss.Serialize(val));
+                            userLocalVal.Add(pinfo.Name, jOVal);
                             break;
                         case Area.UserRoaming:
-                            userRoamingVal.Add(pinfo.Name, jss.Serialize(val));
+                            userRoamingVal.Add(pinfo.Name, jOVal);
                             break;
                         case Area.App:
-                            appVal.Add(pinfo.Name, jss.Serialize(val));
+                            appVal.Add(pinfo.Name, jOVal);
                             break;
                         case Area.CommonApp:
-                            appCommonVal.Add(pinfo.Name, jss.Serialize(val));
+                            appCommonVal.Add(pinfo.Name, jOVal);
                             break;
                         default:
                             throw new ArgumentException("ProgramSettinsUserAreaAttribute.Value");
                     }
                 }
 
-                ToJsonSerialize(fileNameUserRoaming, userRoamingVal);
-                ToJsonSerialize(fileNameUserLocal, userLocalVal);
-                ToJsonSerialize(fileNameAppCommon, appCommonVal);
-                ToJsonSerialize(fileNameApp, appVal);
+                toJsonSerialize(fileNameUserRoaming, userRoamingVal);
+                toJsonSerialize(fileNameUserLocal, userLocalVal);
+                toJsonSerialize(fileNameAppCommon, appCommonVal);
+                toJsonSerialize(fileNameApp, appVal);
             }
         }
     }

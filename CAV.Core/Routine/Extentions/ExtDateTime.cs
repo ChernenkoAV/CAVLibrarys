@@ -214,6 +214,57 @@ namespace Cav
         #endregion
 
         #endregion
+
+
+        #region Первый и последний день месяца
+
+        /// <summary>
+        /// Первый день месяца
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public static DateTime FirstDayMonth(this DateTime date)
+        {
+            return new DateTime(date.Year, date.Month, 1);
+        }
+
+        /// <summary>
+        /// Первый день месяца
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public static DateTime? FirstDayMonth(this DateTime? date)
+        {
+            if (!date.HasValue)
+                return null;
+
+            return date.Value.FirstDayMonth();
+        }
+
+        /// <summary>
+        /// Последний день месяца
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public static DateTime LastDayMonth(this DateTime date)
+        {
+            return new DateTime(date.Year, date.Month, DateTime.DaysInMonth(date.Year, date.Month));
+        }
+
+        /// <summary>
+        /// Последний день месяца
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public static DateTime? LastDayMonth(this DateTime? date)
+        {
+            if (!date.HasValue)
+                return null;
+
+            return date.Value.LastDayMonth();
+        }
+
+        #endregion
     }
 
     /// <summary>

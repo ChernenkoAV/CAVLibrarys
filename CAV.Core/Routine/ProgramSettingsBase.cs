@@ -275,14 +275,12 @@ namespace Cav.Configuration
                             }
                         }
 
-                        foreach (var childItem in targetJson.Children())
-                        {
-                            var pi = prinfs.FirstOrDefault(x => x.Name == childItem.Path);
-                            if (pi == null)
-                                continue;
+                        internalCreate = true;
+                        var proxyObj = targetJson.ToString().JsonDeserealize<T>();
+                        internalCreate = false;
 
-                            pi.SetValue(this, ((JProperty)childItem).Value.ToString().JsonDeserealize(pi.PropertyType));
-                        }
+                        foreach (var pi in prinfs)
+                            pi.SetValue(this, pi.GetValue(proxyObj));
                     }
                 }
             }

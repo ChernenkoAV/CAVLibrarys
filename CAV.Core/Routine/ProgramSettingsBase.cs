@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Newtonsoft.Json.Linq;
 
 namespace Cav.Configuration
 {
@@ -62,11 +63,13 @@ namespace Cav.Configuration
         }
         internal String FileName { get; private set; }
     }
+
     /// <summary>
     /// Базовый класс для сохранения настроек
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class ProgramSettingsBase<T> where T : ProgramSettingsBase<T>
+    [Obsolete("Реорганизация структуры хранения в файлах. В следующей версии будет несовместимо.")]
+    public abstract class ProgramSettingsBase<T> where T : ProgramSettingsBase<T>, new()
     {
         /// <summary>
         /// Событие, возникающее при перезагрузке данных. Также вызывается при первичной загрузке.
@@ -106,7 +109,7 @@ namespace Cav.Configuration
 
                         internalCreate = false;
 
-                        String filename = (typeof(T).GetCustomAttribute<ProgramSettingsFileAttribute>() ?? new ProgramSettingsFileAttribute(null)).FileName;
+                        String filename = (typeof(T).GetCustomAttribute<ProgramSettingsFileAttribute>())?.FileName;
 
                         if (filename.IsNullOrWhiteSpace())
                             filename = typeof(T).FullName + ".json";
@@ -181,59 +184,112 @@ namespace Cav.Configuration
             }
         }
 
-        private void toJsonSerialize(String fileName, Dictionary<String, String> props)
-        {
-            if (File.Exists(fileName))
-                File.Delete(fileName);
-
-            if (!props.Any())
-                return;
-
-            File.WriteAllText(fileName, props.JsonSerialize());
-        }
         /// <summary>
         /// Перезагрузить настройки
         /// </summary>
         public void Reload()
         {
-            lock (this)
+            try
             {
-                PropertyInfo[] prinfs = this.GetType().GetProperties();
+                lock (this)
+                {
+                    PropertyInfo[] prinfs = this.GetType().GetProperties();
 
-                foreach (var pinfo in prinfs)
-                    pinfo.SetValue(this, pinfo.PropertyType.GetDefault());
+                    foreach (var pinfo in prinfs)
+                        pinfo.SetValue(this, pinfo.PropertyType.GetDefault());
 
-                fromJsonDeserialize(fileNameApp,
-                    prinfs
-                    .Where(pinfo =>
-                        pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>() != null && pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>().Value == Area.App
-                        ).ToArray()
-                    );
+                    var settingsFiles =
+                        new[] { fileNameApp, fileNameAppCommon, fileNameUserRoaming, fileNameUserLocal }
+                        .Where(x => File.Exists(x))
+                        .ToList();
 
-                fromJsonDeserialize(fileNameAppCommon,
-                    prinfs
-                    .Where(pinfo =>
-                        pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>() != null && pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>().Value == Area.CommonApp
-                        ).ToArray()
-                    );
+                    if (!settingsFiles.Any())
+                        return;
 
-                fromJsonDeserialize(fileNameUserRoaming,
-                    prinfs
-                    .Where(pinfo =>
-                        pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>() == null || pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>().Value == Area.UserRoaming
-                        ).ToArray()
-                    );
+                    var joS = JContainer.Parse(File.ReadAllText(settingsFiles.First()));
 
-                fromJsonDeserialize(fileNameUserLocal,
-                prinfs
-                .Where(pinfo =>
-                        pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>() == null || pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>().Value == Area.UserLocal
-                    ).ToArray()
-                );
+                    if (joS.Type == JTokenType.Array)
+                    {
+                        // Если внутри массив - значит json старого формата.
+                        fromJsonDeserialize(fileNameApp,
+                            prinfs
+                            .Where(pinfo =>
+                                pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>() != null && pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>().Value == Area.App
+                                ).ToArray()
+                            );
+
+                        fromJsonDeserialize(fileNameAppCommon,
+                            prinfs
+                            .Where(pinfo =>
+                                pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>() != null && pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>().Value == Area.CommonApp
+                                ).ToArray()
+                            );
+
+                        fromJsonDeserialize(fileNameUserRoaming,
+                            prinfs
+                            .Where(pinfo =>
+                                pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>() == null || pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>().Value == Area.UserRoaming
+                                ).ToArray()
+                            );
+
+                        fromJsonDeserialize(fileNameUserLocal,
+                        prinfs
+                        .Where(pinfo =>
+                                pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>() == null || pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>().Value == Area.UserLocal
+                            ).ToArray()
+                        );
+                    }
+                    else
+                    {
+                        var targetJson = new JObject();
+
+                        foreach (var jo in settingsFiles
+                            .SelectMany(x => JObject.Parse(File.ReadAllText(x)).Children())
+                            .Select(x => (JProperty)x)
+                            .GroupBy(x => x.Name)
+                            .ToArray())
+                        {
+                            if (jo.Count() == 1)
+                            {
+                                targetJson.Add(jo.Single());
+                                continue;
+                            }
+
+                            var prop = prinfs.FirstOrDefault(x => x.Name == jo.Key);
+
+                            if (prop == null)
+                                continue;
+
+                            foreach (var joitem in jo)
+                            {
+                                try
+                                {
+                                    joitem.Value.ToString().JsonDeserealize(prop.PropertyType);
+                                    targetJson.Add(joitem);
+                                    break;
+                                }
+                                catch
+                                {
+                                    continue;
+                                }
+                            }
+                        }
+
+                        foreach (var childItem in targetJson.Children())
+                        {
+                            var pi = prinfs.FirstOrDefault(x => x.Name == childItem.Path);
+                            if (pi == null)
+                                continue;
+
+                            pi.SetValue(this, ((JProperty)childItem).Value.ToString().JsonDeserealize(pi.PropertyType));
+                        }
+                    }
+                }
             }
-
-            if (ReloadEvent != null)
-                ReloadEvent(this);
+            finally
+            {
+                ReloadEvent?.Invoke(this);
+            }
         }
         /// <summary>
         /// Сохранить настройки
@@ -242,47 +298,41 @@ namespace Cav.Configuration
         {
             lock (this)
             {
-                PropertyInfo[] prinfs = this.GetType().GetProperties();
 
-                Dictionary<String, String> appVal = new Dictionary<String, String>();
-                Dictionary<String, String> appCommonVal = new Dictionary<String, String>();
-                Dictionary<String, String> userRoamingVal = new Dictionary<String, String>();
-                Dictionary<String, String> userLocalVal = new Dictionary<String, String>();
+                var settingsFiles = new[] {
+                    new { Area = Area.App, File =  fileNameApp } ,
+                    new { Area = Area.CommonApp, File =  fileNameAppCommon} ,
+                    new { Area = Area.UserRoaming, File =  fileNameUserRoaming} ,
+                    new { Area = Area.UserLocal, File =  fileNameUserLocal } };
 
+                var allProps = this
+                    .GetType()
+                    .GetProperties()
+                    .Select(x => new { PropertyName = x.Name, Area = x.GetCustomAttribute<ProgramSettingsAreaAttribute>()?.Value ?? Area.UserLocal })
+                    .ToList();
 
-                foreach (var pinfo in prinfs)
+                var jsInstSetting = _instance.JsonSerialize();
+
+                foreach (var setFile in settingsFiles)
                 {
-                    Object val = pinfo.GetValue(this);
+                    if (File.Exists(setFile.File))
+                        File.Delete(setFile.File);
 
-                    if (val == null)
+                    var jOSets = JObject.Parse(jsInstSetting);
+
+                    var curProps = allProps.Where(x => x.Area == setFile.Area).Select(x => x.PropertyName).ToList();
+
+                    foreach (var cldItem in jOSets.Children().ToArray())
+                    {
+                        if (!curProps.Contains(cldItem.Path))
+                            jOSets.Remove(cldItem.Path);
+                    }
+
+                    if (!jOSets.Children().Any())
                         continue;
 
-                    var psatr = pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>() ?? new ProgramSettingsAreaAttribute(Area.UserLocal);
-
-                    var jOVal = val.JsonSerialize();
-                    switch (psatr.Value)
-                    {
-                        case Area.UserLocal:
-                            userLocalVal.Add(pinfo.Name, jOVal);
-                            break;
-                        case Area.UserRoaming:
-                            userRoamingVal.Add(pinfo.Name, jOVal);
-                            break;
-                        case Area.App:
-                            appVal.Add(pinfo.Name, jOVal);
-                            break;
-                        case Area.CommonApp:
-                            appCommonVal.Add(pinfo.Name, jOVal);
-                            break;
-                        default:
-                            throw new ArgumentException("ProgramSettinsUserAreaAttribute.Value");
-                    }
+                    File.WriteAllText(setFile.File, jOSets.ToString());
                 }
-
-                toJsonSerialize(fileNameUserRoaming, userRoamingVal);
-                toJsonSerialize(fileNameUserLocal, userLocalVal);
-                toJsonSerialize(fileNameAppCommon, appCommonVal);
-                toJsonSerialize(fileNameApp, appVal);
             }
         }
     }

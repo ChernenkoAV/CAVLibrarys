@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
 		<id>Postgres.psql</id>
-		<version>13.4</version>
+		<version>13.4.0.1</version>
 		<title>Postgres 13.4 win-x64 psql pg_dump pg_dumpall</title>
 		<authors>ChernenkoAV</authors>
 		<owners>ChernenkoAV</owners>

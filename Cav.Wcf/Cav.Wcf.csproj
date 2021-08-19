@@ -10,45 +10,29 @@
     <RootNamespace>Cav.Wcf</RootNamespace>
     <AssemblyName>Cav.Wcf</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <FileAlignment>512</FileAlignment>    
+	<OutputPath>..\_Build\$(AssemblyName)</OutputPath>
+    <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
+	<DebugSymbols>true</DebugSymbols>
+	<PlatformTarget>AnyCPU</PlatformTarget>
+	<Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugNet461|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\_Build\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <DefineConstants>TRACE;DEBUG;NET461</DefineConstants>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <OutputPath>..\_Build\Cav.Wcf\</OutputPath>
-    <DocumentationFile>..\_Build\Cav.Wcf\Cav.Wcf.xml</DocumentationFile>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">    
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <DefineConstants>
-    </DefineConstants>
+    <DefineConstants>TRACE;NET461</DefineConstants>
     <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>    
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseNet461|AnyCPU'">
-    <OutputPath>..\_Build\Cav.Wcf\Net461\</OutputPath>
-    <DocumentationFile>..\_Build\Cav.Wcf\Net461\Cav.Wcf.xml</DocumentationFile>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <DefineConstants>NET461</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -101,7 +85,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>if $(ConfigurationName)==Release PowerShell -NoProfile -ExecutionPolicy Bypass -Command "&amp; '$(SolutionDir)nuspec\CreatePackage.ps1' -ProjectPath '$(ProjectPath)' -MSBuid '$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)'</PostBuildEvent>
-  </PropertyGroup>
+  
+  <Import Project="..\nugetPak\Tools.target"/>
 </Project>

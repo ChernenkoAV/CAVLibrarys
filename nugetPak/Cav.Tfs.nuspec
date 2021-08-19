@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package>
+    <metadata>
+        <id>Cav.Tfs</id>
+        <version>0.0.0</version>
+        <title>Cav.Tfs</title>
+        <authors>ChernenkoAV</authors>
+        <owners>ChernenkoAV</owners>
+        <license type="expression">MIT</license>
+        <projectUrl>https://github.com/ChernenkoAV/CavLibrarys</projectUrl>
+        <icon>images\Cav.png</icon>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Обертка к сборкам TFS в Visual Studio</description>
+        <copyright>Copyright 2020</copyright>
+        <tags>cav tfs tfs2013 tfs2015 tfs2017 tfs2019 wrap</tags>
+        <dependencies>
+            <group targetFramework="net461">
+                <dependency id="Cav.Core" version="7.3.0" />
+            </group>
+			<group targetFramework="net48">
+                <dependency id="Cav.Core" version="7.3.0" />
+            </group>
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="..\..\Cav.png" target="images\" />
+        <file src="net461\Cav.Tfs.*" target="lib\net461\" />
+		<file src="net48\Cav.Tfs.*" target="lib\net48\" />
+    </files>	
+</package>

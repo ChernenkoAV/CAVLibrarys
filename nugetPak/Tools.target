@@ -1,0 +1,73 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release.net48|AnyCPU' ">
+		<TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+		<PlatformTarget>AnyCPU</PlatformTarget>
+		<Optimize>true</Optimize>
+		<DebugType>pdbonly</DebugType>
+		<PlatformTarget>AnyCPU</PlatformTarget>
+		<ErrorReport>prompt</ErrorReport>
+		<Prefer32Bit>false</Prefer32Bit>
+		<DefineConstants>TRACE;NET48</DefineConstants>
+		<CodeAnalysisRuleSet/>
+		<OutputPath>$(OutputPath)net48</OutputPath>
+		<BaseOutputPath>$(OutputPath)</BaseOutputPath>
+		<OutDir>$(OutputPath)\</OutDir>
+		<DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
+	</PropertyGroup>
+	
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release.net461|AnyCPU' ">
+		<TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+		<PlatformTarget>AnyCPU</PlatformTarget>		
+		<Optimize>true</Optimize>
+		<DebugType>pdbonly</DebugType>
+		<ErrorReport>prompt</ErrorReport>
+		<Prefer32Bit>false</Prefer32Bit>
+		<DefineConstants>TRACE;NET461</DefineConstants>
+		<CodeAnalysisRuleSet/>
+		<OutputPath>$(OutputPath)net461</OutputPath>
+		<BaseOutputPath>$(OutputPath)</BaseOutputPath>
+		<OutDir>$(OutputPath)\</OutDir>
+		<DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
+	</PropertyGroup>
+	
+	<PropertyGroup>
+		<VerAssembly Condition="'$(VerAssembly)' == ''">0.0.0.0</VerAssembly>
+		<VerFile Condition="'$(VerFile)' == ''">0.0.0.0</VerFile>
+		<ProductVersion Condition="'$(ProductVersion)' == ''">0000</ProductVersion>
+	</PropertyGroup>
+	<Target Name="BeforeBuild">
+		<ItemGroup>
+			<AssemblyAttributes Include="AssemblyVersion">
+				<_Parameter1>$(VerAssembly)</_Parameter1>
+			</AssemblyAttributes>
+			<AssemblyAttributes Include="AssemblyFileVersion">
+				<_Parameter1>$(VerFile)</_Parameter1>
+			</AssemblyAttributes>
+			<AssemblyAttributes Include="AssemblyInformationalVersion">
+				<_Parameter1>$(ProductVersion)</_Parameter1>
+			</AssemblyAttributes>
+		</ItemGroup>
+		<MakeDir Directories="$(BaseIntermediateOutputPath)"/>
+		<WriteCodeFragment Language="C#" OutputFile="$(BaseIntermediateOutputPath)$(AssemblyName)$(ProductVersion)Version.cs" AssemblyAttributes="@(AssemblyAttributes)"/>
+		<ItemGroup>
+			<Compile Include="$(BaseIntermediateOutputPath)$(AssemblyName)$(ProductVersion)Version.cs"/>
+		</ItemGroup>
+	</Target>
+	
+	<ItemGroup>
+		<NugetPackage Include="..\..\packages\Nuget.CommandLine.*\tools\NuGet.exe">
+			<InProject>False</InProject>
+		</NugetPackage>
+	</ItemGroup>
+	
+	<Target Name="AfterBuild" Condition="'$(Configuration)'=='Release'">
+		<ReadLinesFromFile File="Version.txt">
+			<Output TaskParameter="Lines" PropertyName="PropVer"/>
+		</ReadLinesFromFile>
+		<Message Text="------ Указана версия сборки $(PropVer)" Importance="High" />
+		<Exec Command="PowerShell -NoProfile -ExecutionPolicy Bypass -Command &quot;&amp; '$(SolutionDir)nugetPak\BuildForPack.ps1' -Project '$(ProjectPath)' -ProductVersion '$(PropVer)' -MSBuid '$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)'&quot;"/>
+		<Exec Command="&quot;@(NugetPackage->'%(fullpath)')&quot; pack ..\nugetPak\$(AssemblyName).nuspec -Version $(PropVer) -Properties Configuration=Release -OutputDirectory $(OutDir)..\nuget -BasePath $(OutDir)"/>
+		<Message Text="------ Сборка пакета NuGet для проекта $(AssemblyName) $(PropVer) успешно завершена" Importance="High" />		
+	</Target>	
+</Project>

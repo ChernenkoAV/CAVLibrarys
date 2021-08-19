@@ -1,123 +1,106 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">DebugNet461</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{4F15EE08-31C8-45FD-9F6B-5FEC2E9F09A7}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Cav</RootNamespace>
-    <AssemblyName>Cav.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugNet461|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\_Build\</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <DefineConstants>TRACE;DEBUG;NET461</DefineConstants>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <OutputPath>..\_Build\Cav.Core\</OutputPath>
-    <DocumentationFile>..\_Build\Cav.Core\Cav.Core.xml</DocumentationFile>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <DefineConstants>
-    </DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseNet461|AnyCPU'">
-    <OutputPath>..\_Build\Cav.Core\Net461\</OutputPath>
-    <DocumentationFile>..\_Build\Cav.Core\Net461\Cav.Core.xml</DocumentationFile>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <DefineConstants>NET461</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>Cav.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Configuration.Install" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Management" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Security" />
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.ServiceProcess" />
-    <Reference Include="System.Transactions" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Container\Locator.cs" />
-    <Compile Include="Container\PropertyInjectAttribute.cs" />
-    <Compile Include="DataAcces\DataAccesBase.cs" />
-    <Compile Include="DataAcces\DataAccesBase_IUD.cs" />
-    <Compile Include="DataAcces\DataAccesBase_S.cs" />
-    <Compile Include="DataAcces\DbTransactionScope.cs" />
-    <Compile Include="DataAcces\HeplerDataAcces.cs" />
-    <Compile Include="DataAcces\IDataAcces.cs" />
-    <Compile Include="DigitalSignature\DSGeneric.cs" />
-    <Compile Include="DynamicCode\DynamicCodeHelper.cs" />
-    <Compile Include="Routine\Extentions\ExtAes.cs" />
-    <Compile Include="Routine\Extentions\ExtCollection.cs" />
-    <Compile Include="Routine\Extentions\ExtDataRow.cs" />
-    <Compile Include="Routine\Extentions\ExtDateTime.cs" />
-    <Compile Include="Routine\Extentions\ExtEnum.cs" />
-    <Compile Include="Routine\Extentions\ExtException.cs" />
-    <Compile Include="Routine\Extentions\ExtExpressionTree.cs" />
-    <Compile Include="Routine\Extentions\ExtGuid.cs" />
-    <Compile Include="Routine\Extentions\ExtGZip.cs" />
-    <Compile Include="Routine\Extentions\ExtMD5.cs" />
-    <Compile Include="Routine\Extentions\ExtJson.cs" />
-    <Compile Include="Routine\Extentions\ExtObject.cs" />
-    <Compile Include="Routine\Extentions\ExtString.cs" />
-    <Compile Include="Routine\Extentions\ExtXml.cs" />
-    <Compile Include="Routine\JsonSerealizeSettings.cs" />
-    <Compile Include="Routine\PredicateBuilder.cs" />
-    <Compile Include="Routine\ProductionCalendar.cs" />
-    <Compile Include="Routine\ProgramSettingsBase.cs" />
-    <Compile Include="Routine\Extentions\ExtReflection.cs" />
-    <Compile Include="Routine\WinServiceManager.cs" />
-    <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Routine\DomainContext.cs" />
-    <Compile Include="Routine\Utils.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Cav.snk" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>if $(ConfigurationName)==Release PowerShell -NoProfile -ExecutionPolicy Bypass -Command "&amp; '$(SolutionDir)nuspec\CreatePackage.ps1' -ProjectPath '$(ProjectPath)' -MSBuid '$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)'</PostBuildEvent>
-  </PropertyGroup>
+	<Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')"/>	
+	<PropertyGroup>
+		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+		<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+		<ProjectGuid>{4F15EE08-31C8-45FD-9F6B-5FEC2E9F09A7}</ProjectGuid>
+		<OutputType>Library</OutputType>
+		<RootNamespace>Cav</RootNamespace>
+		<AssemblyName>Cav.Core</AssemblyName>		
+		<FileAlignment>512</FileAlignment>
+		<ErrorReport>prompt</ErrorReport>
+		<WarningLevel>4</WarningLevel>
+		<TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+		<GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+		<Prefer32Bit>false</Prefer32Bit>		
+		<CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+		<OutputPath>..\_Build\Cav.Core</OutputPath>
+		<DocumentationFile>$(OutputPath)\Cav.Core.xml</DocumentationFile>
+		<OutDir>$(OutputPath)</OutDir>
+		<PlatformTarget>AnyCPU</PlatformTarget>
+		<DebugSymbols>true</DebugSymbols>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+		<PlatformTarget>AnyCPU</PlatformTarget>
+		<Optimize>false</Optimize>		
+		<DebugType>full</DebugType>
+		<DefineConstants>TRACE;DEBUG;NET461</DefineConstants>		
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+		<PlatformTarget>AnyCPU</PlatformTarget>	
+		<DefineConstants>TRACE;NET461</DefineConstants>
+		<Optimize>true</Optimize>
+		<DebugType>pdbonly</DebugType>
+	</PropertyGroup>
+	<PropertyGroup>
+		<SignAssembly>true</SignAssembly>
+	</PropertyGroup>
+	<PropertyGroup>
+		<AssemblyOriginatorKeyFile>Cav.snk</AssemblyOriginatorKeyFile>
+	</PropertyGroup>
+	<ItemGroup>
+		<Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+			<HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+			<Private>True</Private>
+		</Reference>
+		<Reference Include="System"/>
+		<Reference Include="System.Configuration.Install"/>
+		<Reference Include="System.Core"/>
+		<Reference Include="System.Deployment"/>
+		<Reference Include="System.Management"/>
+		<Reference Include="System.Runtime.Serialization"/>
+		<Reference Include="System.Security"/>
+		<Reference Include="System.ServiceModel"/>
+		<Reference Include="System.ServiceProcess"/>
+		<Reference Include="System.Transactions"/>
+		<Reference Include="System.Xml.Linq"/>
+		<Reference Include="Microsoft.CSharp"/>
+		<Reference Include="System.Data"/>
+		<Reference Include="System.Xml"/>
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Include="Container\Locator.cs"/>
+		<Compile Include="Container\PropertyInjectAttribute.cs"/>
+		<Compile Include="DataAcces\DataAccesBase.cs"/>
+		<Compile Include="DataAcces\DataAccesBase_IUD.cs"/>
+		<Compile Include="DataAcces\DataAccesBase_S.cs"/>
+		<Compile Include="DataAcces\DbTransactionScope.cs"/>
+		<Compile Include="DataAcces\HeplerDataAcces.cs"/>
+		<Compile Include="DataAcces\IDataAcces.cs"/>
+		<Compile Include="DigitalSignature\DSGeneric.cs"/>
+		<Compile Include="DynamicCode\DynamicCodeHelper.cs"/>
+		<Compile Include="Routine\Extentions\ExtAes.cs"/>
+		<Compile Include="Routine\Extentions\ExtCollection.cs"/>
+		<Compile Include="Routine\Extentions\ExtDataRow.cs"/>
+		<Compile Include="Routine\Extentions\ExtDateTime.cs"/>
+		<Compile Include="Routine\Extentions\ExtEnum.cs"/>
+		<Compile Include="Routine\Extentions\ExtException.cs"/>
+		<Compile Include="Routine\Extentions\ExtExpressionTree.cs"/>
+		<Compile Include="Routine\Extentions\ExtGuid.cs"/>
+		<Compile Include="Routine\Extentions\ExtGZip.cs"/>
+		<Compile Include="Routine\Extentions\ExtMD5.cs"/>
+		<Compile Include="Routine\Extentions\ExtJson.cs"/>
+		<Compile Include="Routine\Extentions\ExtObject.cs"/>
+		<Compile Include="Routine\Extentions\ExtString.cs"/>
+		<Compile Include="Routine\Extentions\ExtXml.cs"/>
+		<Compile Include="Routine\JsonSerealizeSettings.cs"/>
+		<Compile Include="Routine\PredicateBuilder.cs"/>
+		<Compile Include="Routine\ProductionCalendar.cs"/>
+		<Compile Include="Routine\ProgramSettingsBase.cs"/>
+		<Compile Include="Routine\Extentions\ExtReflection.cs"/>
+		<Compile Include="Routine\WinServiceManager.cs"/>
+		<Compile Include="AssemblyInfo.cs"/>
+		<Compile Include="Routine\DomainContext.cs"/>
+		<Compile Include="Routine\Utils.cs"/>
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="Version.txt"/>
+		<None Include="Cav.snk"/>
+		<None Include="packages.config"/>
+	</ItemGroup>
+	<ItemGroup/>
+	<Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
+	
+	<Import Project="..\nugetPak\Tools.target"/>
 </Project>

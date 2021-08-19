@@ -1,12 +1,11 @@
 ﻿using System.Reflection;
-using System.Resources;
 using System.Runtime.InteropServices;
 
 // Управление общими сведениями о сборке осуществляется с помощью 
 // набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
 [assembly: AssemblyTitle("Cav.Core")]
-[assembly: AssemblyDescription("Набор утилит, облегчающих рутинные оперции")]
+[assembly: AssemblyDescription("Набор утилит, облегчающих рутинные оперции с Wcf")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ChernenkoAV")]
 [assembly: AssemblyProduct("Cav.Core")]
@@ -22,17 +21,3 @@ using System.Runtime.InteropServices;
 // Следующий GUID служит для идентификации библиотеки типов, если этот проект будет видимым для COM
 [assembly: Guid("bb8d5d25-e46b-45f6-88e5-6d7cedbb0f99")]
 
-// Сведения о версии сборки состоят из следующих четырех значений:
-//
-//      Основной номер версии
-//      Дополнительный номер версии 
-//   Номер сборки
-//      Редакция
-//
-// Можно задать все значения или принять номера сборки и редакции по умолчанию 
-// используя "*", как показано ниже:
-// [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.1")]
-[assembly: AssemblyInformationalVersion("")]
-[assembly: NeutralResourcesLanguageAttribute("ru-RU")]

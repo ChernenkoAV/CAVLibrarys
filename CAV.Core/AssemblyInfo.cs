@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ChernenkoAV")]
 [assembly: AssemblyProduct("Cav.Core")]
-[assembly: AssemblyCopyright("Copyright ©  2021")]
+[assembly: AssemblyCopyright("Copyright© 2021")]
 [assembly: AssemblyTrademark("ChernenkoAV")]
 [assembly: AssemblyCulture("")]
 
@@ -22,17 +22,4 @@ using System.Runtime.InteropServices;
 // Следующий GUID служит для идентификации библиотеки типов, если этот проект будет видимым для COM
 [assembly: Guid("ab8d5d25-e46b-45f6-88e5-6d7cedbb0f99")]
 
-// Сведения о версии сборки состоят из следующих четырех значений:
-//
-//      Основной номер версии
-//      Дополнительный номер версии 
-//   Номер сборки
-//      Редакция
-//
-// Можно задать все значения или принять номера сборки и редакции по умолчанию 
-// используя "*", как показано ниже:
-// [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("7.2.3")]
-[assembly: AssemblyFileVersion("7.2.3.0")]
-[assembly: AssemblyInformationalVersion("")]
 [assembly: NeutralResourcesLanguageAttribute("ru-RU")]

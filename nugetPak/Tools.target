@@ -56,7 +56,7 @@
 	</Target>
 	
 	<ItemGroup>
-		<NugetPackage Include="..\..\packages\Nuget.CommandLine.*\tools\NuGet.exe">
+		<NugetPackage Include="..\packages\Nuget.CommandLine.*\tools\NuGet.exe">
 			<InProject>False</InProject>
 		</NugetPackage>
 	</ItemGroup>

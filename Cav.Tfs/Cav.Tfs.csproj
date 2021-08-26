@@ -20,13 +20,11 @@
     <Optimize>false</Optimize>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>    
     <DefineConstants>TRACE;DEBUG;NET461</DefineConstants>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <DefineConstants>TRACE;NET461</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>

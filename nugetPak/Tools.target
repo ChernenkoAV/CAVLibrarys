@@ -1,6 +1,5 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release.net48|AnyCPU' ">
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release.net48|AnyCPU'">
 		<TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
 		<PlatformTarget>AnyCPU</PlatformTarget>
 		<Optimize>true</Optimize>
@@ -15,10 +14,9 @@
 		<OutDir>$(OutputPath)\</OutDir>
 		<DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
 	</PropertyGroup>
-	
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release.net461|AnyCPU' ">
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release.net461|AnyCPU'">
 		<TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-		<PlatformTarget>AnyCPU</PlatformTarget>		
+		<PlatformTarget>AnyCPU</PlatformTarget>
 		<Optimize>true</Optimize>
 		<DebugType>pdbonly</DebugType>
 		<ErrorReport>prompt</ErrorReport>
@@ -30,13 +28,30 @@
 		<OutDir>$(OutputPath)\</OutDir>
 		<DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
 	</PropertyGroup>
-	
-	<PropertyGroup>
-		<VerAssembly Condition="'$(VerAssembly)' == ''">0.0.0.0</VerAssembly>
-		<VerFile Condition="'$(VerFile)' == ''">0.0.0.0</VerFile>
-		<ProductVersion Condition="'$(ProductVersion)' == ''">0000</ProductVersion>
-	</PropertyGroup>
+	<UsingTask TaskName="CreateVersion" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+		<ParameterGroup>
+			<ProductVersion ParameterType="System.String" Required="true"/>
+		  <VerAssembly ParameterType="System.String" Output="true"/>      
+		  <VerFile ParameterType="System.String" Output="true"/>
+		</ParameterGroup>
+		<Task>
+		  <Using Namespace="System"/>
+		  <Code Type="Fragment" Language="cs"><![CDATA[            
+				VerAssembly = ProductVersion.Split(new[] {'.'})[0];				
+				VerFile = VerAssembly + DateTime.Now.ToString(".yyyy.MM.dd");
+				VerAssembly = VerAssembly +".0.0.0";
+				]]></Code>
+		</Task>
+  </UsingTask>
+
 	<Target Name="BeforeBuild">
+		<ReadLinesFromFile File="Version.txt">
+			<Output TaskParameter="Lines" PropertyName="ProductVersion"/>
+		</ReadLinesFromFile>
+		<CreateVersion ProductVersion="$(ProductVersion)">
+			<Output TaskParameter="VerAssembly" PropertyName="VerAssembly"/>
+			<Output TaskParameter="VerFile" PropertyName="VerFile"/>
+		</CreateVersion>		
 		<ItemGroup>
 			<AssemblyAttributes Include="AssemblyVersion">
 				<_Parameter1>$(VerAssembly)</_Parameter1>
@@ -53,6 +68,7 @@
 		<ItemGroup>
 			<Compile Include="$(BaseIntermediateOutputPath)$(AssemblyName)$(ProductVersion)Version.cs"/>
 		</ItemGroup>
+		<Message Text="------- Версия сборки $(VerAssembly) Версия файла $(VerFile)" Importance="High"/>
 	</Target>
 	
 	<ItemGroup>
@@ -61,13 +77,11 @@
 		</NugetPackage>
 	</ItemGroup>
 	
-	<Target Name="AfterBuild" Condition="'$(Configuration)'=='Release'">
-		<ReadLinesFromFile File="Version.txt">
-			<Output TaskParameter="Lines" PropertyName="PropVer"/>
-		</ReadLinesFromFile>
-		<Message Text="------ Указана версия сборки $(PropVer)" Importance="High" />
-		<Exec Command="PowerShell -NoProfile -ExecutionPolicy Bypass -Command &quot;&amp; '$(SolutionDir)nugetPak\BuildForPack.ps1' -Project '$(ProjectPath)' -ProductVersion '$(PropVer)' -MSBuid '$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)'&quot;"/>
-		<Exec Command="&quot;@(NugetPackage->'%(fullpath)')&quot; pack ..\nugetPak\$(AssemblyName).nuspec -Version $(PropVer) -Properties Configuration=Release -OutputDirectory $(OutDir)..\nuget -BasePath $(OutDir)"/>
-		<Message Text="------ Сборка пакета NuGet для проекта $(AssemblyName) $(PropVer) успешно завершена" Importance="High" />		
-	</Target>	
+	<Target Name="AfterBuild" Condition="'$(Configuration)' =='Release'">
+		<Message Text="------- Версия пакета $(ProductVersion)" Importance="High"/>
+		<Exec Command="PowerShell -NoProfile -ExecutionPolicy Bypass -Command &quot;&amp; '$(SolutionDir)nugetPak\BuildForPack.ps1' -Project '$(ProjectPath)' -MSBuid '$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)' &quot;"/>
+		<Exec Command="&quot;@(NugetPackage->'%(fullpath)')&quot; pack ..\nugetPak\$(AssemblyName).nuspec -Version $(ProductVersion) -Properties Configuration=Release -OutputDirectory $(OutDir)..\nuget -BasePath $(OutDir)"/>
+		<Message Text="------ Сборка пакета NuGet для проекта $(AssemblyName) $(ProductVersion) успешно завершена" Importance="High"/>
+	</Target>
 </Project>
+		

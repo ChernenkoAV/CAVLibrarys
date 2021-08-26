@@ -18,15 +18,11 @@
             <group targetFramework="net461">
                 <dependency id="Newtonsoft.Json" version="13.0.1" />
             </group>
-			<group targetFramework="net48">
-                <dependency id="Newtonsoft.Json" version="13.0.1" />
-            </group>
         </dependencies>
         <repository type="git" url="https://github.com/ChernenkoAV/CavLibrarys"/>
     </metadata>
     <files>
         <file src="..\..\Cav.png" target="images\"/>
         <file src="net461\Cav.Core.*" target="lib\net461\"/>
-		<file src="net48\Cav.Core.*" target="lib\net48\"/>
     </files>
 </package>

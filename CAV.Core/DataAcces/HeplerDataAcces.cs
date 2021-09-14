@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Cav.DataAcces;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq.Expressions;
-using Cav.DataAcces;
 
 namespace Cav
 {
@@ -104,7 +104,7 @@ namespace Cav
 
             returnType = Nullable.GetUnderlyingType(returnType) ?? returnType;
 
-            if (conv == null && val != null && (returnType.IsEnum))
+            if (conv == null && val != null && returnType.IsEnum)
                 val = Enum.Parse(returnType, val.ToString(), true);
 
             if (conv != null && (val != null || returnType.IsArray))

@@ -133,18 +133,17 @@ namespace Cav
 
         #endregion
 
-
         /// <summary>
         /// Диалог выбора папки(директории)
         /// </summary>
-        /// <param name="Owner">Контрол, к котрому показывается диалог.</param>
+        /// <param name="owner">Контрол, к котрому показывается диалог.</param>
         /// <param name="Description">Описание</param>
         /// <param name="RootFolder">Корневая папка</param>
         /// <param name="SelectedPath">Выбранная папка</param>
         /// <param name="ShowNewFolderButton">Показывать кнопку создания новой папки</param>
         /// <returns>Выбранная папка (null - отмена выбора)</returns>
         public static String FolderBrowser(
-            Control Owner = null,
+            Control owner = null,
             String Description = null,
             Environment.SpecialFolder? RootFolder = null,
             String SelectedPath = null,
@@ -158,15 +157,11 @@ namespace Cav
             if (!SelectedPath.IsNullOrWhiteSpace())
                 dg.SelectedPath = SelectedPath;
 
-            DialogResult dr;
-            if (Owner != null)
-                dr = dg.ShowDialog(Owner);
-            else
-                dr = dg.ShowDialog();
+            dg.ShowNewFolderButton = ShowNewFolderButton;
 
-            if (dr != DialogResult.OK)
-                return null;
-            return dg.SelectedPath;
+            var dr = owner != null ? dg.ShowDialog(owner) : dg.ShowDialog();
+
+            return dr != DialogResult.OK ? null : dg.SelectedPath;
         }
 
         /// <summary>
@@ -218,17 +213,12 @@ namespace Cav
                 AddExtension = AddExtension,
             };
 
-            DialogResult dr;
-            if (Owner != null)
-                dr = fd.ShowDialog(Owner);
-            else
-                dr = fd.ShowDialog();
+            var dr = Owner != null ? fd.ShowDialog(Owner) : fd.ShowDialog();
 
             if (dr == DialogResult.OK)
                 res.AddRange(fd.FileNames);
             return res;
         }
-
 
         /// <summary>
         /// Диалоговое окно сохранения файла
@@ -280,13 +270,7 @@ namespace Cav
                 AddExtension = AddExtension,
             };
 
-            DialogResult dr;
-
-            if (Owner != null)
-                dr = fd.ShowDialog(Owner);
-            else
-                dr = fd.ShowDialog();
-
+            var dr = Owner != null ? fd.ShowDialog(Owner) : fd.ShowDialog();
 
             if (dr == DialogResult.OK)
                 file = fd.FileName;

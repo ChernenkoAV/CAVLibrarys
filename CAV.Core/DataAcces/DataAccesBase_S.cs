@@ -51,7 +51,7 @@ namespace Cav.DataAcces
             if (!comands.TryGetValue(actionType, out config))
                 throw new NotImplementedException($"Команда для {actionType.ToString()} не настроена");
 
-            DbCommand command = CreateCommand(config);
+            DbCommand command = createCommand(config);
 
             String key = actionType.ToString();
 
@@ -59,7 +59,7 @@ namespace Cav.DataAcces
 
             foreach (var item in commandParams.Where(x => x.Key.StartsWith(key)))
             {
-                var prmCmd = CreateParametr(item.Value);
+                var prmCmd = createParametr(item.Value);
                 Object val = null;
                 String paramValKey = item.Key.Replace(key + " ", String.Empty);
 
@@ -304,7 +304,7 @@ namespace Cav.DataAcces
             comands.TryAdd(config.ActionType, config);
         }
 
-        private DbCommand CreateCommand(AdapterConfig config)
+        private DbCommand createCommand(AdapterConfig config)
         {
             var cmmnd = this.CreateCommandObject();
             cmmnd.CommandText = config.TextCommand;
@@ -323,7 +323,7 @@ namespace Cav.DataAcces
             return cmmnd;
         }
 
-        private DbParameter CreateParametr(DbParamSetting paramSetting)
+        private DbParameter createParametr(DbParamSetting paramSetting)
         {
             var res = this.DbProviderFactoryGet().CreateParameter();
             res.ParameterName = paramSetting.ParamName;

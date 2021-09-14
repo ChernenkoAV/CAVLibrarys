@@ -9,7 +9,7 @@ using System.Threading;
 namespace Cav.Container
 {
     /// <summary>
-    /// Локатор-контейнер объектов
+    /// Локатор-контейнер объектов. По умолчанию экземпляры кладет в кэш. То есть: объект - синглтон
     /// </summary>
     public static class Locator
     {
@@ -26,14 +26,14 @@ namespace Cav.Container
 
         private static ConcurrentDictionary<Type, Object> cacheObjects = new ConcurrentDictionary<Type, object>();
 
-        private static Object GetObjectFromCache(Type type)
+        private static Object getObjectFromCache(Type type)
         {
             Object res = null;
             cacheObjects.TryGetValue(type, out res);
             return res;
         }
 
-        private static void PutObjectToCache(Object inst)
+        private static void putObjectToCache(Object inst)
         {
             Type typrObj = inst.GetType();
             cacheObjects.TryAdd(typrObj, inst);
@@ -42,11 +42,13 @@ namespace Cav.Container
         /// <summary>
         /// Дополнительные действия с объектом после создания
         /// </summary>
+        [Obsolete("Будет удалено. Используйте интерфейс IInitInstance")]
         public static Action<Object> AdditionalSettingsObject { get; set; }
 
         /// <summary>
         /// Использовать кэш объектов (false - объект и зависимости создаются заново)
         /// </summary>
+        [Obsolete("Будет удалено. Используйте атрибут AlwaysNewAttribute")]
         public static Boolean UseCache { get; set; }
 
         /// <summary>
@@ -68,16 +70,18 @@ namespace Cav.Container
             if (typeInstance.IsAbstract)
                 throw new ArgumentException($"{nameof(typeInstance)} {typeInstance.FullName}  не может бать абстрактным классом");
 
+            var akaSingleton = typeInstance.GetCustomAttribute<AlwaysNewAttribute>() == null;
+
             object res = null;
 
-            if (UseCache && typeInstance.IsClass)
+            if ((UseCache || akaSingleton) && typeInstance.IsClass)
             {
-                res = GetObjectFromCache(typeInstance);
+                res = getObjectFromCache(typeInstance);
                 if (res != null)
                     return res;
             }
 
-            PuhStackAndCheckRecursion(typeInstance);
+            puhStackAndCheckRecursion(typeInstance);
 
             var constructor = typeInstance.GetConstructors().OrderBy(x => x.GetParameters().Length).FirstOrDefault();
             if (constructor == null)
@@ -119,10 +123,8 @@ namespace Cav.Container
 
             res = constructor.Invoke(paramConstr.ToArray());
 
-            AdditionalSettingsObject?.Invoke(res);
-
-            if (UseCache)
-                PutObjectToCache(res);
+            if (UseCache || akaSingleton)
+                putObjectToCache(res);
 
             foreach (var propInfo in typeInstance.GetProperties())
             {
@@ -135,7 +137,11 @@ namespace Cav.Container
                 propSetData.Value.Add(new PropSetDataT() { Property = propInfo, InstatnceObject = res });
             }
 
-            PopStack();
+            popStack();
+
+            AdditionalSettingsObject?.Invoke(res);
+
+            (res as IInitInstance)?.InitInstance();
 
             return res;
         }
@@ -144,7 +150,7 @@ namespace Cav.Container
         private static ThreadLocal<Stack<String>> pathDependency = new ThreadLocal<Stack<string>>(() => new Stack<string>());
         private static ThreadLocal<List<PropSetDataT>> propSetData = new ThreadLocal<List<PropSetDataT>>(() => new List<PropSetDataT>());
 
-        private static void PopStack()
+        private static void popStack()
         {
             if (pathDependency.Value.Any())
                 pathDependency.Value.Pop();
@@ -157,7 +163,7 @@ namespace Cav.Container
                 }
         }
 
-        private static void PuhStackAndCheckRecursion(Type typeInstance)
+        private static void puhStackAndCheckRecursion(Type typeInstance)
         {
             var type = pathDependency.Value.FirstOrDefault(x => x == typeInstance.FullName);
             if (type != null)

@@ -31,7 +31,7 @@ namespace Cav.DataAcces
     }
 
     /// <summary>
-    /// Интерфейс для тестирования слоя доступа к данным в нормированной выборкой
+    /// Интерфейс для тестирования слоя доступа к данным c нормированной выборкой
     /// </summary>
     public interface IDataAcces<Trow, TselectParams> : IDataAcces
         where Trow : class, new()

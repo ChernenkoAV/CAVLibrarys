@@ -16,7 +16,7 @@ namespace Cav.WinForms.BaseClases
         {
             InitializeComponent();
 
-            this.Focus();
+            Focus();
         }
 
         /// <summary>

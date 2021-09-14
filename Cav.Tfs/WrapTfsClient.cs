@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Cav.ReflectHelpers;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -6,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-using Cav.ReflectHelpers;
 
 namespace Cav.Tfs
 {
@@ -250,7 +250,7 @@ namespace Cav.Tfs
         private const string tfsVersionControlControlsCommonDll = tfsPrefix + "VersionControl.Controls.Common.dll";
         private const string tfsVersionControlControlsDll = tfsPrefix + "VersionControl.Controls.dll";
         private const string tfsWorkItemTrackingClientDll = tfsPrefix + "WorkItemTracking.Client.dll";
-        
+
         private static Assembly tfsClientAssembly = null;
         private static Assembly tfsVersionControlCommonAssembly = null;
         private static Assembly tfsVersionControlClientAssembly = null;
@@ -994,7 +994,7 @@ namespace Cav.Tfs
 
             foreach (var item in ssts)
             {
-                if (item.GetPropertyValue("Name") as string == nameShelvset)
+                if ((item.GetPropertyValue("Name") as string) == nameShelvset)
                 {
                     shset = item;
                     break;

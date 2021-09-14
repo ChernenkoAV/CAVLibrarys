@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration.Install;
 using System.Diagnostics;
 using System.IO;
@@ -48,14 +47,11 @@ namespace Cav.WinService
 
             ServiceController sc = new ServiceController(ServiceName);
 
-            List<ServiceControllerStatus> stats = new List<ServiceControllerStatus>();
-            stats.Add(ServiceControllerStatus.Running);
-            stats.Add(ServiceControllerStatus.StartPending);
-            stats.Add(ServiceControllerStatus.StopPending);
-            stats.Add(ServiceControllerStatus.ContinuePending);
-            stats.Add(ServiceControllerStatus.PausePending);
-
-            if (!stats.Contains(sc.Status))
+            if (!sc.Status.In(
+                    ServiceControllerStatus.Running,
+                    ServiceControllerStatus.StartPending,
+                    ServiceControllerStatus.StopPending,
+                    ServiceControllerStatus.ContinuePending))
                 sc.Start();
         }
 

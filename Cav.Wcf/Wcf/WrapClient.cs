@@ -16,15 +16,13 @@ namespace Cav.Wcf
         /// <param name="Client">Экземпляр клиента</param>
         public WrapClient(T Client)
         {
-            this.client = Client;
+            this.Client = Client;
         }
-
-        private readonly T client;
 
         /// <summary>
         /// Экземпляр клиента
         /// </summary>
-        public T Client => client;
+        public T Client { get; }
 
         #region Члены IDisposable
 
@@ -33,19 +31,19 @@ namespace Cav.Wcf
         /// </summary>
         public void Dispose()
         {
-            if (client == null)
+            if (Client == null)
                 return;
 
-            if (client.State == CommunicationState.Faulted)
+            if (Client.State == CommunicationState.Faulted)
             {
-                client.Abort();
+                Client.Abort();
             }
-            else if (client.State != CommunicationState.Closed)
+            else if (Client.State != CommunicationState.Closed)
             {
-                client.Close();
+                Client.Close();
             }
 
-            client.Dispose();
+            Client.Dispose();
         }
 
         #endregion

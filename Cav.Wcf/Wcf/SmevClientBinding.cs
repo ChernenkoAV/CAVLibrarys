@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Cav.DigitalSignature;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,7 +12,6 @@ using System.ServiceModel.Security;
 using System.ServiceModel.Security.Tokens;
 using System.Text;
 using System.Xml;
-using Cav.DigitalSignature;
 
 namespace Cav.Wcf
 {
@@ -388,63 +388,22 @@ namespace Cav.Wcf
 
         internal SMEVMessageEncoderFactory(string mediaType, string charSet, MessageVersion version, MessageEncoderFactory messageFactory, string senderActor, string recipientActor)
         {
-            theFactory = messageFactory;
-            theVersion = version;
-            theMediaType = mediaType;
-            theCharSet = charSet;
-            this.SenderActor = senderActor;
-            this.RecipientActor = recipientActor;
-            theEncoder = new SMEVMessageEncoder(this);
+            InnerFactory = messageFactory;
+            MessageVersion = version;
+            MediaType = mediaType;
+            CharSet = charSet;
+            SenderActor = senderActor;
+            RecipientActor = recipientActor;
+            Encoder = new SMEVMessageEncoder(this);
         }
 
-        private MessageEncoderFactory theFactory;
-        private SMEVMessageEncoder theEncoder;
-        private MessageVersion theVersion;
-        private string theMediaType;
-        private string theCharSet;
-
-        internal MessageEncoderFactory InnerFactory
-        {
-            get
-            {
-                return this.theFactory;
-            }
-        }
-
-        public override MessageEncoder Encoder
-        {
-            get
-            {
-                return theEncoder;
-            }
-        }
-
-        public override MessageVersion MessageVersion
-        {
-            get
-            {
-                return theVersion;
-            }
-        }
-
-        public string SenderActor { get; private set; }
-        public string RecipientActor { get; private set; }
-
-        public string MediaType
-        {
-            get
-            {
-                return theMediaType;
-            }
-        }
-
-        public string CharSet
-        {
-            get
-            {
-                return theCharSet;
-            }
-        }
+        internal MessageEncoderFactory InnerFactory { get; }
+        public override MessageEncoder Encoder { get; }
+        public override MessageVersion MessageVersion { get; }
+        public string SenderActor { get; }
+        public string RecipientActor { get; }
+        public string MediaType { get; }
+        public string CharSet { get; }
     }
 
     #endregion

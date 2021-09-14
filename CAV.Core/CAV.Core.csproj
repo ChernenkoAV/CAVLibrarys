@@ -61,7 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Container\Locator.cs" />
-    <Compile Include="Container\PropertyInjectAttribute.cs" />
+    <Compile Include="Container\LocatorAdditionalTools.cs" />
     <Compile Include="DataAcces\DataAccesBase.cs" />
     <Compile Include="DataAcces\DataAccesBase_IUD.cs" />
     <Compile Include="DataAcces\DataAccesBase_S.cs" />

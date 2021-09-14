@@ -46,7 +46,7 @@ namespace Cav.DataAcces
                 return;
 
             var cmndText = command.CommandText;
-            DbParameter[] dbParm = new DbParameter[command.Parameters.Count];
+            var dbParm = new DbParameter[command.Parameters.Count];
             if (command.Parameters.Count > 0)
                 command.Parameters.CopyTo(dbParm, 0);
             (new Task(mcaftexex, Tuple.Create(MonitorCommandAfterExecute, cmndText, objColrn, dbParm))).Start();
@@ -56,7 +56,7 @@ namespace Cav.DataAcces
         {
             try
             {
-                Tuple<Action<String, Object, DbParameter[]>, String, object, DbParameter[]> p = (Tuple<Action<String, Object, DbParameter[]>, String, object, DbParameter[]>)o;
+                var p = (Tuple<Action<String, Object, DbParameter[]>, String, object, DbParameter[]>)o;
                 p.Item1(p.Item2, p.Item3, p.Item4);
             }
             catch { }
@@ -281,10 +281,7 @@ namespace Cav.DataAcces
             if (tran != null && tran.Connection == null)
                 throw new NullReferenceException("Несогласованное состояние транзакции. Соедиение с БД сброшено.");
 
-            if (tran != null)
-                cmd.Connection = tran.Connection;
-            else
-                cmd.Connection = DbTransactionScope.Connection(ConnectionName);
+            cmd.Connection = tran?.Connection ?? DbTransactionScope.Connection(ConnectionName);
 
             cmd.Transaction = tran;
 

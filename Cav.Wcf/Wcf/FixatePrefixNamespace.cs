@@ -62,27 +62,26 @@ namespace Cav.Wcf
     {
         private readonly IClientMessageFormatter clientFormatter;
         private readonly IDispatchMessageFormatter serverFormatter;
-        private readonly Dictionary<String, String> prefNamespace;
 
-        public Dictionary<String, String> Namespaces { get { return prefNamespace; } }
+        public Dictionary<String, String> Namespaces { get; }
 
         #region ctor
 
         public FixatePrefixMessageFormatter(Dictionary<String, String> namespaces)
         {
-            this.prefNamespace = namespaces;
+            this.Namespaces = namespaces;
         }
 
         public FixatePrefixMessageFormatter(IClientMessageFormatter formatter, Dictionary<String, String> namespaces)
         {
             this.clientFormatter = formatter;
-            this.prefNamespace = namespaces;
+            this.Namespaces = namespaces;
         }
 
         public FixatePrefixMessageFormatter(IDispatchMessageFormatter formatter, Dictionary<String, String> namespaces)
         {
             this.serverFormatter = formatter;
-            this.prefNamespace = namespaces;
+            this.Namespaces = namespaces;
         }
 
         #endregion

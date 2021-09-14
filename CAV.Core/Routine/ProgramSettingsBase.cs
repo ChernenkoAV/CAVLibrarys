@@ -68,7 +68,7 @@ namespace Cav.Configuration
     /// Базовый класс для сохранения настроек
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    [Obsolete("Реорганизация структуры хранения в файлах. В следующей версии будет несовместимо.")]
+    [Obsolete("Реорганизация структуры хранения в файлах. Скоро будет несовместимо.")]
     public abstract class ProgramSettingsBase<T> where T : ProgramSettingsBase<T>, new()
     {
         /// <summary>
@@ -85,7 +85,7 @@ namespace Cav.Configuration
             throw new TypeAccessException("Для получения экземпляра воспользуйтесь свойством Instance");
         }
 
-        private static T _instance = null;
+        private static T instance = null;
         private static Boolean internalCreate = false;
         private static Object lockObj = new object();
         /// <summary>
@@ -96,16 +96,16 @@ namespace Cav.Configuration
             get
             {
 
-                if (_instance != null)
-                    return _instance;
+                if (instance != null)
+                    return instance;
 
                 lock (lockObj)
                 {
-                    if (_instance == null)
+                    if (instance == null)
                     {
                         internalCreate = true;
 
-                        _instance = (T)Activator.CreateInstance(typeof(T));
+                        instance = (T)Activator.CreateInstance(typeof(T));
 
                         internalCreate = false;
 
@@ -116,15 +116,15 @@ namespace Cav.Configuration
 
                         filename = filename.ReplaceInvalidPathChars();
 
-                        _instance.fileNameApp = Path.Combine(Path.GetDirectoryName(typeof(T).Assembly.Location), filename);
-                        _instance.fileNameUserRoaming = Path.Combine(DomainContext.AppDataUserStorageRoaming, filename);
-                        _instance.fileNameUserLocal = Path.Combine(DomainContext.AppDataUserStorageLocal, filename);
-                        _instance.fileNameAppCommon = Path.Combine(DomainContext.AppDataCommonStorage, filename);
-                        _instance.Reload();
+                        instance.fileNameApp = Path.Combine(Path.GetDirectoryName(typeof(T).Assembly.Location), filename);
+                        instance.fileNameUserRoaming = Path.Combine(DomainContext.AppDataUserStorageRoaming, filename);
+                        instance.fileNameUserLocal = Path.Combine(DomainContext.AppDataUserStorageLocal, filename);
+                        instance.fileNameAppCommon = Path.Combine(DomainContext.AppDataCommonStorage, filename);
+                        instance.Reload();
                     }
                 }
 
-                return _instance;
+                return instance;
             }
         }
 
@@ -309,7 +309,7 @@ namespace Cav.Configuration
                     .Select(x => new { PropertyName = x.Name, Area = x.GetCustomAttribute<ProgramSettingsAreaAttribute>()?.Value ?? Area.UserLocal })
                     .ToList();
 
-                var jsInstSetting = _instance.JsonSerialize();
+                var jsInstSetting = instance.JsonSerialize();
 
                 foreach (var setFile in settingsFiles)
                 {

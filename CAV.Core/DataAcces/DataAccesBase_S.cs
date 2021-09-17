@@ -282,7 +282,7 @@ namespace Cav.DataAcces
                 paramType = HeplerDataAcces.TypeMapDbType(typeVal);
 
             if (typeVal.IsEnum)
-                param.ConvetProperty = x => Convert.ChangeType(x, typeVal.GetEnumUnderlyingType());
+                param.ConvetProperty = x => x != null ? Convert.ChangeType(x, typeVal.GetEnumUnderlyingType()) : null;
 
             param.ParamType = paramType.Value;
 

@@ -1,8 +1,8 @@
-﻿using Cav.DataAcces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq.Expressions;
+using Cav.DataAcces;
 
 namespace Cav
 {
@@ -59,10 +59,8 @@ namespace Cav
         /// <returns></returns>
         public static DbType TypeMapDbType(Type sType)
         {
-            Type origanalType = sType;
-            Type nullableType = Nullable.GetUnderlyingType(sType);
-            if (nullableType != null)
-                sType = nullableType;
+            var originalType = sType;
+            sType = Nullable.GetUnderlyingType(sType) ?? sType;
 
             if (sType.IsEnum)
                 sType = sType.GetEnumUnderlyingType();
@@ -70,7 +68,7 @@ namespace Cav
             DbType res;
 
             if (!typeMaps.TryGetValue(sType, out res))
-                throw new ArgumentException($"Не удалось сопоставить тип {origanalType.FullName} с типом DbType");
+                throw new ArgumentException($"Не удалось сопоставить тип {originalType.FullName} с типом DbType");
 
             return res;
         }

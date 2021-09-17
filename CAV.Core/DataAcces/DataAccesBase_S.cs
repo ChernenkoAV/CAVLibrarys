@@ -49,13 +49,13 @@ namespace Cav.DataAcces
         {
             AdapterConfig config = null;
             if (!comands.TryGetValue(actionType, out config))
-                throw new NotImplementedException($"Команда для {actionType.ToString()} не настроена");
+                throw new NotImplementedException($"Команда для {actionType} не настроена");
 
             DbCommand command = createCommand(config);
 
             String key = actionType.ToString();
 
-            var paramValues = ParceParams(paramsExpr, obj);
+            var paramValues = parceParams(paramsExpr, obj);
 
             foreach (var item in commandParams.Where(x => x.Key.StartsWith(key)))
             {
@@ -93,7 +93,7 @@ namespace Cav.DataAcces
             return command;
         }
 
-        private Dictionary<string, object> ParceParams(Expression paramsExpr, Trow obj)
+        private Dictionary<string, object> parceParams(Expression paramsExpr, Trow obj)
         {
             Dictionary<string, object> res = new Dictionary<string, object>();
             if (paramsExpr == null)
@@ -149,7 +149,7 @@ namespace Cav.DataAcces
             {
                 if (flagConfigured)
                     return;
-                this.ConfigAcces();
+                ConfigAcces();
                 flagConfigured = true;
             }
         }
@@ -276,9 +276,14 @@ namespace Cav.DataAcces
 
             DbParamSetting param = new DbParamSetting();
             param.ParamName = paramName;
+            var typeVal = Nullable.GetUnderlyingType(proprow.Type) ?? proprow.Type;
 
             if (!paramType.HasValue)
-                paramType = HeplerDataAcces.TypeMapDbType(proprow.Type);
+                paramType = HeplerDataAcces.TypeMapDbType(typeVal);
+
+            if (typeVal.IsEnum)
+                param.ConvetProperty = x => Convert.ChangeType(x, typeVal.GetEnumUnderlyingType());
+
             param.ParamType = paramType.Value;
 
             if (convertProperty != null)

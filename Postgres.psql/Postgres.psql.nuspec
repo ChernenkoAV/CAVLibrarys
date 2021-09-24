@@ -17,6 +17,7 @@
 			<group targetFramework="net45"/>
 			<group targetFramework="net461"/>
 			<group targetFramework="netstandard20"/>
+			<group targetFramework="net50"/>
 		</dependencies>
 	</metadata>
 	<files>

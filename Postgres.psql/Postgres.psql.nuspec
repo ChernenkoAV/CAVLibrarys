@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
 		<id>Postgres.psql</id>
-		<version>13.4.0.1</version>
+		<version>13.4.0.2</version>
 		<title>Postgres 13.4 win-x64 psql pg_dump pg_dumpall</title>
 		<authors>ChernenkoAV</authors>
 		<owners>ChernenkoAV</owners>
@@ -11,7 +11,7 @@
 		<projectUrl>https://github.com/ChernenkoAV/CavLibrarys</projectUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>The package contains the PostgreSql 13.4 win-x64 client part in the form of psql, pg_dump, pg_dumpall. Applies to inline script tasks when building msbuild and etc.</description>
-		<tags>postgres win x64 psql pg_dump pg_dumpall</tags>
+		<tags>postgres win x64 psql pg_dump pg_dumpall pg_restore</tags>
 		<dependencies>
 			<group targetFramework="net40"/>
 			<group targetFramework="net45"/>

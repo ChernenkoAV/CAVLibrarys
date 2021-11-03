@@ -69,15 +69,15 @@ namespace Cav.DataAcces
             if (providerFactory != null)
                 return providerFactory;
 
-            var tran = DbTransactionScope.TransactionGet(ConnectionName);
+            var tran = DbTransactionScope.TransactionGet(connectionName);
             if (tran != null)
                 providerFactory = DbProviderFactories.GetFactory(tran.Connection);
 
             if (providerFactory == null)
             {
-                var conn = DbTransactionScope.Connection(ConnectionName);
+                var conn = DbTransactionScope.Connection(connectionName);
                 providerFactory = DbProviderFactories.GetFactory(conn);
-                if (DbTransactionScope.TransactionGet(ConnectionName) == null)
+                if (DbTransactionScope.TransactionGet(connectionName) == null)
                     if (conn != null)
                         try
                         {
@@ -93,7 +93,7 @@ namespace Cav.DataAcces
         /// <summary>
         /// Имя соединения, с которым будет работать текущий объект
         /// </summary>
-        protected String ConnectionName = null;
+        protected String connectionName = null;
         /// <summary>
         /// Получение объекта DbCommand при наличии настроенного соединения с БД
         /// </summary>
@@ -254,7 +254,7 @@ namespace Cav.DataAcces
             }
             catch { }
 
-            var tran = DbTransactionScope.TransactionGet(ConnectionName);
+            var tran = DbTransactionScope.TransactionGet(connectionName);
 
             if (tran != null && tran.Connection == null)
                 throw new NullReferenceException("Несогласованное состояние объекта транзакции. Соедиение с БД сброшено.");
@@ -276,12 +276,12 @@ namespace Cav.DataAcces
 
         private DbCommand tuneCommand(DbCommand cmd)
         {
-            var tran = DbTransactionScope.TransactionGet(ConnectionName);
+            var tran = DbTransactionScope.TransactionGet(connectionName);
 
             if (tran != null && tran.Connection == null)
                 throw new NullReferenceException("Несогласованное состояние транзакции. Соедиение с БД сброшено.");
 
-            cmd.Connection = tran?.Connection ?? DbTransactionScope.Connection(ConnectionName);
+            cmd.Connection = tran?.Connection ?? DbTransactionScope.Connection(connectionName);
 
             cmd.Transaction = tran;
 

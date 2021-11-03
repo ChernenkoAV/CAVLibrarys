@@ -9,13 +9,14 @@ using System.Xml.Linq;
 
 namespace Cav.WinService
 {
-    /// <summary>Менеджер управления виндовыми службами</summary>
+    /// <summary>Менеджер управления виндовыми службами</summary>    
     public static class Manager
     {
         /// <summary>Установка в качестве службы.</summary>
         /// <remarks>1. Сборка должна быть .Net-кая. Наверное. Системная обертка к Installutil.exe</remarks>
         /// <remarks>2. Служба будет установлена для файла по указанному пути.</remarks>        
         /// <param name="FileName">Файл для установки.</param>
+        [Obsolete("Будет удалено. Используйте либо https://github.com/winsw/winsw, либо утилиту sc.exe https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/sc-create")]
         public static void InstallAsService(String FileName)
         {
             ManagedInstallerClass.InstallHelper(new[] { FileName });
@@ -24,6 +25,7 @@ namespace Cav.WinService
         /// <summary>Удаление сервиса</summary>
         /// <remarks>Сборка должна быть .Net-кая. Наверное. Системная обертка к Installutil.exe</remarks>
         /// <param name="FileName">Файл службы</param>
+        [Obsolete("Будет удалено. Используйте либо https://github.com/winsw/winsw, либо утилиту sc.exe https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/sc-delete")]
         public static void UninstallService(String FileName)
         {
             ManagedInstallerClass.InstallHelper(new[] { "/u", FileName });
@@ -31,7 +33,7 @@ namespace Cav.WinService
 
         /// <summary>Проверка существования службы по имени</summary>
         /// <param name="ServiceName">Имя службы</param>
-        /// <returns>True - служба установлена</returns>
+        /// <returns>True - служба установлена</returns>        
         public static Boolean ServiceExist(String ServiceName)
         {
             return ServiceController.GetServices().Any(s => s.ServiceName == ServiceName);
@@ -144,22 +146,5 @@ namespace Cav.WinService
 
             xml.Save(filepath);
         }
-
-        ///// <summary>
-        ///// Установка аргументов к файлу запуска слжбы. Без проверок. Может отработать корректно, но только один раз
-        ///// </summary>
-        ///// <param name="serviceName">Имя службы</param>
-        ///// <param name="ars">строка с аргуметами</param>
-        //public static void SetServiceArgumentsToExeFile(String serviceName, String ars)
-        //{
-        //    using (var system = Registry.LocalMachine.OpenSubKey("System"))
-        //    using (var curContrSet = system.OpenSubKey("CurrentControlSet"))
-        //    using (var servs = curContrSet.OpenSubKey("Services"))
-        //    using (var serv = servs.OpenSubKey(serviceName, RegistryKeyPermissionCheck.ReadWriteSubTree))
-        //    {
-        //        string path = serv.GetValue("ImagePath") + " " + ars;
-        //        serv.SetValue("ImagePath", path);
-        //    }
-        //}
     }
 }

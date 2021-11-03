@@ -30,6 +30,7 @@ namespace Cav
         /// </summary>
         /// <param name="SetForeground">Если приложение имеет окна, то вывести окно вперед</param>
         /// <returns>true - приложение найдено(можно не запускать вторую копию), false - приложение не найдено.</returns>
+        [Obsolete("Будет перенесено")]
         public static Boolean FindStartedProgram(Boolean SetForeground = true)
         {
             Process current = Process.GetCurrentProcess();
@@ -94,6 +95,7 @@ namespace Cav
         /// <param name="connectionName">има подключения для коллекции</param>
         /// <param name="pooling">Добавлять подключение в пул</param>
         /// <returns>Сформированная строка соединения</returns>
+        [Obsolete("Будет удалено, используйте обобщеные методы")]
         public static string InitConnection(
             String server,
             String dbName,
@@ -137,6 +139,7 @@ namespace Cav
         /// <param name="connectionString">Строка подключения</param>
         /// <param name="pooling">Добавлять подключение в пул</param>
         /// <param name="connectionName">Имя подключения для коллекции</param>
+        [Obsolete("Будет удалено, используйте обобщеные методы")]
         public static void InitConnection(
             String connectionString,
             Boolean pooling = false,
@@ -249,6 +252,7 @@ namespace Cav
         /// <summary>
         /// Получение параметров командной строки приложения ClickOnce
         /// </summary>
+        [Obsolete("Будет перенесено")]
         public static string[] ProgramArguments
         {
             get
@@ -275,7 +279,7 @@ namespace Cav
                         continue;
                     Uri fileUri = new Uri(larg[i]);
                     larg[i] = Uri.UnescapeDataString(fileUri.AbsolutePath);
-                    //После этого можно проверить существование файла и открыть его, как обычно.                    
+                    //После этого можно проверить существование файла и открыть его, как обычно.
                 }
 
                 return larg.ToArray();
@@ -374,8 +378,6 @@ namespace Cav
             }
         }
 
-
-
         /// <summary>
         /// Имя сборки, из которого запущенно приложение (имя exe файла) (ТОЛЬКО ЕСЛИ ЭТО НЕ COM!!!)
         /// При работе в IIS бесмысленно, ибо там всегда процесс w3c. вроде. Какой-то один, короче...
@@ -392,6 +394,7 @@ namespace Cav
         /// Текущая версия приложения.
         /// </summary>
         /// <returns>ClickOnce или версию AssemblyVersion исполняемого файла</returns>
+        [Obsolete("Будет перенесено")]
         public static Version CurrentVersion
         {
             get
@@ -410,6 +413,7 @@ namespace Cav
         /// <summary>
         /// Имя приложения
         /// </summary>
+        [Obsolete("Будет перенесено")]
         public static String ApplicationName
         {
             get
@@ -427,6 +431,7 @@ namespace Cav
         /// Логин, под которым прилогинены к БД. Работает только для Sql Server.
         /// </summary>
         /// <param name="ConnectionName">Имя соедиения</param>
+        [Obsolete("Будет удалено")]
         public static String UserLogin(String ConnectionName = null)
         {
             if (ConnectionName.IsNullOrWhiteSpace())

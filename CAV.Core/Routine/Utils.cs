@@ -45,7 +45,7 @@ namespace Cav
 
         /// <summary>   Флаг первого запуска приложения ClickOnce </summary>
         /// <returns>true - ели приложение ClickOnce и выполняется впервые. в остальных случаях - false </returns>
-        [Obsolete("Будет удалено. Используйте иные маханизмы обновления вместо ClickOnce")]
+        [Obsolete("Будет перенесено")]
         public static Boolean ClickOnceFirstRun()
         {
             if (!ApplicationDeployment.IsNetworkDeployed)

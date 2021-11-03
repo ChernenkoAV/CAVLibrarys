@@ -20,7 +20,7 @@ namespace Cav
         /// </summary>
         /// <param name="obj">Объект десиреализации</param>
         /// <returns>Результирующая строка JSON</returns>
-        [Obsolete("Будет удалено. Лучше использовать с префиксом Json")]
+        [Obsolete("Будет удалено. Используйте с префиксом Json")]
         public static string JSONSerialize(this Object obj)
         {
             if (obj == null)
@@ -40,7 +40,7 @@ namespace Cav
         /// <typeparam name="T">Тип десериализации</typeparam>
         /// <param name="str">Исходная строка</param>
         /// <returns>Результат десериализации</returns>
-        [Obsolete("Будет удалено. Лучше использовать с префиксом Json")]
+        [Obsolete("Будет удалено. Используйте с префиксом Json")]
         public static T JSONDeserialize<T>(this String str)
         {
             return (T)str.JSONDeserialize(typeof(T));
@@ -52,7 +52,7 @@ namespace Cav
         /// <param name="str">Исходная строка</param>
         /// <param name="targetType">Тип десериализации</param>
         /// <returns>Результат десериализации</returns>
-        [Obsolete("Будет удалено. Лучше использовать с префиксом Json")]
+        [Obsolete("Будет удалено. Используйте с префиксом Json")]
         public static object JSONDeserialize(this String str, Type targetType)
         {
             if (str.IsNullOrWhiteSpace())

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 using System.ServiceModel;
@@ -15,8 +14,9 @@ namespace Cav
         /// Развертывание текста исключения
         /// </summary>
         /// <param name="ex"></param>
+        /// <param name="refinedDecoding">приоритетная дополнительная логика раскодирования исключения</param>
         /// <returns></returns>
-        public static String Expand(this Exception ex)
+        public static String Expand(this Exception ex, Func<Exception, string> refinedDecoding = null)
         {
             String res = null;
             if (ex == null)
@@ -24,9 +24,8 @@ namespace Cav
 
             res = $"Message: {ex.Message}{Environment.NewLine}";
 
-            SqlException sqlex = ex as SqlException;
-            if (sqlex != null)
-                res = $"Sql Server Number: {sqlex.Number}{Environment.NewLine}";
+            if (refinedDecoding != null)
+                res = refinedDecoding(ex);
 
             res += $"Type: {ex.GetType().FullName}{Environment.NewLine}";
 
@@ -61,16 +60,16 @@ namespace Cav
             {
                 res += $"{Environment.NewLine.PadLeft(20, '-')}LoaderExceptions ->";
                 foreach (var rEx in reflectEx.LoaderExceptions.Where(x => x != null))
-                    res += Environment.NewLine + rEx.Expand();
+                    res += Environment.NewLine + rEx.Expand(refinedDecoding);
             }
 
             if (ex.InnerException != null)
-                res += $"{Environment.NewLine.PadLeft(20, '-')}InnerException->{Environment.NewLine}{ex.InnerException.Expand()}";
+                res += $"{Environment.NewLine.PadLeft(20, '-')}InnerException->{Environment.NewLine}{ex.InnerException.Expand(refinedDecoding)}";
 
             var agrEx = ex as AggregateException;
             if (agrEx != null && agrEx.InnerExceptions != null)
                 foreach (var inEx in agrEx.InnerExceptions)
-                    res += $"{Environment.NewLine.PadLeft(20, '-')}InnerException->{Environment.NewLine}{inEx.Expand()}";
+                    res += $"{Environment.NewLine.PadLeft(20, '-')}InnerException->{Environment.NewLine}{inEx.Expand(refinedDecoding)}";
 
             return res;
         }

@@ -203,7 +203,7 @@ namespace Cav.Container
             if (predicat == null)
                 throw new ArgumentException("в качестве типа-родителя необходимо указать тип класса либо интерфейса");
 
-            var typeImplemented = Helper.AllCreatedTypeInDomain
+            var typeImplemented = CashTypesOnDomain.AllCreatedType
                 .Where(predicat)
                 .ToArray();
 
@@ -244,17 +244,11 @@ namespace Cav.Container
         /// <summary>
         /// Хелпер для локатора
         /// </summary>
-        internal static class Helper
+        internal static class CashTypesOnDomain
         {
-            private class AslyLoadsT
-            {
-                public Assembly Assembly { get; set; }
-                public Boolean DefTypes { get; set; }
-            }
-
             private static Lazy<List<Type>> cashTypes = new Lazy<List<Type>>(valueFactory: allCreatedTypeInDomain, mode: LazyThreadSafetyMode.ExecutionAndPublication);
 
-            public static ICollection<Type> AllCreatedTypeInDomain => cashTypes.Value;
+            public static ICollection<Type> AllCreatedType => cashTypes.Value;
             /// <summary>
             /// Получение всех типов (DefineTypes), которые присутствуют в текущем домене приложения. 
             /// За исключением сборок из GAC и сборок с ошибкой загрузки зависимости. Для них берется ExportedTypes 
@@ -262,89 +256,76 @@ namespace Cav.Container
             /// <returns></returns>
             private static List<Type> allCreatedTypeInDomain()
             {
-                var types = new List<Type>();
+
+                #region Прогружаем референсные сборки в домен приложения
+
+                Action<Assembly> recursionLoadAssembly = null;
+                recursionLoadAssembly = asbly =>
+                {
+                    var referAss = asbly
+                        .GetReferencedAssemblies()
+                        .Where(an => !AppDomain.CurrentDomain.GetAssemblies().Any(gan => AssemblyName.ReferenceMatchesDefinition(gan.GetName(), an)))
+                        .ToList();
+
+                    foreach (var rAsbl in referAss)
+                    {
+                        try
+                        {
+                            var lAs = Assembly.Load(rAsbl);
+                            recursionLoadAssembly(lAs);
+                        }
+                        catch { }
+                    }
+                };
 
                 var aslyDom = AppDomain.CurrentDomain.GetAssemblies();
 
-                var excludeAssemblyNames = new List<AssemblyName>();
-                excludeAssemblyNames.AddRange(aslyDom.Where(x => x.GlobalAssemblyCache).Select(x => x.GetName()).ToArray());
+                var assemblysForWork = AppDomain.CurrentDomain.GetAssemblies().Where(x => !x.GlobalAssemblyCache).ToArray();
 
-                var assemblyes = new List<AslyLoadsT>();
-                assemblyes.AddRange(aslyDom
-                    .Where(x => !x.GlobalAssemblyCache)
-                    .Select(x => new AslyLoadsT() { Assembly = x, DefTypes = true })
-                    .ToArray());
+                foreach (var aitem in assemblysForWork)
+                    recursionLoadAssembly(aitem);
 
-                var stop = false;
-                do
+                #endregion
+
+                assemblysForWork = AppDomain.CurrentDomain.GetAssemblies().Where(x => !x.GlobalAssemblyCache).ToArray();
+
+                var res = new List<Type>();
+
+                Func<IEnumerable<Type>, List<Type>> filterTypes = inLi =>
                 {
-                    stop = true;
-                    var referAss = assemblyes
-                        .Where(x => x.DefTypes)
-                        .Select(x => new { TAL = x, Assbl = x.Assembly, RefAss = x.Assembly.GetReferencedAssemblies() }).ToArray();
+                    return inLi
+                        .Where(x =>
+                            !x.IsAbstract &&
+                            !x.IsInterface &&
+                            !typeof(Delegate).IsAssignableFrom(x) &&
+                            !typeof(Attribute).IsAssignableFrom(x) &&
+                            !x.GenericTypeArguments.Any() &&
+                            !x.GetTypeInfo().GenericTypeParameters.Any() &&
+                            x.GetConstructors().Any())
+                        .ToList();
+                };
 
-                    foreach (var ras in referAss)
-                        foreach (var ras_item in ras.RefAss)
+                foreach (var aitem in assemblysForWork)
+                {
+                    try
+                    {
+                        res.AddRange(filterTypes(aitem.DefinedTypes.Select(x => x.AsType()).ToArray()));
+                    }
+                    catch
+                    {
+                        try
                         {
-                            if (assemblyes.Any(x => AssemblyName.ReferenceMatchesDefinition(x.Assembly.GetName(), ras_item)))
-                                continue;
-
-                            if (excludeAssemblyNames.Any(x => AssemblyName.ReferenceMatchesDefinition(x, ras_item)))
-                                continue;
-
-                            var domAss = AppDomain.CurrentDomain.GetAssemblies();
-
-                            var da = domAss.FirstOrDefault(x => AssemblyName.ReferenceMatchesDefinition(x.GetName(), ras_item));
-                            if (da == null)
-                            {
-                                try
-                                {
-                                    da = Assembly.Load(ras_item);
-                                }
-                                catch
-                                {
-                                    ras.TAL.DefTypes = false;
-                                }
-                            }
-
-                            if (da != null)
-                            {
-                                if (da.GlobalAssemblyCache)
-                                    excludeAssemblyNames.Add(da.GetName());
-                                else
-                                    assemblyes.Add(new AslyLoadsT() { Assembly = da, DefTypes = true });
-                            }
-
-                            stop = false;
+                            res.AddRange(filterTypes(aitem.ExportedTypes));
                         }
+                        catch
+                        {
+
+                        }
+                    }
                 }
-                while (!stop);
 
-                types.AddRange(
-                    assemblyes
-                        .Where(x => x.DefTypes)
-                        .SelectMany(x => x.Assembly.DefinedTypes.Select(y => y.AsType()))
-                        .ToArray());
-
-                types.AddRange(
-                    assemblyes
-                        .Where(x => !x.DefTypes)
-                        .SelectMany(x => x.Assembly.ExportedTypes)
-                        .ToArray());
-
-                var cashTypes = types
-                    .Where(x => !x.IsAbstract)
-                    .Where(x => !x.IsInterface)
-                    .Where(x => !typeof(Delegate).IsAssignableFrom(x))
-                    .Where(x => !typeof(Attribute).IsAssignableFrom(x))
-                    .Where(x => !x.GenericTypeArguments.Any())
-                    .Where(x => !x.GetTypeInfo().GenericTypeParameters.Any())
-                    .Where(x => x.GetConstructors().Any())
-                    .ToList();
-
-                return cashTypes;
+                return res;
             }
         }
     }
-}
 }

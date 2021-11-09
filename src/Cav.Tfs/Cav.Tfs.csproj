@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Dev</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <TargetFramework>net48</TargetFramework>
+        <SignAssembly>true</SignAssembly>
+        <DelaySign>false</DelaySign>
+        <AssemblyOriginatorKeyFile>..\cav.snk</AssemblyOriginatorKeyFile>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <WarningLevel>5</WarningLevel>
+        <WarningsAsErrors />
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <AssemblyName>Cav.Tfs</AssemblyName>
+		<RootNamespace>Cav.Tfs</RootNamespace>
+		<DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
+        <OutputPath>..\_Build\$(AssemblyName)</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>        
+        <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
+        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+		<AnalysisMode>AllEnabledByDefault</AnalysisMode>
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    </PropertyGroup>
+    
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dev|AnyCPU'">        
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prod|AnyCPU'">
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <DefineConstants>TRACE;PROD</DefineConstants>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Cav.Core" Version="7.3.4" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="System.Windows.Forms" />
+    </ItemGroup>
+
+</Project>

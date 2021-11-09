@@ -1,0 +1,50 @@
+is_global = true
+
+# Настройки анализатора
+
+# включение всего как ошибки. Но все равно не работает, поэтому надо включеть в файлт проекта еще <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+dotnet_analyzer_diagnostic.severity = error
+
+# уточнения по разным правилам
+
+#Пометить сборки как CLSCompliant
+dotnet_diagnostic.CA1014.severity = none
+
+# Тип "Program" относится к статическим заполнителям, однако не является ни Static, ни NotInheritable
+dotnet_diagnostic.CA1052.severity = silent
+
+# правила глобализации
+dotnet_diagnostic.CA1303.severity = silent
+dotnet_diagnostic.CA1305.severity = silent
+dotnet_diagnostic.CA1310.severity = silent
+
+
+# Свойства коллекций должны быть доступны только для чтения
+dotnet_diagnostic.CA2227.severity = silent
+
+#Идентификаторы не должны содержать символы подчеркивания
+dotnet_diagnostic.CA1707.severity = silent
+
+#Не предоставляйте универсальные списки
+dotnet_diagnostic.CA1002.severity = silent
+
+# CA2008: Не создавайте задачи без передачи TaskScheduler
+dotnet_diagnostic.CA2008.severity = suggestion
+
+# Измените "Main", чтобы перехватывать исключение более конкретного типа или выдать исключение повторно.
+dotnet_diagnostic.CA1031.severity = silent
+
+
+
+# Пространство имен (namespace) не соответствует структуре папок
+dotnet_diagnostic.IDE0130.severity = silent
+
+# Использовать ключевые слова языка вместо имен типов платформы для ссылок на типы
+dotnet_diagnostic.IDE0049.severity = silent
+
+# Добавление недостающих вариантов в выражение switch
+dotnet_diagnostic.IDE0010.severity = silent
+
+# IDE0046: Преобразовать в условное выражение
+dotnet_diagnostic.IDE0046.severity = suggestion
+

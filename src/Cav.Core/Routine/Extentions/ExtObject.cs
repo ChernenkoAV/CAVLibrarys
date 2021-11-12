@@ -16,10 +16,12 @@ namespace Cav
         /// <returns>Значение по уполчанию</returns>
         public static object GetDefault(this Type type)
         {
+            if (type is null)
+                throw new ArgumentNullException(nameof(type));
+
             if (type.IsValueType)
-            {
                 return Activator.CreateInstance(type);
-            }
+
             return null;
         }
 
@@ -30,10 +32,9 @@ namespace Cav
         /// <param name="exp">Проверяемое выражение</param>
         /// <param name="operand">Операнд сравнения</param>
         /// <returns></returns>
-        public static Nullable<T> NullIf<T>(this T exp, T operand) where T : struct
-        {
-            return exp.Equals(operand) ? (T?)null : exp;
-        }
+        public static T? NullIf<T>(this T exp, T operand)
+            where T : struct =>
+            exp.Equals(operand) ? (T?)null : exp;
 
         /// <summary>
         /// Повтор IFNULL() из T-SQL для структур
@@ -42,12 +43,9 @@ namespace Cav
         /// <param name="val">Проверяемое значение</param>
         /// <param name="operand">Значение подстановки</param>
         /// <returns></returns>
-        public static T IfNull<T>(this T? val, T operand) where T : struct
-        {
-            if (val.HasValue)
-                return val.Value;
-            return operand;
-        }
+        public static T IfNull<T>(this T? val, T operand)
+            where T : struct =>
+            val ?? operand;
 
         /// <summary>
         /// Получение свойства у объекта. Обработка вложеных объектов
@@ -88,12 +86,8 @@ namespace Cav
         /// <param name="arg">Проверяемый аргумент</param>
         /// <param name="args">Перечень значений</param>
         /// <returns>Если аргумент IsNullOrWhiteSpace() результат всегда false</returns>
-        public static bool In(this string arg, params string[] args)
-        {
-            if (arg.IsNullOrWhiteSpace())
-                return false;
-            return args.Contains(arg);
-        }
+        public static bool In(this string arg, params string[] args) =>
+            !arg.IsNullOrWhiteSpace() && args.Contains(arg);
 
         /// <summary>
         /// Проверка вхождения значения в перечень
@@ -102,10 +96,9 @@ namespace Cav
         /// <param name="arg">Проверяемый аргумент</param>
         /// <param name="args">Перечень значений</param>
         /// <returns></returns>
-        public static bool In<T>(this T arg, params T[] args) where T : struct
-        {
-            return args.Contains(arg);
-        }
+        public static bool In<T>(this T arg, params T[] args)
+            where T : struct =>
+            args.Contains(arg);
 
         /// <summary>
         /// Проверка на вхождение значения в перечень (для Nullable-типов)
@@ -114,13 +107,9 @@ namespace Cav
         /// <param name="arg">Проверяемый аргумент</param>
         /// <param name="args">Перечень значений</param>
         /// <returns></returns>
-        public static bool In<T>(this T? arg, params T?[] args) where T : struct
-        {
-            if (!arg.HasValue)
-                return false;
-
-            return args.Contains(arg);
-        }
+        public static bool In<T>(this T? arg, params T?[] args)
+            where T : struct =>
+            arg.HasValue && args.Contains(arg);
 
         #endregion
 

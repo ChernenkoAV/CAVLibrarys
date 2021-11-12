@@ -206,7 +206,6 @@ namespace Cav.DataAcces
         /// </summary>
         /// <param name="cmd">Команда на выполенение. Присваевается в SelectCommand DbDataAdapter`а</param>
         /// <returns>Результат работы команды</returns>
-        [Obsolete("Будет удалено, используйте ExecuteReader")]
         protected DataTable FillTable(DbCommand cmd)
         {
             if (cmd is null)

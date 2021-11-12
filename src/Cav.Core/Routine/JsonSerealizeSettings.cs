@@ -8,6 +8,17 @@ using Newtonsoft.Json.Serialization;
 
 namespace Cav.Json
 {
+    /// <summary>
+    /// Конвертирование <see cref="DateTime"/> по фомату "yyyy-MM-dd"
+    /// </summary>
+    public class DateConverter : IsoDateTimeConverter
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public DateConverter() => DateTimeFormat = "yyyy-MM-dd";
+    }
+
     internal class FlagEnumStringConverter : StringEnumConverter
     {
         public FlagEnumStringConverter() => AllowIntegerValues = true;

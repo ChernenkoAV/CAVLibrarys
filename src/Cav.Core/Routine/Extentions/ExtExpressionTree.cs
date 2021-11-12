@@ -23,7 +23,7 @@ namespace Cav
         /// <returns></returns>
         public static Expression XElement_AddContentValue(this Expression instanseXElement, string newElementName, string xmlNamespace, Expression contentValue)
         {
-            XNamespace ns = xmlNamespace.GetNullIfIsNullOrWhiteSpace() ?? XNamespace.None;
+            var ns = xmlNamespace.GetNullIfIsNullOrWhiteSpace() ?? XNamespace.None;
 
             return Expression.Call(
                         instanseXElement,
@@ -40,13 +40,11 @@ namespace Cav
         /// <param name="instanseXElement">экземляр <see cref="XElement"/>, в который буде производиться добавление контента</param>
         /// <param name="contentValue">контент</param>
         /// <returns></returns>
-        public static Expression XElement_AddContent(this Expression instanseXElement, Expression contentValue)
-        {
-            return Expression.Call(
-                        instanseXElement,
-                        typeof(XElement).GetMethod(nameof(XElement.Add), new[] { typeof(object) }),
-                        Expression.Convert(contentValue, typeof(object)));
-        }
+        public static Expression XElement_AddContent(this Expression instanseXElement, Expression contentValue) =>
+            Expression.Call(
+                instanseXElement,
+                typeof(XElement).GetMethod(nameof(XElement.Add), new[] { typeof(object) }),
+                Expression.Convert(contentValue, typeof(object)));
 
         /// <summary>
         /// Создание нового элемента <see cref="XElement"/> с указанным именем и пространсвом имен
@@ -66,10 +64,10 @@ namespace Cav
         /// <param name="newElementName">имя еэлемента</param>
         /// <param name="xNamespace">Выражение, содержащее пространство имен</param>
         /// <returns></returns>
-        public static Expression XElementNew(this string newElementName, Expression xNamespace)
-        {
-            return Expression.New(typeof(XElement).GetConstructor(new[] { typeof(XName) }), Expression.Convert(Expression.Add(xNamespace, Expression.Constant(newElementName)), typeof(XName)));
-        }
+        public static Expression XElementNew(this string newElementName, Expression xNamespace) =>
+            Expression.New(
+                typeof(XElement).GetConstructor(new[] { typeof(XName) }),
+                Expression.Convert(Expression.Add(xNamespace, Expression.Constant(newElementName)), typeof(XName)));
 
         /// <summary>
         /// Реализация выражения цикла обхода коллекци
@@ -80,6 +78,13 @@ namespace Cav
         /// <returns></returns>
         public static Expression ForEach(this Expression collection, ParameterExpression loopVar, Expression loopContent)
         {
+            if (collection is null)
+                throw new ArgumentNullException(nameof(collection));
+            if (loopVar is null)
+                throw new ArgumentNullException(nameof(loopVar));
+            if (loopContent is null)
+                throw new ArgumentNullException(nameof(loopContent));
+
             var elementType = loopVar.Type;
             var enumerableType = typeof(IEnumerable<>).MakeGenericType(elementType);
             var enumeratorType = typeof(IEnumerator<>).MakeGenericType(elementType);
@@ -117,6 +122,9 @@ namespace Cav
         /// <returns></returns>
         public static Expression Count(this Expression iEnumerableCollection)
         {
+            if (iEnumerableCollection is null)
+                throw new ArgumentNullException(nameof(iEnumerableCollection));
+
             var resType = iEnumerableCollection.Type;
 
             return Expression.Call(
@@ -134,6 +142,9 @@ namespace Cav
         /// <returns></returns>
         public static Expression First(this Expression iEnumerableCollection)
         {
+            if (iEnumerableCollection is null)
+                throw new ArgumentNullException(nameof(iEnumerableCollection));
+
             var resType = iEnumerableCollection.Type;
 
             return Expression.Call(
@@ -150,13 +161,11 @@ namespace Cav
         /// <param name="sourceXml">экземпляр <see cref="XElement"/></param>
         /// <param name="termName">терм поиска имени</param>
         /// <returns></returns>
-        public static Expression XElement_Elements(this Expression sourceXml, string termName)
-        {
-            return Expression.Call(
+        public static Expression XElement_Elements(this Expression sourceXml, string termName) =>
+            Expression.Call(
                 sourceXml,
                 typeof(XElement).GetMethod(nameof(XElement.Elements), new[] { typeof(XName) }),
                 Expression.Convert(Expression.Constant(termName), typeof(XName)));
-        }
 
         /// <summary>
         /// Вызов <see cref="XContainer.Element(XName)"/> для <see cref="XElement"/>
@@ -164,13 +173,11 @@ namespace Cav
         /// <param name="sourceXml">экземпляр <see cref="XElement"/></param>
         /// <param name="termName">терм поиска имени</param>
         /// <returns></returns>
-        public static Expression XElement_Element(this Expression sourceXml, string termName)
-        {
-            return Expression.Call(
+        public static Expression XElement_Element(this Expression sourceXml, string termName) =>
+            Expression.Call(
                 sourceXml,
                 typeof(XElement).GetMethod(nameof(XElement.Element), new[] { typeof(XName) }),
                 Expression.Convert(Expression.Constant(termName), typeof(XName)));
-        }
 
         /// <summary>
         /// Вызов <see cref="List{T}.Add(T)"/> для <see cref="List{T}"/>
@@ -180,6 +187,11 @@ namespace Cav
         /// <returns></returns>
         public static Expression ListAdd(this Expression listCollection, Expression value)
         {
+            if (listCollection is null)
+                throw new ArgumentNullException(nameof(listCollection));
+            if (value is null)
+                throw new ArgumentNullException(nameof(value));
+
             var resType = listCollection.Type;
             var itemType = resType.GetEnumeratedType();
 
@@ -187,10 +199,9 @@ namespace Cav
                 value = Expression.Convert(value, itemType);
 
             return Expression.Call(
-                          listCollection,
-                          resType.GetMethod(nameof(IList.Add), new[] { itemType }),
-                          value);
+                listCollection,
+                resType.GetMethod(nameof(IList.Add), new[] { itemType }),
+                value);
         }
-
     }
 }

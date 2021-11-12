@@ -13,15 +13,15 @@
         <DebugSymbols>true</DebugSymbols>
         <DebugType>full</DebugType>
         <Optimize>false</Optimize>
-        <AssemblyName>Cav.Cav</AssemblyName>
-		<RootNamespace>Cav.Cav</RootNamespace>
-		<DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
+        <AssemblyName>Cav.Core</AssemblyName>
+        <RootNamespace>Cav.Core</RootNamespace>
+        <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
         <OutputPath>..\_Build\$(AssemblyName)</OutputPath>
         <DefineConstants>TRACE</DefineConstants>        
         <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
         <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-		<AnalysisMode>AllEnabledByDefault</AnalysisMode>
-		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+        <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+        <EnableNETAnalyzers>true</EnableNETAnalyzers>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     </PropertyGroup>
     

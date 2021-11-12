@@ -34,6 +34,9 @@ dotnet_diagnostic.CA2008.severity = suggestion
 # Измените "Main", чтобы перехватывать исключение более конкретного типа или выдать исключение повторно.
 dotnet_diagnostic.CA1031.severity = silent
 
+# CA1716: Идентификаторы не должны совпадать с ключевыми словами
+dotnet_diagnostic.CA1716.severity = silent
+
 
 
 # Пространство имен (namespace) не соответствует структуре папок

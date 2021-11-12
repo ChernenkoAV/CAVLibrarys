@@ -15,16 +15,10 @@ namespace Cav.Routine
     public class ProductionCalendar
     {
         /// <summary>
-        /// 
-        /// </summary>
-        public ProductionCalendar()
-        {
-            Holidays = new List<HoliDay>();
-        }
-        /// <summary>
         /// для сериализации
         /// </summary>
-        public class HoliDay
+#pragma warning disable CA1034 // Вложенные типы не должны быть видимыми
+        public class HoliDayDto
         {
             /// <summary>
             /// для сериализации
@@ -40,7 +34,7 @@ namespace Cav.Routine
         /// <summary>
         /// для сериализации
         /// </summary>
-        public class Day
+        public class DayDto
         {
             /// <summary>
             /// для сериализации
@@ -100,13 +94,13 @@ namespace Cav.Routine
         /// </summary>
         [XmlArray("holidays")]
         [XmlArrayItem("holiday")]
-        public List<HoliDay> Holidays { get; set; }
+        public List<HoliDayDto> Holidays { get; set; } = new List<HoliDayDto>();
         /// <summary>
         /// для сериализации
         /// </summary>
         [XmlArray("days")]
         [XmlArrayItem("day")]
-        public List<Day> Days { get; set; }
+        public List<DayDto> Days { get; set; } = new List<DayDto>();
 
         /// <summary>
         /// Тип выходного(нерабочего дня)
@@ -126,7 +120,9 @@ namespace Cav.Routine
         /// <summary>
         /// Нерабочий день
         /// </summary>
+#pragma warning disable CA1815 // Переопределите операторы Equals и равенства для типов значений
         public struct Holiday
+#pragma warning restore CA1815 // Переопределите операторы Equals и равенства для типов значений
         {
             /// <summary>
             /// Дата
@@ -149,13 +145,13 @@ namespace Cav.Routine
         /// <returns>Нерабочие дни </returns>
         public static List<Holiday> GetAllHolidays(int year)
         {
-            String url = "http://xmlcalendar.ru/data/ru/{0}/calendar.xml";
+            var url = "http://xmlcalendar.ru/data/ru/{0}/calendar.xml";
             url = String.Format(url, year);
 
             String bodyXML = null;
-            List<Holiday> res = new List<Holiday>();
+            var res = new List<Holiday>();
 
-            var wreq = WebRequest.Create(url);
+            var wreq = WebRequest.Create(new Uri(url));
             using (var wresp = wreq.GetResponse())
             using (var sr = new StreamReader(wresp.GetResponseStream()))
                 bodyXML = sr.ReadToEnd();
@@ -168,8 +164,8 @@ namespace Cav.Routine
             foreach (var day in cdr.Days)
                 day.Date = DateTime.Parse(day.DayMonth + "." + cdr.Year.ToString(), CultureInfo.InvariantCulture);
 
-            DateTime date = new DateTime(year, 1, 1).AddDays(-1);
-            DateTime dateend = new DateTime(year + 1, 1, 1);
+            var date = new DateTime(year, 1, 1).AddDays(-1);
+            var dateend = new DateTime(year + 1, 1, 1);
 
             while (date < dateend)
             {
@@ -186,10 +182,7 @@ namespace Cav.Routine
                     h.Kind = HolidayKind.Fiesta;
 
                     var hnote = cdr.Holidays.FirstOrDefault(x => x.ID == day.HoliID);
-                    if (hnote != null)
-                        h.Note = hnote.Title;
-                    else
-                        h.Note = "Праздник";
+                    h.Note = hnote != null ? hnote.Title : "Праздник";
 
                     res.Add(h);
 

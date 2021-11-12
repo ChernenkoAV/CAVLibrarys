@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration.Install;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -10,100 +9,76 @@ using System.Xml.Linq;
 namespace Cav.WinService
 {
     /// <summary>Менеджер управления виндовыми службами</summary>    
-    public static class Manager
+    public static class ServiceManager
     {
-        /// <summary>Установка в качестве службы.</summary>
-        /// <remarks>1. Сборка должна быть .Net-кая. Наверное. Системная обертка к Installutil.exe</remarks>
-        /// <remarks>2. Служба будет установлена для файла по указанному пути.</remarks>        
-        /// <param name="FileName">Файл для установки.</param>
-        [Obsolete("Будет удалено. Используйте либо https://github.com/winsw/winsw, либо утилиту sc.exe https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/sc-create")]
-        public static void InstallAsService(String FileName)
-        {
-            ManagedInstallerClass.InstallHelper(new[] { FileName });
-        }
-
-        /// <summary>Удаление сервиса</summary>
-        /// <remarks>Сборка должна быть .Net-кая. Наверное. Системная обертка к Installutil.exe</remarks>
-        /// <param name="FileName">Файл службы</param>
-        [Obsolete("Будет удалено. Используйте либо https://github.com/winsw/winsw, либо утилиту sc.exe https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/sc-delete")]
-        public static void UninstallService(String FileName)
-        {
-            ManagedInstallerClass.InstallHelper(new[] { "/u", FileName });
-        }
-
         /// <summary>Проверка существования службы по имени</summary>
-        /// <param name="ServiceName">Имя службы</param>
-        /// <returns>True - служба установлена</returns>        
-        public static Boolean ServiceExist(String ServiceName)
-        {
-            return ServiceController.GetServices().Any(s => s.ServiceName == ServiceName);
-        }
+        /// <param name="serviceName">Имя службы</param>
+        /// <returns>True - служба установлена</returns>
+        public static Boolean Exist(String serviceName) => ServiceController.GetServices().Any(s => s.ServiceName == serviceName);
 
         /// <summary>Запуск службы</summary>        
         /// <exception cref="ArgumentOutOfRangeException">Если отсутствует служба с указаным именем.</exception>
-        /// <param name="ServiceName">Имя службы.</param>
-        public static void StartService(String ServiceName)
+        /// <param name="serviceName">Имя службы.</param>
+        public static void Start(String serviceName)
         {
-            if (!ServiceExist(ServiceName))
-                throw new ArgumentOutOfRangeException(String.Format("Указаная служба '{0}'не существует", ServiceName));
+            if (!Exist(serviceName))
+                throw new ArgumentException("Указаная служба не существует");
 
-            ServiceController sc = new ServiceController(ServiceName);
-
-            if (!sc.Status.In(
-                    ServiceControllerStatus.Running,
-                    ServiceControllerStatus.StartPending,
-                    ServiceControllerStatus.StopPending,
-                    ServiceControllerStatus.ContinuePending))
-                sc.Start();
+            using (var sc = new ServiceController(serviceName))
+                if (!sc.Status.In(
+                        ServiceControllerStatus.Running,
+                        ServiceControllerStatus.StartPending,
+                        ServiceControllerStatus.StopPending,
+                        ServiceControllerStatus.ContinuePending))
+                    sc.Start();
         }
 
         /// <summary>Останов службы</summary>        
         /// <exception cref="ArgumentOutOfRangeException">Если отсутствует служба с указаным именем.</exception>
         /// <exception cref="System.TimeoutException">Если служба не остановилась за указанный промежуток времени</exception>
-        /// <param name="ServiceName">Имя службы.</param>
-        /// <param name="WaitTimeout">Таймаут ожидания останова</param>
-        public static void StopService(String ServiceName, TimeSpan? WaitTimeout = null)
+        /// <param name="serviceName">Имя службы.</param>
+        /// <param name="waitTimeout">Таймаут ожидания останова</param>
+        public static void Stop(String serviceName, TimeSpan? waitTimeout = null)
         {
-            if (!ServiceExist(ServiceName))
-                throw new ArgumentOutOfRangeException("Указаная служба не существует");
+            if (!Exist(serviceName))
+                throw new ArgumentException("указаная служба не существует");
 
-            ServiceController sc = new ServiceController(ServiceName);
-            if (sc.Status == ServiceControllerStatus.Stopped)
-                return;
-
-            sc.Stop();
-
-            if (!WaitTimeout.HasValue)
-                sc.WaitForStatus(ServiceControllerStatus.Stopped);
-            else
+            using (var sc = new ServiceController(serviceName))
             {
-                sc.WaitForStatus(ServiceControllerStatus.Stopped, WaitTimeout.Value);
-                if (sc.Status != ServiceControllerStatus.Stopped)
-                    throw new System.TimeoutException("Служба не остановилась за указанный промежуток времени");
+                if (sc.Status == ServiceControllerStatus.Stopped)
+                    return;
+
+                sc.Stop();
+
+                if (!waitTimeout.HasValue)
+                    sc.WaitForStatus(ServiceControllerStatus.Stopped);
+                else
+                {
+                    sc.WaitForStatus(ServiceControllerStatus.Stopped, waitTimeout.Value);
+                    if (sc.Status != ServiceControllerStatus.Stopped)
+                        throw new System.TimeoutException("Служба не остановилась за указанный промежуток времени");
+                }
             }
         }
 
         /// <summary>Проверка на наличие администраторских прав у текущего процесса.</summary>        
         /// <returns>true - если админ</returns>
-        public static Boolean IsAdmin()
-        {
-            return (new WindowsPrincipal(WindowsIdentity.GetCurrent())).IsInRole(WindowsBuiltInRole.Administrator);
-        }
+        public static Boolean IsAdmin() => new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
 
         /// <summary>Запуск приложения с администраторскими правами</summary>        
-        /// <param name="FileName">Файл приложения для запуска</param>
-        /// <param name="Arguments">аргументы приложения</param>
+        /// <param name="fileName">Файл приложения для запуска</param>
+        /// <param name="arguments">аргументы приложения</param>
         /// <returns>The Process.</returns>
-        public static Process RunAsAdmin(String FileName, String Arguments = null)
+        public static Process RunAsAdmin(String fileName, String arguments = null)
         {
-            ProcessStartInfo processInfo = new ProcessStartInfo();
+            var processInfo = new ProcessStartInfo();
 
-            processInfo.FileName = FileName;
-            processInfo.Arguments = Arguments;
+            processInfo.FileName = fileName;
+            processInfo.Arguments = arguments;
             processInfo.UseShellExecute = true;
             processInfo.Verb = "runas"; // здесь вся соль
 
-            return System.Diagnostics.Process.Start(processInfo);
+            return Process.Start(processInfo);
         }
 
         /// <summary>
@@ -114,7 +89,7 @@ namespace Cav.WinService
         /// <param name="descriptionView">Описание представления</param>
         public static void AddEventView(String source, String nameView, String descriptionView)
         {
-            String filepath = Path.Combine(@"c:\ProgramData\Microsoft\Event Viewer\Views\", source.ReplaceInvalidPathChars() + ".xml");
+            var filepath = Path.Combine(@"c:\ProgramData\Microsoft\Event Viewer\Views\", source.ReplaceInvalidPathChars() + ".xml");
 
             var pathViews = Path.GetDirectoryName(filepath);
             if (!Directory.Exists(pathViews))

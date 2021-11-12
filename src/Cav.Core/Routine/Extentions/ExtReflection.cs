@@ -20,6 +20,11 @@ namespace Cav.ReflectHelpers
         /// <returns></returns>
         public static Object GetPropertyValue(this object obj, String propertyName)
         {
+            if (obj is null)
+                throw new ArgumentNullException(nameof(obj));
+            if (string.IsNullOrWhiteSpace(propertyName))
+                throw new ArgumentException($"\"{nameof(propertyName)}\" не может быть пустым или содержать только пробел.", nameof(propertyName));
+
             return obj.GetType().GetProperty(propertyName).GetValue(obj);
         }
         /// <summary>
@@ -31,13 +36,18 @@ namespace Cav.ReflectHelpers
         /// <returns></returns>
         public static Object GetStaticOrConstPropertyOrFieldValue(this Assembly asm, String className, String namePropertyOrField)
         {
+            if (asm is null)
+                throw new ArgumentNullException(nameof(asm));
+            if (string.IsNullOrWhiteSpace(className))
+                throw new ArgumentException($"\"{nameof(className)}\" не может быть неопределенным или пустым.", nameof(className));
+            if (string.IsNullOrWhiteSpace(namePropertyOrField))
+                throw new ArgumentException($"\"{nameof(namePropertyOrField)}\" не может быть неопределенным или пустым.", nameof(namePropertyOrField));
+
             var type = asm.ExportedTypes.Single(x => x.Name == className || x.FullName == className);
             Object res = null;
             var prop = type.GetProperty(namePropertyOrField);
-            if (prop != null)
-                res = prop.GetValue(null);
-            else
-                res = type.GetField(namePropertyOrField).GetValue(null);
+
+            res = prop != null ? prop.GetValue(null) : type.GetField(namePropertyOrField).GetValue(null);
 
             return res;
         }
@@ -50,7 +60,12 @@ namespace Cav.ReflectHelpers
         /// <returns></returns>
         public static ReadOnlyCollection<Object> GetStaticPropertys(this Type type, Type typeProperty)
         {
-            List<Object> res = new List<object>();
+            if (type is null)
+                throw new ArgumentNullException(nameof(type));
+            if (typeProperty is null)
+                throw new ArgumentNullException(nameof(typeProperty));
+
+            var res = new List<object>();
 
             var flds = type.GetProperties(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
             foreach (var fld in flds.Where(x => x.PropertyType == typeProperty))
@@ -68,6 +83,9 @@ namespace Cav.ReflectHelpers
         /// <returns></returns>
         public static ReadOnlyCollection<T> GetStaticPropertys<T>(this Type type)
         {
+            if (type is null)
+                throw new ArgumentNullException(nameof(type));
+
             return new ReadOnlyCollection<T>(type.GetStaticPropertys(typeof(T)).Cast<T>().ToArray());
         }
 
@@ -79,7 +97,12 @@ namespace Cav.ReflectHelpers
         /// <returns></returns>
         public static ReadOnlyCollection<Object> GetStaticFields(this Type type, Type typeFields)
         {
-            List<Object> res = new List<object>();
+            if (type is null)
+                throw new ArgumentNullException(nameof(type));
+            if (typeFields is null)
+                throw new ArgumentNullException(nameof(typeFields));
+
+            var res = new List<object>();
 
             var flds = type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
             foreach (var fld in flds.Where(x => x.FieldType == typeFields))
@@ -95,10 +118,8 @@ namespace Cav.ReflectHelpers
         /// <typeparam name="T">Тип полей для коллекции</typeparam>
         /// <param name="type">Просматреваемый тип</param>
         /// <returns></returns>
-        public static ReadOnlyCollection<T> GetStaticFields<T>(this Type type)
-        {
-            return new ReadOnlyCollection<T>(type.GetStaticFields(typeof(T)).Cast<T>().ToArray());
-        }
+        public static ReadOnlyCollection<T> GetStaticFields<T>(this Type type) =>
+            new ReadOnlyCollection<T>(type.GetStaticFields(typeof(T)).Cast<T>().ToArray());
 
         /// <summary>
         /// Установка значения свойства
@@ -108,6 +129,9 @@ namespace Cav.ReflectHelpers
         /// <param name="value">значение</param>
         public static void SetPropertyValue(this object obj, String propertyName, Object value)
         {
+            if (obj is null)
+                throw new ArgumentNullException(nameof(obj));
+
             obj.GetType().GetProperty(propertyName).SetValue(obj, value);
         }
         /// <summary>
@@ -119,7 +143,12 @@ namespace Cav.ReflectHelpers
         /// <returns></returns>
         public static Object CreateInstance(this Assembly asm, String className, params object[] args)
         {
-            Type clType = asm.ExportedTypes
+            if (asm is null)
+                throw new ArgumentNullException(nameof(asm));
+            if (string.IsNullOrWhiteSpace(className))
+                throw new ArgumentException($"\"{nameof(className)}\" не может быть неопределенным или пустым.", nameof(className));
+
+            var clType = asm.ExportedTypes
                 .Single(x => x.Name == className || x.FullName == className);
             return Activator.CreateInstance(clType, args);
         }
@@ -132,7 +161,14 @@ namespace Cav.ReflectHelpers
         /// <returns></returns>
         public static Object GetEnumValue(this Assembly asm, String enumTypeName, String valueName)
         {
-            Type rtType = asm.ExportedTypes
+            if (asm is null)
+                throw new ArgumentNullException(nameof(asm));
+            if (string.IsNullOrWhiteSpace(enumTypeName))
+                throw new ArgumentException($"\"{nameof(enumTypeName)}\" не может быть неопределенным или пустым.", nameof(enumTypeName));
+            if (string.IsNullOrWhiteSpace(valueName))
+                throw new ArgumentException($"\"{nameof(valueName)}\" не может быть неопределенным или пустым.", nameof(valueName));
+
+            var rtType = asm.ExportedTypes
                 .Single(x => x.Name == enumTypeName || x.FullName == enumTypeName);
 
             return Enum.Parse(rtType, valueName);
@@ -148,6 +184,8 @@ namespace Cav.ReflectHelpers
         {
             if (obj is null)
                 throw new ArgumentNullException(nameof(obj));
+            if (string.IsNullOrWhiteSpace(methodName))
+                throw new ArgumentException($"\"{nameof(methodName)}\" не может быть пустым или содержать только пробел.", nameof(methodName));
 
             var minfo = obj.GetType().GetMethod(methodName, arg.Select(x => x.GetType()).ToArray());
             return minfo.Invoke(obj, arg);
@@ -183,8 +221,13 @@ namespace Cav.ReflectHelpers
         /// </summary>
         /// <param name="type"></param>
         /// <returns>Первый генерик-тип в перечеслении</returns>
-        public static Type GetEnumeratedType(this Type type) =>
-            type.GetElementType() ??
+        public static Type GetEnumeratedType(this Type type)
+        {
+            if (type is null)
+                throw new ArgumentNullException(nameof(type));
+
+            return type.GetElementType() ??
             (typeof(IEnumerable).IsAssignableFrom(type) ? type.GenericTypeArguments.FirstOrDefault() : null);
+        }
     }
 }

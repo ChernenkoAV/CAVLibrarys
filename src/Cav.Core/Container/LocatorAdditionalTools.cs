@@ -12,7 +12,6 @@ namespace Cav
     /// Пометка класса для обозначения, что экземляр не хранить в кэше (не использовать сингтон). Не наследуется.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-    [Obsolete("Для корректной работы необходимо присвоить Locator.UseCache = false")]
     public sealed class AlwaysNewAttribute : Attribute { }
 
     /// <summary>

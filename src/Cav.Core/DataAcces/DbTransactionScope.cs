@@ -26,7 +26,7 @@ namespace Cav
         {
             currentTran = Guid.NewGuid();
             if (connectionName.IsNullOrWhiteSpace())
-                connectionName = DomainContext.defaultNameConnection;
+                connectionName = DbContext.defaultNameConnection;
 
             if (!rootTran.Value.HasValue)
                 rootTran.Value = currentTran;
@@ -53,18 +53,18 @@ namespace Cav
         internal static DbConnection Connection(String connectionName = null)
         {
             if (connectionName.IsNullOrWhiteSpace())
-                connectionName = DomainContext.defaultNameConnection;
+                connectionName = DbContext.defaultNameConnection;
 
             var tran = TransactionGet(connectionName);
             if (tran != null)
                 return tran.Connection;
-            return DomainContext.Connection(connectionName);
+            return DbContext.Connection(connectionName);
         }
 
         internal static DbTransaction TransactionGet(String connectionName = null)
         {
             if (connectionName.IsNullOrWhiteSpace())
-                connectionName = DomainContext.defaultNameConnection;
+                connectionName = DbContext.defaultNameConnection;
 
             transactions.Value.TryGetValue(connectionName, out var tran);
             return tran;
@@ -85,7 +85,7 @@ namespace Cav
             var connNameEv = connName;
 
             if (connName.IsNullOrWhiteSpace())
-                connName = DomainContext.defaultNameConnection;
+                connName = DbContext.defaultNameConnection;
 
             var tran = TransactionGet(connName);
 

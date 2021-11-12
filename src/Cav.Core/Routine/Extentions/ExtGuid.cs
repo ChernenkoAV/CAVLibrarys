@@ -12,10 +12,10 @@ namespace Cav
         /// </summary>
         /// <param name="guid"></param>
         /// <returns></returns>
-        public static String ToShortString(this Guid guid)
-        {
-            return Convert.ToBase64String(guid.ToByteArray()).TrimEnd('=').Replace('/', '_').Replace('+', '-');
-        }
+#pragma warning disable CA1720 // Идентификатор содержит имя типа
+        public static String ToShortString(this Guid guid) =>
+#pragma warning restore CA1720 // Идентификатор содержит имя типа
+            Convert.ToBase64String(guid.ToByteArray()).TrimEnd('=').Replace('/', '_').Replace('+', '-');
 
         /// <summary>
         /// Получение Guid из короткой строки

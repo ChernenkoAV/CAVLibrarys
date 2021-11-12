@@ -76,20 +76,7 @@ namespace Cav
 
             var strJson = Encoding.UTF8.GetString(data.GZipDecompress());
 
-            T res = default;
-
-            try
-            {
-                res = strJson.JsonDeserealize<T>();
-            }
-            catch
-            {
-#pragma warning disable CS0618 // Тип или член устарел
-                res = strJson.JSONDeserialize<T>();
-#pragma warning restore CS0618 // Тип или член устарел
-            }
-
-            return res;
+            return strJson.JsonDeserealize<T>();
 
         }
     }

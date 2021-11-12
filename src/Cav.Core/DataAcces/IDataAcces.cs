@@ -33,9 +33,9 @@ namespace Cav.DataAcces
     /// <summary>
     /// Интерфейс для тестирования слоя доступа к данным c нормированной выборкой
     /// </summary>
-    public interface IDataAcces<Trow, TselectParams> : IDataAcces
-        where Trow : class, new()
-        where TselectParams : IAdapterParametrs
+    public interface IDataAcces<TRow, TSelectParams> : IDataAcces
+        where TRow : class, new()
+        where TSelectParams : IAdapterParametrs
     {
         /// <summary>
         /// Получение данных из БД с записью в класс Trow, либо в его наследники
@@ -44,46 +44,46 @@ namespace Cav.DataAcces
         /// <param name="selectParams">Выражение на основе типа парамеров адаптера на выборку. Если null, то всем параметров присваивается DbNull</param>
         /// <returns>Коллекция объектов типа THeritorType</returns>
         IEnumerable<THeritorType> Get<THeritorType>(
-                Expression<Action<TselectParams>> selectParams = null)
-                where THeritorType : Trow, new();
+                Expression<Action<TSelectParams>> selectParams = null)
+                where THeritorType : TRow, new();
 
         /// <summary>
         /// Получение данных из БД с записью в класс Trow
         /// </summary>
         /// <param name="selectParams">Выражение на основе типа парамеров адаптера на выборку. Если null, то всем параметров присваивается DbNull</param>
         /// <returns>Коллекция объектов типа Trow</returns>
-        IEnumerable<Trow> Get(Expression<Action<TselectParams>> selectParams = null);
+        IEnumerable<TRow> Get(Expression<Action<TSelectParams>> selectParams = null);
     }
 
     /// <summary>
     /// Интерфейс для тестирования слоя доступа к данным в нормированной выборкой
     /// </summary>
-    /// <typeparam name="Trow">Класс, на который производится отражение данных из БД</typeparam>
-    /// <typeparam name="TselectParams">Клас, типизирующий параметры адаптера на выборку</typeparam>
-    /// <typeparam name="TupdateParams">Клас, типизирующий параметры адаптера на изменение</typeparam>
-    /// <typeparam name="TdeleteParams">Клас, типизирующий параметры адаптера на удаление</typeparam>
-    public interface IDataAcces<Trow, TselectParams, TupdateParams, TdeleteParams> : IDataAcces<Trow, TselectParams>
-        where Trow : class, new()
-        where TselectParams : IAdapterParametrs
-        where TupdateParams : IAdapterParametrs
-        where TdeleteParams : IAdapterParametrs
+    /// <typeparam name="TRow">Класс, на который производится отражение данных из БД</typeparam>
+    /// <typeparam name="TSelectParams">Клас, типизирующий параметры адаптера на выборку</typeparam>
+    /// <typeparam name="TUpdateParams">Клас, типизирующий параметры адаптера на изменение</typeparam>
+    /// <typeparam name="TDeleteParams">Клас, типизирующий параметры адаптера на удаление</typeparam>
+    public interface IDataAcces<TRow, TSelectParams, TUpdateParams, TDeleteParams> : IDataAcces<TRow, TSelectParams>
+        where TRow : class, new()
+        where TSelectParams : IAdapterParametrs
+        where TUpdateParams : IAdapterParametrs
+        where TDeleteParams : IAdapterParametrs
     {
         /// <summary>
         /// Добавить объект в БД
         /// </summary>
         /// <param name="newObj">Экземпляр объекта, который необходимо добавит в БД</param>
-        void Add(Trow newObj);
+        void Add(TRow newObj);
 
         /// <summary>
         /// Удаление по предикату 
         /// </summary>
         /// <param name="deleteParams"></param>
-        void Delete(Expression<Action<TdeleteParams>> deleteParams);
+        void Delete(Expression<Action<TDeleteParams>> deleteParams);
 
         /// <summary>
         /// Обновление данных
         /// </summary>
         /// <param name="updateParams"></param>
-        void Update(Expression<Action<TupdateParams>> updateParams);
+        void Update(Expression<Action<TUpdateParams>> updateParams);
     }
 }

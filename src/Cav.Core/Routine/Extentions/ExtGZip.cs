@@ -15,9 +15,12 @@ namespace Cav
         /// <returns></returns>
         public static byte[] GZipCompress(this byte[] sourse)
         {
-            using (MemoryStream result = new MemoryStream())
+            if (sourse is null)
+                throw new System.ArgumentNullException(nameof(sourse));
+
+            using (var result = new MemoryStream())
             {
-                using (GZipStream tstream = new GZipStream(result, CompressionMode.Compress))
+                using (var tstream = new GZipStream(result, CompressionMode.Compress))
                     tstream.Write(sourse, 0, sourse.Length);
 
                 return result.ToArray();
@@ -31,12 +34,12 @@ namespace Cav
         /// <returns></returns>
         public static byte[] GZipDecompress(this byte[] sourse)
         {
-            using (MemoryStream sms = new MemoryStream(sourse))
-            using (GZipStream tstream = new GZipStream(sms, CompressionMode.Decompress))
-            using (MemoryStream result = new MemoryStream())
+            using (var sms = new MemoryStream(sourse))
+            using (var tstream = new GZipStream(sms, CompressionMode.Decompress))
+            using (var result = new MemoryStream())
             {
-                byte[] buffer = new byte[1024];
-                int readBytes = 0;
+                var buffer = new byte[1024];
+                var readBytes = 0;
 
                 do
                 {

@@ -14,37 +14,29 @@ namespace Cav
         /// </summary>
         /// <param name="dateTime"></param>
         /// <returns></returns>
-        public static int Quarter(this DateTime dateTime)
-        {
-            return ((dateTime.Month - 1) / 3) + 1;
-        }
+        public static int Quarter(this DateTime dateTime) => ((dateTime.Month - 1) / 3) + 1;
 
         /// <summary>
         /// Получение первого дня квартала, в котором находится указанная дата
         /// </summary>
         /// <param name="dateTime"></param>
         /// <returns></returns>
-        public static DateTime FirstDayQuarter(this DateTime dateTime)
-        {
-            return new DateTime(dateTime.Year, (dateTime.Quarter() * 3) - 2, 1, 0, 0, 0, dateTime.Kind);
-        }
+        public static DateTime FirstDayQuarter(this DateTime dateTime) => new DateTime(dateTime.Year, (dateTime.Quarter() * 3) - 2, 1, 0, 0, 0, dateTime.Kind);
 
         /// <summary>
         /// Получение последнего дня квартала. Время 23:59:59.9999
         /// </summary>
         /// <param name="dateTime"></param>
         /// <returns></returns>
-        public static DateTime LastDayQuarter(this DateTime dateTime)
-        {
-            return dateTime.Add(-dateTime.TimeOfDay).AddDays(-dateTime.Day + 1).AddMonths((dateTime.Quarter() * 3) - dateTime.Month + 1).AddMilliseconds(-1);
-        }
+        public static DateTime LastDayQuarter(this DateTime dateTime) =>
+            dateTime.Add(-dateTime.TimeOfDay).AddDays(-dateTime.Day + 1).AddMonths((dateTime.Quarter() * 3) - dateTime.Month + 1).AddMilliseconds(-1);
 
         #endregion
 
         /// <summary>
         /// Усечение даты-времени (скопированно с https://stackoverflow.com/questions/1004698/how-to-truncate-milliseconds-off-of-a-net-datetime)
         /// </summary>
-        /// <param name="self">Экземпляр <see cref="System.DateTime"/></param>
+        /// <param name="self">Экземпляр <see cref="DateTime"/></param>
         /// <param name="resolution">Точность, до которой усечь</param>
         /// <returns></returns>
         public static DateTime Truncate(this DateTime self, DateTimeTruncateResolution resolution = DateTimeTruncateResolution.Second)
@@ -66,7 +58,7 @@ namespace Cav
                 case DateTimeTruncateResolution.Millisecond:
                     return self.AddTicks(-(self.Ticks % TimeSpan.TicksPerMillisecond));
                 default:
-                    throw new ArgumentException(nameof(resolution));
+                    throw new NotImplementedException(resolution.ToString());
             }
         }
 
@@ -215,7 +207,6 @@ namespace Cav
 
         #endregion
 
-
         #region Первый и последний день месяца
 
         /// <summary>
@@ -223,10 +214,7 @@ namespace Cav
         /// </summary>
         /// <param name="date"></param>
         /// <returns></returns>
-        public static DateTime FirstDayMonth(this DateTime date)
-        {
-            return new DateTime(date.Year, date.Month, 1);
-        }
+        public static DateTime FirstDayMonth(this DateTime date) => new DateTime(date.Year, date.Month, 1);
 
         /// <summary>
         /// Первый день месяца
@@ -246,10 +234,7 @@ namespace Cav
         /// </summary>
         /// <param name="date"></param>
         /// <returns></returns>
-        public static DateTime LastDayMonth(this DateTime date)
-        {
-            return new DateTime(date.Year, date.Month, DateTime.DaysInMonth(date.Year, date.Month));
-        }
+        public static DateTime LastDayMonth(this DateTime date) => new DateTime(date.Year, date.Month, DateTime.DaysInMonth(date.Year, date.Month));
 
         /// <summary>
         /// Последний день месяца
@@ -268,7 +253,7 @@ namespace Cav
     }
 
     /// <summary>
-    /// Точность, до которой усечь экземпляр <see cref="System.DateTime"/>
+    /// Точность, до которой усечь экземпляр <see cref="DateTime"/>
     /// </summary>
     public enum DateTimeTruncateResolution
     {

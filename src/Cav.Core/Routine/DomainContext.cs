@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.ObjectModel;
-using System.Data.Common;
-using System.Data.SqlClient;
+using System.Collections.Generic;
 using System.Deployment.Application;
 using System.Diagnostics;
 using System.IO;
@@ -20,24 +17,28 @@ namespace Cav
         #region Для запуска программы в одном экземпляре (На базе поиска процесса)
 
         [DllImport("User32.dll")]
+#pragma warning disable CA5392 // Используйте атрибут DefaultDllImportSearchPaths для P/Invokes.
         private static extern bool ShowWindowAsync(IntPtr hWnd, int cmdShow);
         [DllImport("User32.dll")]
         private static extern bool SetForegroundWindow(IntPtr hWnd);
+#pragma warning restore CA5392 // Используйте атрибут DefaultDllImportSearchPaths для P/Invokes.
+#pragma warning disable IDE1006 // Стили именования
         private const int WS_SHOWNORMAL = 1;
+#pragma warning restore IDE1006 // Стили именования
 
         /// <summary>
         /// Поиск процесса запущенного приложения
         /// </summary>
-        /// <param name="SetForeground">Если приложение имеет окна, то вывести окно вперед</param>
+        /// <param name="setForeground">Если приложение имеет окна, то вывести окно вперед</param>
         /// <returns>true - приложение найдено(можно не запускать вторую копию), false - приложение не найдено.</returns>
         [Obsolete("Будет перенесено")]
-        public static Boolean FindStartedProgram(Boolean SetForeground = true)
+        public static Boolean FindStartedProgram(Boolean setForeground = true)
         {
-            Process current = Process.GetCurrentProcess();
-            Process[] processes = Process.GetProcessesByName(current.ProcessName);
+            var current = Process.GetCurrentProcess();
+            var processes = Process.GetProcessesByName(current.ProcessName);
             Process findedProcess = null;
             //Loop through the running processes in with the same name
-            foreach (Process process in processes)
+            foreach (var process in processes)
             {
                 if (process.Id == current.Id)
                     continue;
@@ -55,7 +56,7 @@ namespace Cav
             if (findedProcess == null)
                 return false;
 
-            if (SetForeground && findedProcess.MainWindowHandle != IntPtr.Zero)
+            if (setForeground && findedProcess.MainWindowHandle != IntPtr.Zero)
             {
                 //Make sure the window is not minimized or maximized
                 ShowWindowAsync(findedProcess.MainWindowHandle, WS_SHOWNORMAL);
@@ -68,216 +69,37 @@ namespace Cav
 
         #endregion
 
-        #region Статический КонекшнСтринг
-
-        internal static String defaultNameConnection = "DefaultNameConnectionForConnectionCollectionOnDomainContext";
-
-        /// <summary>
-        /// Коллекция настроек соединения с БД
-        /// </summary>
-        private static ConcurrentDictionary<String, SettingConnection> dcsb = new ConcurrentDictionary<string, SettingConnection>();
-        private struct SettingConnection
-        {
-            public String ConnectionString { get; set; }
-            public Type ConnectionType { get; set; }
-        }
-
-        /// <summary>
-        /// Инициализация подключения к БД SqlServer.
-        /// </summary>
-        /// <param name="server"></param>
-        /// <param name="dbName"></param>
-        /// <param name="login"></param>
-        /// <param name="pass"></param>
-        /// <param name="integratedSecurity">IntegratedSecurity</param>
-        /// <param name="MARS">MultipleActiveResultSets</param>
-        /// <param name="applicationName">Наименование приожения</param>
-        /// <param name="connectionName">има подключения для коллекции</param>
-        /// <param name="pooling">Добавлять подключение в пул</param>
-        /// <returns>Сформированная строка соединения</returns>
-        [Obsolete("Будет удалено, используйте обобщеные методы")]
-        public static string InitConnection(
-            String server,
-            String dbName,
-            String login = null,
-            String pass = null,
-            Boolean integratedSecurity = false,
-            Boolean MARS = false,
-            String applicationName = null,
-            String connectionName = null,
-            Boolean pooling = false)
-        {
-            var scsb = new SqlConnectionStringBuilder();
-            scsb.DataSource = server;
-            scsb.InitialCatalog = dbName;
-            scsb.IntegratedSecurity = integratedSecurity;
-            scsb.MultipleActiveResultSets = MARS;
-            scsb["LANGUAGE"] = "Russian";
-            scsb.ConnectTimeout = 5;
-            scsb.Pooling = pooling;
-
-            if (!login.IsNullOrWhiteSpace())
-                scsb.UserID = login;
-            if (!pass.IsNullOrWhiteSpace())
-                scsb.Password = pass;
-            if (!applicationName.IsNullOrWhiteSpace())
-                scsb.ApplicationName = applicationName;
-
-            if (connectionName.IsNullOrWhiteSpace())
-                connectionName = defaultNameConnection;
-
-            InitConnection(
-                connectionString: scsb.ToString(),
-                connectionName: connectionName);
-
-            return scsb.ToString();
-        }
-
-        /// <summary>
-        /// Настройка подключения к БД SQl Server. Проверка соединения.
-        /// </summary>
-        /// <param name="connectionString">Строка подключения</param>
-        /// <param name="pooling">Добавлять подключение в пул</param>
-        /// <param name="connectionName">Имя подключения для коллекции</param>
-        [Obsolete("Будет удалено, используйте обобщеные методы")]
-        public static void InitConnection(
-            String connectionString,
-            Boolean pooling = false,
-            String connectionName = null)
-        {
-            if (connectionString.IsNullOrWhiteSpace())
-                throw new ArgumentNullException("connectionString");
-
-            if (connectionName.IsNullOrWhiteSpace())
-                connectionName = defaultNameConnection;
-
-            SqlConnectionStringBuilder scsb = new SqlConnectionStringBuilder(connectionString);
-            scsb["LANGUAGE"] = "Russian";
-            scsb.ConnectTimeout = 5;
-            scsb.Pooling = pooling;
-
-            InitConnection<SqlConnection>(connectionString, connectionName);
-        }
-
-        /// <summary>
-        /// Инициализация нового соединения с БД указанного типа. Проверка соединения с сервером.
-        /// </summary>
-        /// <typeparam name="TConnection">Тип - наследник DbConnection</typeparam>
-        /// <param name="connectionString">Строка соединения</param>
-        /// <param name="connectionName">Имя подключения</param>
-        public static void InitConnection<TConnection>(
-            String connectionString,
-            String connectionName = null)
-            where TConnection : DbConnection
-        {
-            InitConnection(typeof(TConnection), connectionString, connectionName);
-        }
-
-        /// <summary>
-        /// Инициализация нового соединения с БД указанного типа. Проверка соединения с сервером.
-        /// </summary>
-        /// <param name="typeConnection">Тип - наследник DbConnection</param>
-        /// <param name="connectionString">Строка соединения</param>
-        /// <param name="connectionName">Имя подключения</param>
-        public static void InitConnection(
-            Type typeConnection,
-            String connectionString,
-            String connectionName = null)
-        {
-            if (typeConnection == null)
-                throw new ArgumentNullException("typeConnection");
-
-            if (!typeConnection.IsSubclassOf(typeof(DbConnection)))
-                throw new ArgumentNullException("typeConnection не является наследником DbConnection");
-
-            if (connectionString.IsNullOrWhiteSpace())
-                throw new ArgumentNullException("connectionString");
-
-            if (connectionName.IsNullOrWhiteSpace())
-                connectionName = defaultNameConnection;
-
-            SettingConnection setCon;
-
-            if (dcsb.TryGetValue(connectionName, out setCon))
-                if (setCon.ConnectionString == connectionString && setCon.ConnectionType == typeConnection)
-                    return;
-
-            using (DbConnection conn = (DbConnection)Activator.CreateInstance(typeConnection, connectionString))
-                conn.Open();
-
-            setCon = new SettingConnection()
-            {
-                ConnectionString = connectionString,
-                ConnectionType = typeConnection
-            };
-
-            dcsb.AddOrUpdate(connectionName, setCon, (k, v) => setCon);
-        }
-
-        /// <summary>
-        /// Получение экземпляра открытого соединения с БД
-        /// </summary>
-        /// <param name="connectionName">Имя соединения в коллекции</param>
-        /// <returns></returns>
-        public static DbConnection Connection(String connectionName = null)
-        {
-            if (connectionName.IsNullOrWhiteSpace())
-                connectionName = defaultNameConnection;
-
-            SettingConnection setCon;
-
-            if (!dcsb.TryGetValue(connectionName, out setCon))
-                throw new InvalidOperationException("Соединение с БД не настроено");
-
-            var connection = (DbConnection)Activator.CreateInstance(setCon.ConnectionType, setCon.ConnectionString);
-            connection.Open();
-            return connection;
-        }
-
-        /// <summary>
-        /// Имена соединений, присутствующие в коллекции
-        /// </summary>
-        public static ReadOnlyCollection<String> NamesConnectionOnCollection
-        {
-            get
-            {
-                return new ReadOnlyCollection<string>(dcsb.Keys.ToArray());
-            }
-        }
-
-        #endregion
-
         #region Environment
 
         /// <summary>
         /// Получение параметров командной строки приложения ClickOnce
         /// </summary>
         [Obsolete("Будет перенесено")]
-        public static string[] ProgramArguments
+        public static IEnumerable<string> ProgramArguments
         {
             get
             {
                 if (!ApplicationDeployment.IsNetworkDeployed)
-                    return new string[0];
+                    return Array.Empty<string>();
 
                 var adata = AppDomain.CurrentDomain.SetupInformation.ActivationArguments.ActivationData;
                 if (adata == null)
-                    return new string[0];
+                    return Array.Empty<string>();
 
                 var larg = adata.ToList();
 
                 if (larg.Count == 0)
-                    return new string[0];
+                    return Array.Empty<string>();
 
                 //Другой нюанс заключается в том, что местоположение файла передается в формате URI, 
                 //как в file:///c:\MyApp\MyFile.testDoc. 
                 //Это значит, что для получения действительного пути к файлу и очистке от защищенных пробелов (которые в URI транслируются в символ %20) понадобится следующий код:
-                for (int i = 0; i < larg.Count - 1; i++)
+                for (var i = 0; i < larg.Count - 1; i++)
                 {
 
                     if (!larg[i].StartsWith("file:///"))
                         continue;
-                    Uri fileUri = new Uri(larg[i]);
+                    var fileUri = new Uri(larg[i]);
                     larg[i] = Uri.UnescapeDataString(fileUri.AbsolutePath);
                     //После этого можно проверить существование файла и открыть его, как обычно.
                 }
@@ -293,7 +115,7 @@ namespace Cav
         {
             get
             {
-                string path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                var path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 
                 path = Path.Combine(path, NameEntryAssembly);
                 if (!Directory.Exists(path))
@@ -309,7 +131,7 @@ namespace Cav
         {
             get
             {
-                string path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                var path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
                 path = Path.Combine(path, NameEntryAssembly);
                 if (!Directory.Exists(path))
@@ -325,7 +147,7 @@ namespace Cav
         {
             get
             {
-                string path = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+                var path = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
 
                 path = Path.Combine(path, NameEntryAssembly);
                 if (!Directory.Exists(path))
@@ -341,7 +163,7 @@ namespace Cav
         {
             get
             {
-                string path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                var path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
                 path = Path.Combine(path, NameEntryAssembly);
                 if (!Directory.Exists(path))
@@ -357,7 +179,7 @@ namespace Cav
         {
             get
             {
-                String tempPath = Path.Combine(Path.GetTempPath(), NameEntryAssembly);
+                var tempPath = Path.Combine(Path.GetTempPath(), NameEntryAssembly);
                 if (!Directory.Exists(tempPath))
                     Directory.CreateDirectory(tempPath);
                 return tempPath;
@@ -371,7 +193,7 @@ namespace Cav
         {
             get
             {
-                String tempPath = Path.Combine(Environment.GetEnvironmentVariable("TEMP", EnvironmentVariableTarget.Machine), NameEntryAssembly);
+                var tempPath = Path.Combine(Environment.GetEnvironmentVariable("TEMP", EnvironmentVariableTarget.Machine), NameEntryAssembly);
                 if (!Directory.Exists(tempPath))
                     Directory.CreateDirectory(tempPath);
                 return tempPath;
@@ -382,13 +204,7 @@ namespace Cav
         /// Имя сборки, из которого запущенно приложение (имя exe файла) (ТОЛЬКО ЕСЛИ ЭТО НЕ COM!!!)
         /// При работе в IIS бесмысленно, ибо там всегда процесс w3c. вроде. Какой-то один, короче...
         /// </summary>
-        public static String NameEntryAssembly
-        {
-            get
-            {
-                return Path.GetFileNameWithoutExtension(Assembly.GetEntryAssembly().Location);
-            }
-        }
+        public static String NameEntryAssembly => Path.GetFileNameWithoutExtension(Assembly.GetEntryAssembly().Location);
 
         /// <summary>
         /// Текущая версия приложения.
@@ -401,7 +217,7 @@ namespace Cav
             {
                 if (ApplicationDeployment.IsNetworkDeployed)
                 {
-                    ApplicationDeployment curdep = ApplicationDeployment.CurrentDeployment;
+                    var curdep = ApplicationDeployment.CurrentDeployment;
                     if (curdep != null)
                         return curdep.CurrentVersion;
                 }
@@ -420,32 +236,11 @@ namespace Cav
             {
                 if (!ApplicationDeployment.IsNetworkDeployed)
                     return null;
-                ApplicationDeployment curdep = ApplicationDeployment.CurrentDeployment;
+                var curdep = ApplicationDeployment.CurrentDeployment;
                 if (curdep == null)
                     return null;
                 return curdep.UpdatedApplicationFullName;
             }
-        }
-
-        /// <summary>
-        /// Логин, под которым прилогинены к БД. Работает только для Sql Server.
-        /// </summary>
-        /// <param name="ConnectionName">Имя соедиения</param>
-        [Obsolete("Будет удалено")]
-        public static String UserLogin(String ConnectionName = null)
-        {
-            if (ConnectionName.IsNullOrWhiteSpace())
-                ConnectionName = defaultNameConnection;
-
-            if (!dcsb.ContainsKey(ConnectionName))
-                throw new Exception("Не настроено соединение с БД");
-
-            var setCom = dcsb[ConnectionName];
-            if (setCom.ConnectionType != typeof(SqlConnection))
-                return null;
-            var sqlConBuild = new SqlConnectionStringBuilder(setCom.ConnectionString);
-
-            return sqlConBuild.UserID;
         }
 
         #endregion

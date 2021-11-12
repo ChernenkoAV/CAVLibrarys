@@ -21,8 +21,6 @@ namespace Cav.Container
             public Object InstatnceObject { get; set; }
         }
 
-        static Locator() => UseCache = true;
-
         private static ConcurrentDictionary<Type, Object> cacheObjects = new ConcurrentDictionary<Type, object>();
 
         private static Object getObjectFromCache(Type type)
@@ -30,18 +28,6 @@ namespace Cav.Container
             cacheObjects.TryGetValue(type, out var res);
             return res;
         }
-
-        /// <summary>
-        /// Дополнительные действия с объектом после создания
-        /// </summary>
-        [Obsolete("Будет удалено. Используйте интерфейс IInitInstance")]
-        public static Action<Object> AdditionalSettingsObject { get; set; }
-
-        /// <summary>
-        /// Использовать кэш объектов (false - объект и зависимости создаются заново)
-        /// </summary>
-        [Obsolete("Будет удалено. Используйте атрибут AlwaysNewAttribute")]
-        public static Boolean UseCache { get; set; }
 
         /// <summary>
         ///Получить экземпляр указанного типа 
@@ -66,7 +52,7 @@ namespace Cav.Container
 
             object res = null;
 
-            if ((UseCache || akaSingleton) && typeInstance.IsClass)
+            if (akaSingleton && typeInstance.IsClass)
             {
                 res = getObjectFromCache(typeInstance);
                 if (res != null)
@@ -115,7 +101,7 @@ namespace Cav.Container
 
             res = constructor.Invoke(paramConstr.ToArray());
 
-            if (UseCache || akaSingleton)
+            if (akaSingleton)
                 cacheObjects.TryAdd(res.GetType(), res);
 
             foreach (var propInfo in typeInstance.GetProperties())
@@ -130,8 +116,6 @@ namespace Cav.Container
             }
 
             popStack();
-
-            AdditionalSettingsObject?.Invoke(res);
 
             (res as IInitInstance)?.InitInstance();
 

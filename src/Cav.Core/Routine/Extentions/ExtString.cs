@@ -44,8 +44,8 @@ namespace Cav
         {
             if (text.IsNullOrWhiteSpace())
                 return null;
-            String res = text.Replace("^", "\\^").Replace(".", "\\.").Replace("$", "\\$").Replace("?", ".{1}").Replace("*", ".*");
-            MatchCollection mc = (new Regex(@"\(.+?\)", RegexOptions.IgnoreCase | RegexOptions.Singleline)).Matches(text);
+            var res = text.Replace("^", "\\^").Replace(".", "\\.").Replace("$", "\\$").Replace("?", ".{1}").Replace("*", ".*");
+            var mc = new Regex(@"\(.+?\)", RegexOptions.IgnoreCase | RegexOptions.Singleline).Matches(text);
             foreach (Match item in mc)
                 res = res.Replace(item.Value, item.Value.Replace(" ", @"\W+").Replace("(", @"(\b").Replace(")", @"\b)"));
             return res.Replace(" ", @"\W+");
@@ -81,10 +81,7 @@ namespace Cav
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        public static Boolean IsNullOrWhiteSpace(this String str)
-        {
-            return String.IsNullOrWhiteSpace(str);
-        }
+        public static Boolean IsNullOrWhiteSpace(this String str) => String.IsNullOrWhiteSpace(str);
 
         /// <summary>
         /// Извлекает подстроку из данного экземпляра. Подстрока начинается с указанной позиции и имеет указанную длину.
@@ -99,7 +96,7 @@ namespace Cav
             if (str == null | start < 0 | length < 0)
                 return null;
 
-            int lstr = str.Length;
+            var lstr = str.Length;
             length = length ?? lstr;
 
             if (start >= lstr)
@@ -110,7 +107,6 @@ namespace Cav
 
             return str.Substring(start, length.Value);
         }
-
 
         /// <summary>
         /// Замена символов, запрещенных в пути и имени файла, на указанный символ.
@@ -123,12 +119,12 @@ namespace Cav
             if (filePath.IsNullOrWhiteSpace())
                 return null;
 
-            char[] invchars = Path.GetInvalidFileNameChars().Concat(Path.GetInvalidPathChars()).ToArray();
+            var invchars = Path.GetInvalidFileNameChars().Concat(Path.GetInvalidPathChars()).ToArray();
 
             if (invchars.Contains(replasmentChar))
                 replasmentChar = '_';
 
-            foreach (char ic in invchars)
+            foreach (var ic in invchars)
                 filePath = filePath.Replace(ic, '_');
 
             return filePath;
@@ -149,16 +145,10 @@ namespace Cav
             if (str == null | testString == null)
                 return false;
 
-            str = str.ReplaceDoubleSpace().Trim().ToLowerInvariant();
-            testString = testString.ReplaceDoubleSpace().Trim().ToLowerInvariant();
+            str = str.ReplaceDoubleSpace().Trim().ToUpperInvariant();
+            testString = testString.ReplaceDoubleSpace().Trim().ToUpperInvariant();
 
-            Boolean res;
-            if (fullMatch)
-                res = str.Equals(testString);
-            else
-                res = str.Contains(testString);
-
-            return res;
+            return fullMatch ? str == testString : str.Contains(testString);
         }
 
         /// <summary>
@@ -204,7 +194,7 @@ namespace Cav
         /// <returns>Измененная строка</returns>
         public static String Replace2(this String str, string chars, string newValue)
         {
-            if (chars == null && chars == string.Empty)
+            if (string.IsNullOrEmpty(chars))
                 return str;
 
             if (str == null)
@@ -224,22 +214,14 @@ namespace Cav
         /// <param name="exp">Проверяемое выражение</param>
         /// <param name="operand">Операнд сравнения</param>
         /// <returns></returns>
-        public static String NullIf(this String exp, String operand)
-        {
-            return exp == operand ? null : exp;
-        }
+        public static String NullIf(this String exp, String operand) => exp == operand ? null : exp;
 
         /// <summary>
         /// Повтор IFNULL() из T-SQL для строки
         /// </summary>
-        /// <param name="val">Проверяемое значение. Проверка производится c помощью <see cref="ExtString.IsNullOrWhiteSpace"/></param>
+        /// <param name="val">Проверяемое значение. Проверка производится c помощью <see cref="IsNullOrWhiteSpace"/></param>
         /// <param name="operand">Значение подстановки</param>
         /// <returns></returns>
-        public static String IfNull(this String val, String operand)
-        {
-            if (val.IsNullOrWhiteSpace())
-                return operand;
-            return val;
-        }
+        public static String IfNull(this String val, String operand) => val.IsNullOrWhiteSpace() ? operand : val;
     }
 }

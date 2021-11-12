@@ -18,9 +18,12 @@ namespace Cav
         public static Guid ComputeMD5Checksum(this Stream inputData)
         {
             if (inputData == null)
-                throw new ArgumentNullException($"{nameof(ComputeMD5ChecksumString)}:{nameof(inputData)}");
-            MD5 md5 = new MD5CryptoServiceProvider();
-            return new Guid(md5.ComputeHash(inputData));
+                throw new ArgumentException($"{nameof(ComputeMD5ChecksumString)}:{nameof(inputData)}");
+
+#pragma warning disable CA5351 // Не используйте взломанные алгоритмы шифрования
+            using (var md5 = MD5.Create())
+#pragma warning restore CA5351 // Не используйте взломанные алгоритмы шифрования
+                return new Guid(md5.ComputeHash(inputData));
         }
 
         /// <summary>
@@ -31,8 +34,9 @@ namespace Cav
         public static Guid ComputeMD5Checksum(this byte[] inputData)
         {
             if (inputData == null)
-                throw new ArgumentNullException($"{nameof(ComputeMD5ChecksumString)}:{nameof(inputData)}");
-            using (MemoryStream ms = new MemoryStream(inputData))
+                throw new ArgumentException($"{nameof(ComputeMD5ChecksumString)}:{nameof(inputData)}");
+
+            using (var ms = new MemoryStream(inputData))
                 return ComputeMD5Checksum(ms);
         }
 
@@ -44,9 +48,9 @@ namespace Cav
         public static Guid ComputeMD5ChecksumFile(this string filePath)
         {
             if (filePath.IsNullOrWhiteSpace())
-                throw new ArgumentNullException($"{nameof(ComputeMD5ChecksumString)}:{nameof(filePath)}");
+                throw new ArgumentException($"{nameof(ComputeMD5ChecksumString)}:{nameof(filePath)}");
 
-            using (FileStream fs = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (var fs = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 return ComputeMD5Checksum(fs);
         }
 
@@ -58,7 +62,7 @@ namespace Cav
         public static Guid ComputeMD5ChecksumString(this string str)
         {
             if (str.IsNullOrWhiteSpace())
-                throw new ArgumentNullException($"{nameof(ComputeMD5ChecksumString)}:{nameof(str)}");
+                throw new ArgumentException($"{nameof(ComputeMD5ChecksumString)}:{nameof(str)}");
 
             return Encoding.UTF8.GetBytes(str).ComputeMD5Checksum();
         }

@@ -8,7 +8,9 @@ namespace Cav
     /// <summary>
     /// Расширения для исключений
     /// </summary>
+#pragma warning disable CA1711 // Идентификаторы не должны иметь неправильных суффиксов
     public static class ExtException
+#pragma warning restore CA1711 // Идентификаторы не должны иметь неправильных суффиксов
     {
         /// <summary>
         /// Развертывание текста исключения
@@ -30,15 +32,14 @@ namespace Cav
             res += $"Type: {ex.GetType().FullName}{Environment.NewLine}";
 
             if (ex.TargetSite != null)
-                res += $"TargetSite: {ex.TargetSite.ToString()}{Environment.NewLine}";
+                res += $"TargetSite: {ex.TargetSite}{Environment.NewLine}";
 
             if (!ex.StackTrace.IsNullOrWhiteSpace())
                 res += $"StackTrace->{ex.StackTrace}{Environment.NewLine}";
 
-            var commEx = ex as FaultException;
-            if (commEx != null)
+            if (ex is FaultException commEx)
             {
-                ExceptionDetail exdetail = commEx.GetPropertyValueNestedObject("Detail") as ExceptionDetail;
+                var exdetail = commEx.GetPropertyValueNestedObject("Detail") as ExceptionDetail;
 
                 if (exdetail != null)
                     res += Environment.NewLine.PadLeft(5, '*');
@@ -55,8 +56,7 @@ namespace Cav
                 }
             }
 
-            var reflectEx = ex as ReflectionTypeLoadException;
-            if (reflectEx != null && reflectEx.LoaderExceptions != null)
+            if (ex is ReflectionTypeLoadException reflectEx && reflectEx.LoaderExceptions != null)
             {
                 res += $"{Environment.NewLine.PadLeft(20, '-')}LoaderExceptions ->";
                 foreach (var rEx in reflectEx.LoaderExceptions.Where(x => x != null))
@@ -66,8 +66,7 @@ namespace Cav
             if (ex.InnerException != null)
                 res += $"{Environment.NewLine.PadLeft(20, '-')}InnerException->{Environment.NewLine}{ex.InnerException.Expand(refinedDecoding)}";
 
-            var agrEx = ex as AggregateException;
-            if (agrEx != null && agrEx.InnerExceptions != null)
+            if (ex is AggregateException agrEx && agrEx.InnerExceptions != null)
                 foreach (var inEx in agrEx.InnerExceptions)
                     res += $"{Environment.NewLine.PadLeft(20, '-')}InnerException->{Environment.NewLine}{inEx.Expand(refinedDecoding)}";
 

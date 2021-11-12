@@ -56,9 +56,9 @@ namespace Cav
                 connectionName = DbContext.defaultNameConnection;
 
             var tran = TransactionGet(connectionName);
-            if (tran != null)
-                return tran.Connection;
-            return DbContext.Connection(connectionName);
+            return tran != null
+                ? tran.Connection
+                : DbContext.Connection(connectionName);
         }
 
         internal static DbTransaction TransactionGet(String connectionName = null)

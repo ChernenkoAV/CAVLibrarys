@@ -6,8 +6,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 
-#pragma warning disable CS0618 // Тип или член устарел
-
 namespace Cav.Container
 {
     /// <summary>

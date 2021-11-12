@@ -105,9 +105,7 @@ namespace Cav
 
             using (var sr = new StringReader(xDoc.ToString()))
             using (var xr = XmlReader.Create(sr))
-#pragma warning disable CA3075 // Небезопасная обработка DTD в формате XML
                 return xs.Deserialize(xr);
-#pragma warning restore CA3075 // Небезопасная обработка DTD в формате XML
         }
 
         /// <summary>
@@ -116,13 +114,10 @@ namespace Cav
         /// <typeparam name="T">Тип для десиарелизации</typeparam>
         /// <param name="xmlElement">Элемент, из которого десириализовать</param>
         /// <returns>Объект указанного типа или default(T), если XmlElement = null</returns>
-        public static T XMLDeserialize<T>(this XmlElement xmlElement)
-        {
-            if (xmlElement == null)
-                return default;
-
-            return XDocument.Parse(xmlElement.OuterXml).XMLDeserialize<T>();
-        }
+        public static T XMLDeserialize<T>(this XmlElement xmlElement) =>
+            xmlElement == null
+                ? default
+                : XDocument.Parse(xmlElement.OuterXml).XMLDeserialize<T>();
 
         /// <summary>
         /// Десиреализатор из строки, содержащей XML.
@@ -143,10 +138,9 @@ namespace Cav
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
 
-            if (xml.IsNullOrWhiteSpace())
-                return type.GetDefault();
-
-            return XDocument.Parse(xml).XMLDeserialize(type);
+            return xml.IsNullOrWhiteSpace()
+                ? type.GetDefault()
+                : XDocument.Parse(xml).XMLDeserialize(type);
         }
 
         /// <summary>
@@ -163,13 +157,10 @@ namespace Cav
         /// <param name="fileName">Файл, из которого десириализовать</param>
         /// <param name="type">Тип</param>
         /// <returns>Объект</returns>
-        public static Object XMLDeserializeFromFile(this String fileName, Type type)
-        {
-            if (!File.Exists(fileName))
-                return type.GetDefault();
-
-            return XDocument.Load(fileName).XMLDeserialize(type);
-        }
+        public static Object XMLDeserializeFromFile(this String fileName, Type type) =>
+            !File.Exists(fileName)
+                ? type.GetDefault()
+                : XDocument.Load(fileName).XMLDeserialize(type);
 
         /// <summary>
         /// Преобразование XML

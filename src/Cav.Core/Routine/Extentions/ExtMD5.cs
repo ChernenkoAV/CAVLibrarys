@@ -59,12 +59,9 @@ namespace Cav
         /// </summary>
         /// <param name="str">Входная строка</param>
         /// <returns>Хеш, перобразованный к Guid</returns>
-        public static Guid ComputeMD5ChecksumString(this string str)
-        {
-            if (str.IsNullOrWhiteSpace())
-                throw new ArgumentException($"{nameof(ComputeMD5ChecksumString)}:{nameof(str)}");
-
-            return Encoding.UTF8.GetBytes(str).ComputeMD5Checksum();
-        }
+        public static Guid ComputeMD5ChecksumString(this string str) =>
+            str.IsNullOrWhiteSpace()
+                ? throw new ArgumentException($"{nameof(ComputeMD5ChecksumString)}:{nameof(str)}")
+                : Encoding.UTF8.GetBytes(str).ComputeMD5Checksum();
     }
 }

@@ -31,19 +31,15 @@ namespace Cav.Json
 
             var isFlag = enumType.GetCustomAttribute<FlagsAttribute>() != null;
 
-            if (isFlag)
-            {
-                if (reader.TokenType == JsonToken.Integer)
-                    return Enum.ToObject(enumType, serializer.Deserialize<int>(reader));
-
-                return Enum.ToObject(
-                    enumType,
-                    serializer.Deserialize<string[]>(reader)
-                        .Select(x => Enum.Parse(enumType, x))
-                        .Aggregate(0, (cur, val) => cur | (int)val));
-            }
-            else
-                return base.ReadJson(reader, enumType, existingValue, serializer);
+            return isFlag
+                ? reader.TokenType == JsonToken.Integer
+                    ? Enum.ToObject(enumType, serializer.Deserialize<int>(reader))
+                    : Enum.ToObject(
+                        enumType,
+                        serializer.Deserialize<string[]>(reader)
+                            .Select(x => Enum.Parse(enumType, x))
+                            .Aggregate(0, (cur, val) => cur | (int)val))
+                : base.ReadJson(reader, enumType, existingValue, serializer);
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -71,13 +67,11 @@ namespace Cav.Json
         {
             var inst = valueProvider.GetValue(target);
 
-            if (inst == null)
-                return null;
-
-            if (!(inst as IEnumerable).GetEnumerator().MoveNext())
-                return null;
-
-            return inst;
+            return inst == null
+                ? null
+                : !(inst as IEnumerable).GetEnumerator().MoveNext()
+                    ? null
+                    : inst;
         }
 
         public void SetValue(object target, object value)

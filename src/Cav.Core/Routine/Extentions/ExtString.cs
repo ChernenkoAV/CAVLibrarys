@@ -69,12 +69,7 @@ namespace Cav
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        public static String GetNullIfIsNullOrWhiteSpace(this String str)
-        {
-            if (str.IsNullOrWhiteSpace())
-                return null;
-            return str;
-        }
+        public static String GetNullIfIsNullOrWhiteSpace(this String str) => str.IsNullOrWhiteSpace() ? null : str;
 
         /// <summary>
         /// true, если строка null, пустая или содержт только пробелы. Только это метод структуры String, а тут расширение....
@@ -174,16 +169,12 @@ namespace Cav
         /// <param name="length">Длина замещающей </param>
         /// <param name="replaceWith">Строка для наполнения</param>
         /// <returns></returns>
-        public static String Stuff(this String str, int start, int length, string replaceWith)
-        {
-            if (str == null || start < 0 || length < 0)
-                return null;
-
-            if (str.Length < start)
-                return str;
-
-            return str.SubString(0, start) + replaceWith + str.SubString(start + length);
-        }
+        public static String Stuff(this String str, int start, int length, string replaceWith) =>
+            str == null || start < 0 || length < 0
+                ? null
+                : str.Length < start
+                    ? str
+                    : str.SubString(0, start) + replaceWith + str.SubString(start + length);
 
         /// <summary>
         /// Замена символов на указанное значение

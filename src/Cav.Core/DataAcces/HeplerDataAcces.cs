@@ -47,10 +47,7 @@ namespace Cav
 
             type = Nullable.GetUnderlyingType(type) ?? type;
 
-            if (type.IsEnum)
-                return true;
-
-            return typeMaps.TryGetValue(type, out var dt);
+            return type.IsEnum || typeMaps.TryGetValue(type, out var dt);
         }
 
         /// <summary>
@@ -66,10 +63,9 @@ namespace Cav
             if (sType.IsEnum)
                 sType = sType.GetEnumUnderlyingType();
 
-            if (!typeMaps.TryGetValue(sType, out var res))
-                throw new ArgumentException($"Не удалось сопоставить тип {originalType.FullName} с типом DbType");
-
-            return res;
+            return !typeMaps.TryGetValue(sType, out var res)
+                ? throw new ArgumentException($"Не удалось сопоставить тип {originalType.FullName} с типом DbType")
+                : res;
         }
 
         internal static object FromField(Type returnType, DataRow dbRow, String fieldName, Delegate conv)

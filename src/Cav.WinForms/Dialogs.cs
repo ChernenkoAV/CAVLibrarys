@@ -10,12 +10,11 @@ namespace Cav
     /// </summary>
     public static class Dialogs
     {
-        #region Forms, Owner
         /// <summary>
         /// Вопрос с ответами Ok|Cancel (Forms)(Owner)
         /// </summary>
         /// <returns></returns>
-        public static bool QuestionOKCancelF(
+        public static bool QuestionOKCancel(
             Control owner,
             String text,
             String caption = null)
@@ -37,7 +36,7 @@ namespace Cav
         /// Вопрос с ответами Yes|No|Cancel (Forms)(Owner)
         /// </summary>
         /// <returns></returns>
-        public static Boolean? QuestionYesNoCancelF(
+        public static Boolean? QuestionYesNoCancel(
             Control owner,
             String text,
             String caption = null)
@@ -60,7 +59,7 @@ namespace Cav
         /// Информационное (Forms)(Owner)
         /// </summary>
         /// <returns></returns>
-        public static void InformationF(
+        public static void Information(
             Control owner,
             String text,
             String caption = null)
@@ -82,7 +81,7 @@ namespace Cav
         /// Ошибка (Forms)(Owner)
         /// </summary>
         /// <returns></returns>
-        public static void ErrorF(
+        public static void Error(
             Control owner,
             String text,
             String caption = null)
@@ -99,14 +98,13 @@ namespace Cav
 
             MessageBox.Show(owner, text, caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
-        #endregion
 
         #region Forms
         /// <summary>
         /// Вопрос с ответами Ok|Cancel (Forms)
         /// </summary>
         /// <returns></returns>
-        public static Boolean QuestionOKCancelF(
+        public static Boolean QuestionOKCancel(
             String text,
             String caption) =>
             MessageBox.Show(text, caption, MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK;
@@ -115,7 +113,7 @@ namespace Cav
         /// Вопрос с ответами Yes|No|Cancel (Forms)
         /// </summary>
         /// <returns></returns>
-        public static Boolean? QuestionYesNoCancelF(
+        public static Boolean? QuestionYesNoCancel(
             String text,
             String caption)
         {
@@ -127,7 +125,7 @@ namespace Cav
         /// Информационное (Forms)
         /// </summary>
         /// <returns></returns>
-        public static void InformationF(
+        public static void Information(
             String text,
             String caption) =>
             MessageBox.Show(text, caption, MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -136,7 +134,7 @@ namespace Cav
         /// Ошибка (Forms)
         /// </summary>
         /// <returns></returns>
-        public static void ErrorF(
+        public static void Error(
             String text,
             String caption) =>
             MessageBox.Show(text, caption, MessageBoxButtons.OK, MessageBoxIcon.Error);

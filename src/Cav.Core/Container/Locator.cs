@@ -245,16 +245,12 @@ namespace Cav.Container
                     }
                 };
 
-                var aslyDom = AppDomain.CurrentDomain.GetAssemblies();
-
-                var assemblysForWork = AppDomain.CurrentDomain.GetAssemblies().Where(x => !x.GlobalAssemblyCache).ToArray();
-
-                foreach (var aitem in assemblysForWork)
+                foreach (var aitem in AppDomain.CurrentDomain.GetAssemblies().ToArray())
                     recursionLoadAssembly(aitem);
 
                 #endregion
 
-                assemblysForWork = AppDomain.CurrentDomain.GetAssemblies().Where(x => !x.GlobalAssemblyCache).ToArray();
+                var assemblysForWork = AppDomain.CurrentDomain.GetAssemblies().ToArray();
 
                 var res = new List<Type>();
 

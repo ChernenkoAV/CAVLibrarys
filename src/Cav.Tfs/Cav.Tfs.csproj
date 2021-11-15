@@ -14,18 +14,17 @@
         <DebugType>full</DebugType>
         <Optimize>false</Optimize>
         <AssemblyName>Cav.Tfs</AssemblyName>
-		<RootNamespace>Cav.Tfs</RootNamespace>
-		<DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
-        <OutputPath>..\_Build\$(AssemblyName)</OutputPath>
-        <DefineConstants>TRACE</DefineConstants>        
+        <RootNamespace>Cav.Tfs</RootNamespace>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <DefineConstants>TRACE</DefineConstants>
         <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
         <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-		<AnalysisMode>AllEnabledByDefault</AnalysisMode>
-		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+        <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+        <EnableNETAnalyzers>true</EnableNETAnalyzers>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     </PropertyGroup>
     
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dev|AnyCPU'">        
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dev|AnyCPU'">
         <DefineConstants>DEBUG;TRACE</DefineConstants>
     </PropertyGroup>
 
@@ -42,5 +41,12 @@
     <ItemGroup>
       <Reference Include="System.Windows.Forms" />
     </ItemGroup>
+
+    <PropertyGroup>
+        <PackageVersion>4.0.3</PackageVersion>
+        <Description>Обертка к сборкам TFS в Visual Studio</Description>
+        <PackageTags>cav tfs tfs2013 tfs2015 tfs2017 tfs2019 wrap</PackageTags>
+    </PropertyGroup>
+    <Import Condition="'$(Configuration)'=='Release'" Project="$(SolutionDir)PakingNuget.targets" />
 
 </Project>

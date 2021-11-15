@@ -60,30 +60,5 @@ namespace Cav.DigitalSignature
 
             return cert;
         }
-
-        /// <summary>
-        /// Выбор сертификата(ов)
-        /// </summary>
-        /// <param name="singleCertificate">true - выбор одного сертификата(по умолчанию)</param>
-        /// <param name="nameCertificate">Имя сертификата, по которому будет осуществлен поиск в хранилище</param>
-        /// <returns>Коллекция сертификатов</returns>
-        public static X509Certificate2Collection SelectCertificate(bool singleCertificate = true, String nameCertificate = null)
-        {
-            using (var store = new X509Store(StoreLocation.CurrentUser))
-            {
-                store.Open(OpenFlags.OpenExistingOnly | OpenFlags.ReadOnly);
-                var scollection = String.IsNullOrEmpty(nameCertificate)
-                    ? X509Certificate2UI.SelectFromCollection(
-                        store.Certificates,
-                        "Выбор сертификата",
-                        "Выберите сертификат.",
-                        singleCertificate ? X509SelectionFlag.SingleSelection : X509SelectionFlag.MultiSelection)
-                    : store.Certificates.Find(
-                        X509FindType.FindBySubjectName,
-                        nameCertificate,
-                        true);
-                return scollection;
-            }
-        }
     }
 }

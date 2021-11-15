@@ -214,5 +214,24 @@ namespace Cav
         /// <param name="operand">Значение подстановки</param>
         /// <returns></returns>
         public static String IfNull(this String val, String operand) => val.IsNullOrWhiteSpace() ? operand : val;
+
+        /// <summary>
+        /// Удаление папки и всего, что в ней. Включая файлы с атрибутом ReadOnly
+        /// </summary>
+        /// <param name="path">Полный путь для удаления</param>
+        public static void DeleteDirectory(this String path)
+        {
+            if (!Directory.Exists(path))
+                return;
+
+            var directory = new DirectoryInfo(path) { Attributes = FileAttributes.Normal };
+
+            foreach (var info in directory.GetFileSystemInfos("*", SearchOption.AllDirectories))
+            {
+                info.Attributes = FileAttributes.Normal;
+            }
+
+            directory.Delete(true);
+        }
     }
 }

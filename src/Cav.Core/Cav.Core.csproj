@@ -3,7 +3,7 @@
     <PropertyGroup>
         <Configuration Condition=" '$(Configuration)' == '' ">Dev</Configuration>
         <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-        <TargetFramework>net48</TargetFramework>
+        <TargetFrameworks>net4.8;net5.0</TargetFrameworks>
         <SignAssembly>true</SignAssembly>
         <DelaySign>false</DelaySign>
         <AssemblyOriginatorKeyFile>..\cav.snk</AssemblyOriginatorKeyFile>
@@ -15,17 +15,14 @@
         <Optimize>false</Optimize>
         <AssemblyName>Cav.Core</AssemblyName>
         <RootNamespace>Cav.Core</RootNamespace>
-        <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
-        <OutputPath>..\_Build\$(AssemblyName)</OutputPath>
-        <DefineConstants>TRACE</DefineConstants>        
-        <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
-        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <DefineConstants>TRACE</DefineConstants>
         <AnalysisMode>AllEnabledByDefault</AnalysisMode>
         <EnableNETAnalyzers>true</EnableNETAnalyzers>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     </PropertyGroup>
-    
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dev|AnyCPU'">        
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dev|AnyCPU'">
         <DefineConstants>DEBUG;TRACE</DefineConstants>
     </PropertyGroup>
 
@@ -36,15 +33,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+        <PackageReference Condition=" '$(TargetFramework)' == 'net4.8'" Include="Newtonsoft.Json" Version="13.*" />
+        <PackageReference Condition=" '$(TargetFramework)' == 'net5.0'" Include="Newtonsoft.Json" Version="12.*" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Reference Include="System.Configuration.Install" />
-      <Reference Include="System.Deployment" />
-      <Reference Include="System.Security" />
-      <Reference Include="System.ServiceModel" />
-      <Reference Include="System.ServiceProcess" />
-    </ItemGroup>
+    <PropertyGroup>
+        <PackageVersion>0.1.0-beta</PackageVersion>
+        <Description>A set of utilities that facilitate routine operations</Description>
+        <PackageTags>сav utils</PackageTags>
+    </PropertyGroup>
 
+    <Import Condition="'$(Configuration)'=='Release'" Project="$(SolutionDir)PakingNuget.targets" />
 </Project>

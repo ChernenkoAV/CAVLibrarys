@@ -14,18 +14,17 @@
         <DebugType>full</DebugType>
         <Optimize>false</Optimize>
         <AssemblyName>Cav.Wcf</AssemblyName>
-		<RootNamespace>Cav.Wcf</RootNamespace>
-		<DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
-        <OutputPath>..\_Build\$(AssemblyName)</OutputPath>
-        <DefineConstants>TRACE</DefineConstants>        
+        <RootNamespace>Cav.Wcf</RootNamespace>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <DefineConstants>TRACE</DefineConstants>
         <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
         <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-		<AnalysisMode>AllEnabledByDefault</AnalysisMode>
-		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+        <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+        <EnableNETAnalyzers>true</EnableNETAnalyzers>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     </PropertyGroup>
-    
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dev|AnyCPU'">        
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dev|AnyCPU'">
         <DefineConstants>DEBUG;TRACE</DefineConstants>
     </PropertyGroup>
 
@@ -40,11 +39,18 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Reference Include="System.IdentityModel" />
-      <Reference Include="System.Security" />
-      <Reference Include="System.ServiceModel" />
-      <Reference Include="System.ServiceModel.Activation" />
-      <Reference Include="System.ServiceModel.Web" />
+        <Reference Include="System.IdentityModel" />
+        <Reference Include="System.Security" />
+        <Reference Include="System.ServiceModel" />
+        <Reference Include="System.ServiceModel.Activation" />
+        <Reference Include="System.ServiceModel.Web" />
     </ItemGroup>
+
+    <PropertyGroup>
+        <PackageVersion>1.0.1</PackageVersion>
+        <Description>A set of utilities for using Wcf</Description>
+        <PackageTags>Cav utils soap смев smev</PackageTags>
+    </PropertyGroup>
+    <Import Condition="'$(Configuration)'=='Release'" Project="$(SolutionDir)PakingNuget.targets" />
 
 </Project>

@@ -18,6 +18,8 @@ dotnet_diagnostic.CA1303.severity = silent
 dotnet_diagnostic.CA1305.severity = silent
 dotnet_diagnostic.CA1310.severity = silent
 
+#CA1307 Используйте StringComparison, чтобы ясно указать намерение.
+dotnet_diagnostic.CA1307.severity = silent
 
 # Свойства коллекций должны быть доступны только для чтения
 dotnet_diagnostic.CA2227.severity = silent
@@ -50,4 +52,12 @@ dotnet_diagnostic.IDE0010.severity = silent
 
 # IDE0046: Преобразовать в условное выражение
 dotnet_diagnostic.IDE0046.severity = suggestion
+
+# IDE0090: выражение new можно упростить (в net4.8 еще нету)
+dotnet_diagnostic.IDE0090.severity = suggestion
+
+# IDE0063: Оператор using можно упростить (в net4.8 еще нету)
+dotnet_diagnostic.IDE0063.severity = suggestion
+
+
 

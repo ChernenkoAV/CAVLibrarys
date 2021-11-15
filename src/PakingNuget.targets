@@ -1,6 +1,16 @@
 <Project>
 
+    <!--
+Если файл переименовать в Directory.Build.targets
+то он юудет подхватываться автоматически.
+Но надо тогда везде прописать Condition="'$(Configuration)'=='Release'"
+Что б только при релизе отрабатывало.
+-->
+
     <PropertyGroup>
+        <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
+        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+        <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
         <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -11,19 +21,42 @@
         <Deterministic>false</Deterministic>
         <Optimize>true</Optimize>
         <DebugType>pdbonly</DebugType>
-        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-        <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
         <AnalysisMode>AllEnabledByDefault</AnalysisMode>
-        <PaketIcon>$(SolutionDir)..\ppr.png</PaketIcon>
+        <PaketIcon>$(SolutionDir)ppr.png</PaketIcon>
+
+        <Authors>ChernenkoAV</Authors>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/ChernenkoAV/CavLibrarys</RepositoryUrl>
+
+        <VersionFile>$(BaseIntermediateOutputPath)$(AssemblyName).$(PackageVersion).cs</VersionFile>
+    </PropertyGroup>
+
+    <!--Для выполнения таргетов один раз-->
+    <PropertyGroup>
+        <IsMultiTarget>true</IsMultiTarget>
+        <IsMultiTarget Condition="'$(TargetFrameworks)' == ''">false</IsMultiTarget>
+
+        <IsSingleTarget>true</IsSingleTarget>
+        <IsSingleTarget Condition="'$(TargetFramework)' == ''">false</IsSingleTarget>
+
+        <ShouldBeforeTargets>BeforeBuild</ShouldBeforeTargets>
+        <ShouldBeforeTargets Condition="$(IsMultiTarget)">DispatchToInnerBuilds</ShouldBeforeTargets>
+
+        <ShouldAfterTargets>AfterBuild</ShouldAfterTargets>
+        <ShouldAfterTargets Condition="$(IsMultiTarget)">DispatchToInnerBuilds</ShouldAfterTargets>
+
+        <ShouldRunTarget>false</ShouldRunTarget>
+        <ShouldRunTarget Condition="(!'$(IsMultiTarget)' and '$(IsSingleTarget)') or ('$(IsMultiTarget)' and !'$(IsSingleTarget)')">true</ShouldRunTarget>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="NuGet.CommandLine" Version="5.11.0">
+        <PackageReference Include="NuGet.CommandLine" Version="5.*">
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
     </ItemGroup>
 
+    <!--
     <UsingTask TaskName="CreateVersions"
          TaskFactory="CodeTaskFactory"
          AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" >
@@ -33,13 +66,10 @@
             <TempBuildDir ParameterType="System.String" Required="true"/>
             <ProjectDir ParameterType="System.String" Required="true"/>
             <IconPath ParameterType="System.String" Required="true"/>
-
-            <ProductVersion ParameterType="System.String" Output="true"/>
-            <VerAssembly ParameterType="System.String" Output="true"/>
-            <VerFile ParameterType="System.String" Output="true"/>
+            <ProductVersion ParameterType="System.String" Required="true"/>
+            <Description ParameterType="System.String" Required="true"/>
 
             <NewNuspecFile ParameterType="System.String" Output="true"/>
-            <DescriptionFromNuspec ParameterType="System.String" Output="true"/>
         </ParameterGroup>
         <Task>
             <Reference Include="System.Xml"/>
@@ -51,8 +81,7 @@
             <Using Namespace="System.Linq"/>
             <Code Type="Fragment" Language="cs">
                 <![CDATA[
-
-                var verFile = Path.Combine(ProjectDir, ".packVersion");
+                                
                 var nuspecFile = Path.Combine(ProjectDir, AssemblyName + ".nuspec");
 
                 if (!File.Exists(verFile))
@@ -174,9 +203,10 @@
             </Code>
         </Task>
     </UsingTask>
-    
-    <Target Name="SetVersion" AfterTargets="BeforeBuild">
+-->
 
+    <Target Name="SetVersion" Condition="$(ShouldRunTarget)" BeforeTargets="$(ShouldBeforeTargets)">
+        <!--
         <CreateVersions
             ProjectDir ="$(MSBuildProjectDirectory)"
             AssemblyName="$(AssemblyName)"
@@ -197,6 +227,21 @@
             <Output TaskParameter="NewNuspecFile"
                     PropertyName="NuspecFilePath"/>
         </CreateVersions>
+        -->
+
+        <Error Condition="'$(PackageVersion)' == ''" Text="Необходимо заполнить свойство PackageVersion!" />
+
+        <PropertyGroup Condition=" '$(PackageVersion.Split(`.`)[0])' == '0' ">
+            <VerAssembly>0.1.0.0</VerAssembly>
+        </PropertyGroup>
+
+        <PropertyGroup Condition=" '$(PackageVersion.Split(`.`)[0])' != '0' ">
+            <VerAssembly>$(PackageVersion.Split(`.`, StringSplitOptions.None)[0]).0.0.0</VerAssembly>
+        </PropertyGroup>
+
+        <PropertyGroup>
+            <VerFile>$(VerAssembly.Split(`.`)[0])$([System.DateTime]::Now.Tostring(".yyyy.MM.dd"))</VerFile>
+        </PropertyGroup>
 
         <ItemGroup>
             <AssemblyAttributes Include="AssemblyTitle">
@@ -209,42 +254,64 @@
                 <_Parameter1>$(VerFile)</_Parameter1>
             </AssemblyAttributes>
             <AssemblyAttributes Include="AssemblyInformationalVersion">
-                <_Parameter1>$(ProductVersion)</_Parameter1>
+                <_Parameter1>$(PackageVersion)</_Parameter1>
             </AssemblyAttributes>
             <AssemblyAttributes Include="AssemblyDescription">
-                <_Parameter1>$(DescriptionFromNuspec)</_Parameter1>
+                <_Parameter1>$(Description)</_Parameter1>
             </AssemblyAttributes>
             <AssemblyAttributes Include="AssemblyCopyright">
                 <_Parameter1>Copyright $([System.DateTime]::Now.ToString("yyyy"))©</_Parameter1>
             </AssemblyAttributes>
-<!--
+            <AssemblyAttributes Include="AssemblyProduct">
+                <_Parameter1>$(AssemblyName) $(PackageVersion)</_Parameter1>
+            </AssemblyAttributes>
+            <!--
             <AssemblyAttributes Include="AssemblyCompany">
                 <_Parameter1>$()</_Parameter1>
             </AssemblyAttributes>
-            <AssemblyAttributes Include="AssemblyProduct">
-                <_Parameter1>My Product</_Parameter1>
-            </AssemblyAttributes>
--->
+            -->
         </ItemGroup>
 
         <MakeDir Directories="$(BaseIntermediateOutputPath)"/>
         <WriteCodeFragment Language="C#"
-                            OutputFile="$(BaseIntermediateOutputPath)$(AssemblyName)_$(ProductVersion)_Version.cs"
-                            AssemblyAttributes="@(AssemblyAttributes)"/>
-        <ItemGroup>
-            <Compile Include="$(BaseIntermediateOutputPath)$(AssemblyName)_$(ProductVersion)_Version.cs"/>
-        </ItemGroup>
+                           OutputFile="$(VersionFile)"
+                           AssemblyAttributes="@(AssemblyAttributes)"/>
 
-        <Message Text="----- Версия пакета $(ProductVersion) Версия сборки $(VerAssembly) Версия файла $(VerFile)" Importance="High"/>
+        <Message Text="----- Сборка $(AssemblyName): версия пакета $(PackageVersion) версия сборки $(VerAssembly) версия файла $(VerFile)" Importance="High"/>
+
+        <ItemGroup>
+            <Compile Include="$(VersionFile)"/>
+        </ItemGroup>
     </Target>
 
-    <Target Name="PackNuget" AfterTargets="AfterBuild">
+    <ItemGroup Condition="!'$(ShouldRunTarget)'">
+        <Compile Include="$(VersionFile)"/>
+    </ItemGroup>
+
+    <Target Name="PackNuget" Condition="$(ShouldRunTarget)" AfterTargets="$(ShouldAfterTargets)">
+
+        <PropertyGroup>
+
+        </PropertyGroup>
 
         <PropertyGroup Condition=" '$(OutputNuget)' == '' ">
             <OutputNuget>$([System.IO.Path]::GetPathRoot($(MSBuildProjectDirectory)))localNuget</OutputNuget>
         </PropertyGroup>
 
-        <Message Text="----- Запуск пакетирования" Importance="High"/>
+        <Message Text="Создание файла $(AssemblyName).nuspec" Importance="High"/>
+
+        <Message Text="@(PackageReference)" Importance="High"/>
+        <!--
+        <Exec Command="&quot;$(PkgNuGet_CommandLine)\tools\NuGet.exe&quot; spec $(AssemblyName) -AssemblyPath &quot;$(MSBuildProjectDirectory)\$(OutputPath)$(AssemblyName).dll&quot; -Force" />
+
+        
+        OutputPath
+        <Message Text="-Запуск пакетирования" Importance="High"/>
+
+       
+        -OutputDirectory &quot;$(BaseIntermediateOutputPath)&quot;
+
         <Exec Command="&quot;$(PkgNuGet_CommandLine)\tools\NuGet.exe&quot; pack &quot;$(NuspecFilePath)&quot; -Version $(ProductVersion) -Properties Configuration=Release -OutputDirectory $(OutputNuget) -BasePath $(OutputPath)" />
+ -->
     </Target>
 </Project>

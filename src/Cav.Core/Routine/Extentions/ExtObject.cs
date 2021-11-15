@@ -34,7 +34,9 @@ namespace Cav
         /// <returns></returns>
         public static T? NullIf<T>(this T exp, T operand)
             where T : struct =>
+#pragma warning disable IDE0004 //: Приведение избыточно. (в 4.8 пока нету)
             exp.Equals(operand) ? (T?)null : exp;
+#pragma warning restore IDE0004 //: Приведение избыточно. (в 4.8 пока нету)
 
         /// <summary>
         /// Повтор IFNULL() из T-SQL для структур

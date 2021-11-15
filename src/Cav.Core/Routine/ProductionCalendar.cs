@@ -174,7 +174,9 @@ namespace Cav.Routine
                 var day = cdr.Days.FirstOrDefault(x => x.Date == date);
                 if (day != null)
                 {
+#pragma warning disable IDE0078 // Используйте сопоставление шаблонов
                     if (day.Kind == TypeHoliDay.ShortDay || day.Kind == TypeHoliDay.WorkDay)
+#pragma warning restore IDE0078 // Используйте сопоставление шаблонов
                         continue;
 
                     var h = new Holiday();
@@ -189,7 +191,9 @@ namespace Cav.Routine
                     continue;
                 }
 
+#pragma warning disable IDE0078 // Используйте сопоставление шаблонов
                 if (date.DayOfWeek == DayOfWeek.Sunday || date.DayOfWeek == DayOfWeek.Saturday)
+#pragma warning restore IDE0078 // Используйте сопоставление шаблонов
                 {
                     var h = new Holiday();
                     h.Date = date;

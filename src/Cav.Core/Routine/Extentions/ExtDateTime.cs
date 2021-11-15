@@ -41,7 +41,9 @@ namespace Cav
         /// <returns></returns>
         public static DateTime Truncate(this DateTime self, DateTimeTruncateResolution resolution = DateTimeTruncateResolution.Second)
         {
+#pragma warning disable IDE0066 // Преобразовать оператор switch в выражение
             switch (resolution)
+#pragma warning restore IDE0066 // Преобразовать оператор switch в выражение
             {
                 case DateTimeTruncateResolution.Year:
                     return new DateTime(self.Year, 1, 1, 0, 0, 0, 0, self.Kind);

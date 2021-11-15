@@ -320,3 +320,6 @@ dotnet_diagnostic.IDE0011.severity = silent
 
 # CA1304: Укажите CultureInfo
 dotnet_diagnostic.CA1304.severity = silent
+
+# IDE0130: Пространство имен (namespace) не соответствует структуре папок.
+dotnet_diagnostic.IDE0130.severity = silent

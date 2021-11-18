@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using Cav.Json;
@@ -92,6 +94,13 @@ namespace Cav
                 if (type.IsArray)
                     return Array.CreateInstance(type.GetElementType(), 0);
 
+                // Для всяких HashList и тд
+                if (type.IsGenericType &&
+                    type.GetGenericTypeDefinition() == typeof(IEnumerable<>) &&
+                    type.GetGenericArguments().Length == 1)
+                    return Array.CreateInstance(type.GetGenericArguments().Single(), 0);
+
+                //Для Dictionary<> и тд
                 if (typeof(IEnumerable).IsAssignableFrom(type) &&
                     type.GetConstructor(Array.Empty<Type>()) != null)
                     return Activator.CreateInstance(type);

@@ -83,7 +83,7 @@ namespace Cav.Json
                     value = Array.CreateInstance(jsonProperty.PropertyType.GetElementType(), 0);
                 else
                 {
-                    if (jsonProperty.PropertyType.GetConstructor(new Type[0]) != null)
+                    if (jsonProperty.PropertyType.GetConstructor(Array.Empty<Type>()) != null)
                         value = Activator.CreateInstance(jsonProperty.PropertyType);
                 }
             }
@@ -104,7 +104,7 @@ namespace Cav.Json
 
             if (jProperty.PropertyType.IsArray ||
                 (typeof(IEnumerable).IsAssignableFrom(jProperty.PropertyType) &&
-                jProperty.PropertyType.GetConstructor(new Type[0]) != null))
+                jProperty.PropertyType.GetConstructor(Array.Empty<Type>()) != null))
             {
                 var olsShouldSerialise = jProperty.ShouldSerialize;
                 if (olsShouldSerialise == null)
@@ -141,7 +141,7 @@ namespace Cav.Json
                 return instance;
             }
         }
-        
+
         private GenericJsonSerializerSetting()
         {
             this.NullValueHandling = NullValueHandling.Ignore;

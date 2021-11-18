@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using Cav.Json;
@@ -59,24 +57,20 @@ namespace Cav
                 return targetType.GetDefault();
 
             using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(str)))
-                return (new DataContractJsonSerializer(targetType)).ReadObject(ms);
+                return new DataContractJsonSerializer(targetType).ReadObject(ms);
         }
 
         /// <summary>
-        /// Json сериализация. null не выводятся. Пустые <see cref="IList"/> тождественны null
+        /// Json сериализация. null не выводятся. Пустые <see cref="IEnumerable"/> тождественны null
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static String JsonSerialize(this Object obj)
-        {
-            if (obj == null)
-                return null;
-
-            if ((obj as IList)?.Count == 0)
-                return null;
-
-            return JsonConvert.SerializeObject(obj, GenericJsonSerializerSetting.Instance);
-        }
+        public static String JsonSerialize(this Object obj) =>
+            obj == null
+                ? null
+                : obj is IEnumerable ien && !ien.GetEnumerator().MoveNext()
+                    ? null
+                    : JsonConvert.SerializeObject(obj, GenericJsonSerializerSetting.Instance);
 
         /// <summary>
         /// Json десериализация. возврат: Если тип реализует <see cref="IList"/> - пустую коллекцию(что б в коде не проверять на null и сразу юзать foreach)
@@ -98,10 +92,8 @@ namespace Cav
                 if (type.IsArray)
                     return Array.CreateInstance(type.GetElementType(), 0);
 
-                if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-                    return Array.CreateInstance(type.GetGenericArguments().Single(), 0);
-
-                if (typeof(IList).IsAssignableFrom(type))
+                if (typeof(IEnumerable).IsAssignableFrom(type) &&
+                    type.GetConstructor(Array.Empty<Type>()) != null)
                     return Activator.CreateInstance(type);
 
                 return type.GetDefault();
@@ -123,25 +115,11 @@ namespace Cav
             if (File.Exists(filePath))
                 s = File.ReadAllText(filePath);
 
-            if (s.IsNullOrWhiteSpace())
-            {
-                if (type.IsArray)
-                    return Array.CreateInstance(type.GetElementType(), 0);
-
-                if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-                    return Array.CreateInstance(type.GetGenericArguments().Single(), 0);
-
-                if (typeof(IList).IsAssignableFrom(type))
-                    return Activator.CreateInstance(type);
-
-                return type.GetDefault();
-            }
-
-            return JsonConvert.DeserializeObject(s, type, GenericJsonSerializerSetting.Instance);
+            return s.JsonDeserealize(type);
         }
 
         /// <summary>
-        /// Json десериализация из файла. возврат: Если тип реализует <see cref="IList"/> - пустую коллекцию(что б в коде не проверять на null и сразу юзать foreach)
+        /// Json десериализация из файла. возврат: Если тип реализует <see cref="IEnumerable"/> c простым конструктором - пустую коллекцию(что б в коде не проверять на null и сразу юзать foreach)
         /// Если файла нет - десиреализует, как пустую строку.
         /// </summary>
         /// <param name="filePath">Путь к файлу</param>

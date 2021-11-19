@@ -3,7 +3,7 @@
     <PropertyGroup>
         <Configuration Condition=" '$(Configuration)' == '' ">Dev</Configuration>
         <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-        <TargetFramework>net48</TargetFramework>
+        <TargetFramework>net4.8</TargetFramework>
         <SignAssembly>true</SignAssembly>
         <DelaySign>false</DelaySign>
         <AssemblyOriginatorKeyFile>..\cav.snk</AssemblyOriginatorKeyFile>
@@ -47,6 +47,7 @@
         <Description>Обертка к сборкам TFS в Visual Studio</Description>
         <PackageTags>cav tfs tfs2013 tfs2015 tfs2017 tfs2019 wrap</PackageTags>
     </PropertyGroup>
-    <Import Condition="'$(Configuration)'=='Release'" Project="$(SolutionDir)PakingNuget.targets" />
+
+    <Import Condition="'$(Configuration)'=='Release' AND '$(SolutionDir)' != '' " Project="$(SolutionDir)PakingNuget.targets" />
 
 </Project>

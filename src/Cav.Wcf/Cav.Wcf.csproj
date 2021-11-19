@@ -3,7 +3,7 @@
     <PropertyGroup>
         <Configuration Condition=" '$(Configuration)' == '' ">Dev</Configuration>
         <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-        <TargetFramework>net48</TargetFramework>
+        <TargetFramework>net4.8</TargetFramework>
         <SignAssembly>true</SignAssembly>
         <DelaySign>false</DelaySign>
         <AssemblyOriginatorKeyFile>..\cav.snk</AssemblyOriginatorKeyFile>
@@ -51,6 +51,7 @@
         <Description>A set of utilities for using Wcf</Description>
         <PackageTags>Cav utils soap смев smev</PackageTags>
     </PropertyGroup>
-    <Import Condition="'$(Configuration)'=='Release'" Project="$(SolutionDir)PakingNuget.targets" />
+
+    <Import Condition="'$(Configuration)'=='Release' AND '$(SolutionDir)' != '' " Project="$(SolutionDir)PakingNuget.targets" />
 
 </Project>

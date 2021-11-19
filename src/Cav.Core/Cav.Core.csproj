@@ -33,15 +33,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Condition=" '$(TargetFramework)' == 'net4.8'" Include="Newtonsoft.Json" Version="13.*" />
-        <PackageReference Condition=" '$(TargetFramework)' == 'net5.0'" Include="Newtonsoft.Json" Version="12.*" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.*" />        
     </ItemGroup>
 
     <PropertyGroup>
-        <PackageVersion>0.1.0-beta</PackageVersion>
+        <PackageVersion>8.0.0</PackageVersion>
         <Description>A set of utilities that facilitate routine operations</Description>
         <PackageTags>сav utils</PackageTags>
     </PropertyGroup>
 
-    <Import Condition="'$(Configuration)'=='Release'" Project="$(SolutionDir)PakingNuget.targets" />
+    <Import Condition="'$(Configuration)'=='Release' AND '$(SolutionDir)' != '' " Project="$(SolutionDir)PakingNuget.targets" />
+
 </Project>

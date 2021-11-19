@@ -22,12 +22,12 @@
         <Optimize>true</Optimize>
         <DebugType>pdbonly</DebugType>
         <AnalysisMode>AllEnabledByDefault</AnalysisMode>
-        <PaketIcon>$(SolutionDir)ppr.png</PaketIcon>
 
+        <PaketIcon>$(SolutionDir)Cav.png</PaketIcon>
         <Authors>ChernenkoAV</Authors>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/ChernenkoAV/CavLibrarys</RepositoryUrl>
+        <Copyright>Copyright $([System.DateTime]::Now.Year)©</Copyright>
 
         <VersionFile>$(BaseIntermediateOutputPath)$(AssemblyName).$(PackageVersion).cs</VersionFile>
     </PropertyGroup>
@@ -50,26 +50,27 @@
         <ShouldRunTarget Condition="(!'$(IsMultiTarget)' and '$(IsSingleTarget)') or ('$(IsMultiTarget)' and !'$(IsSingleTarget)')">true</ShouldRunTarget>
     </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="NuGet.CommandLine" Version="5.*">
-            <PrivateAssets>all</PrivateAssets>
-        </PackageReference>
-    </ItemGroup>
-
-    <!--
-    <UsingTask TaskName="CreateVersions"
+    <UsingTask TaskName="CombingNuspec"
          TaskFactory="CodeTaskFactory"
          AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" >
         <ParameterGroup>
-            <AssemblyName ParameterType="System.String" Required="true"/>
-            <ProjectName ParameterType="System.String" Required="true"/>
-            <TempBuildDir ParameterType="System.String" Required="true"/>
-            <ProjectDir ParameterType="System.String" Required="true"/>
-            <IconPath ParameterType="System.String" Required="true"/>
-            <ProductVersion ParameterType="System.String" Required="true"/>
-            <Description ParameterType="System.String" Required="true"/>
+            <SourceNuspecFile ParameterType="System.String" Required="true"/>
+            <TargetNuspecFile ParameterType="System.String" Required="true"/>
 
-            <NewNuspecFile ParameterType="System.String" Output="true"/>
+            <id ParameterType="System.String" Required="true"/>
+            <version ParameterType="System.String" Required="true"/>
+            <authors ParameterType="System.String" Required="true"/>
+            <owners ParameterType="System.String" Required="true"/>
+            <projectUrl ParameterType="System.String" Required="true"/>
+            <repositoryType ParameterType="System.String" Required="true"/>
+            <repository ParameterType="System.String" Required="true"/>
+            <iconFile ParameterType="System.String" Required="true"/>
+            <description ParameterType="System.String" Required="true"/>
+            <copyright ParameterType="System.String" Required="true"/>
+            <tags ParameterType="System.String" Required="true"/>
+            <sourseFiles ParameterType="System.String" Required="true"/>
+            <targetPath ParameterType="System.String" Required="true"/>
+
         </ParameterGroup>
         <Task>
             <Reference Include="System.Xml"/>
@@ -77,157 +78,93 @@
 
             <Using Namespace="System.IO"/>
             <Using Namespace="System.Xml.Linq"/>
-            <Using Namespace="System.Text.RegularExpressions"/>
             <Using Namespace="System.Linq"/>
+            <Using Namespace="System.Collections.Generic"/>
             <Code Type="Fragment" Language="cs">
                 <![CDATA[
-                                
-                var nuspecFile = Path.Combine(ProjectDir, AssemblyName + ".nuspec");
 
-                if (!File.Exists(verFile))
+                //Log.LogMessage(MessageImportance.High, iconFile);
+
+                if (!File.Exists(SourceNuspecFile))
                 {
-                    Log.LogError("Отсутвует файл '.packVersion' в корне проекта");
+                    Log.LogError("Не найден файл шаблонного nuspec");
                     return false;
                 }
 
-                if (!File.Exists(nuspecFile))
+                if (string.IsNullOrWhiteSpace(iconFile))
                 {
-                    Log.LogError("Отсутвует файл '"+AssemblyName + ".nuspec' в корне проекта");
+                    Log.LogError("Не указан файл иконки");
                     return false;
                 }
 
-                var packData = File.ReadAllText(verFile);
-
-                if (String.IsNullOrWhiteSpace (packData) || packData.Split(new string[] {"\n"}, StringSplitOptions.None).Length != 1)
+                if (string.IsNullOrWhiteSpace(sourseFiles))
                 {
-                    Log.LogError("Файл " + verFile + " не корректно заполнен. \nДолжна быть одна строка без перевода каретки с указанием версии пакета. \nРекомендуется использовать семвер (semver.org).");
+                    Log.LogError("Не указан источник файлов");
                     return false;
                 }
 
-                if(!(new Regex(@"^\d+\.\d+\.\d+(|-\S+)$").IsMatch(packData)))
+                if (string.IsNullOrWhiteSpace(targetPath))
                 {
-                    Log.LogError("Некорректный формат версии. Для отделения пререлиза используйте дефис");
+                    Log.LogError("Не указана целевая папка пакета");
                     return false;
                 }
 
-                ProductVersion = packData;
-                VerAssembly = ProductVersion.Split(new char[] {'.'}, StringSplitOptions.None)[0];
-                VerFile = VerAssembly + DateTime.Now.ToString(".yyyy.MM.dd");
-
-                VerAssembly = VerAssembly == "0" ? VerAssembly + ".1" : VerAssembly + ".0";
-                VerAssembly = VerAssembly +".0.0";
-                
-
-                var nusp = XDocument.Load(nuspecFile);
-
-                var descrNode = nusp.Descendants().FirstOrDefault(x => x.Name.LocalName == "description");
-                if (descrNode != null)
-                    DescriptionFromNuspec = descrNode.Value;
-
-
-                var csp = XDocument.Load(Path.Combine(ProjectDir, ProjectName + ".csproj"));
-
-                var ns_cs = csp.Root.Name.Namespace;
-                var targetNet = csp.Descendants().First(x => x.Name.LocalName == "TargetFramework").Value;
-                var refs = csp.Descendants().Where(x => x.Name.LocalName == "PackageReference").ToArray();
-
-                var ns = nusp.Root.Name.Namespace;
-                var md = nusp.Root.Element(ns + "metadata");
-                var deps = md.Element(ns + "dependencies");
-
-                if (deps == null)
+                if (!File.Exists(iconFile))
                 {
-                    deps = new XElement(ns + "dependencies");
-                    md.Add(deps);
+                    Log.LogError("Отсутвует файл иконки");
+                    return false;
                 }
 
-                deps.RemoveNodes();
-
-                var depsfromRef = refs
-                 .Select(x => new XElement(ns + "dependency",
-                     new XAttribute("id", x.Attribute(ns_cs + "Include").Value),
-                     new XAttribute("version", x.Attribute(ns_cs + "Version").Value)))
-                 .ToList();
-
-                deps.Add(
-                    new XElement(ns + "group",
-                    new XAttribute("targetFramework", targetNet),
-                    depsfromRef
-                    ));
-
-                /// Удаляем настройку иконку
-                var elMdIcon = md.Element(ns + "icon");
-                if (elMdIcon != null)
-                        elMdIcon.Remove();
-
-                ///Получаем контейнер для файлов
-                var files = nusp.Root.Element(ns + "files");
-
-                if (files == null)
+                var snuspec = XElement.Load(SourceNuspecFile);
+                snuspec.DescendantsAndSelf().ToList().ForEach(el =>
                     {
-                        files = new XElement(ns + "files");
-                        nusp.Root.Add(files);
-                    }
+                        el.Name = XNamespace.None.GetName(el.Name.LocalName);
+                        el.Attributes().Where(x => x.IsNamespaceDeclaration).ToList().ForEach(x => x.Remove());
+                    });
 
-                files.RemoveNodes();
+                var depensies = snuspec.Descendants("dependencies").Single();
 
-                // Добавляем скомпиленные файлы
+                var filesL = new List<XElement>();
 
-                files.Add(new XElement(ns + "file",
-                    new XAttribute("src", AssemblyName + ".*"),
-                    new XAttribute("exclude", "*.json"),
-                    new XAttribute("target", @"lib\" + targetNet + @"\")));
+                var iconFileName = Path.GetFileName(iconFile);
 
-                // Если есть иконка
-                if (!String.IsNullOrWhiteSpace(IconPath) && File.Exists(IconPath))
-                {
-                    var fnIcon = Path.GetFileName(IconPath);
+                filesL.Add(new XElement("file", new XAttribute("src", iconFile), new XAttribute("target", iconFileName)));
+                filesL.Add(new XElement("file", new XAttribute("src", sourseFiles), new XAttribute("target", targetPath), new XAttribute("exclude", @"**\*.json")));
 
-                    md.Add(new XElement(ns + "icon", fnIcon));
+                var targetNuspec = new XElement("package",
+                        new XElement("metadata",
+                            depensies,
+                            new XElement("id", id),
+                            new XElement("version", version),
+                            new XElement("title", id),
+                            new XElement("authors", authors),
+                            new XElement("owners", owners),
+                            new XElement("license", new XAttribute("type", "expression"), "MIT"),
+                            new XElement("projectUrl", projectUrl),
+                            new XElement("repository", new XAttribute("type", repositoryType), repository),
+                            new XElement("icon", iconFileName),
+                            new XElement("requireLicenseAcceptance", "false"),
+                            new XElement("description", description),
+                            new XElement("copyright", copyright),
+                            new XElement("tags", tags)
+                        ),
+                        new XElement("files", filesL)
+                    );
 
-                    files.Add(new XElement(ns + "file",
-                        new XAttribute("src", IconPath),
-                        new XAttribute("target", @"\")));
-                }
+                if (File.Exists(TargetNuspecFile))
+                    File.Delete(TargetNuspecFile);
 
-                NewNuspecFile = Path.Combine(TempBuildDir, Path.GetFileName(nuspecFile));
+                targetNuspec.Save(TargetNuspecFile);
 
-                if (File.Exists(NewNuspecFile))
-                    File.Delete(NewNuspecFile);
-
-                nusp.Save(NewNuspecFile);
-
+                
                 return true;
 
                 ]]>
             </Code>
         </Task>
     </UsingTask>
--->
 
     <Target Name="SetVersion" Condition="$(ShouldRunTarget)" BeforeTargets="$(ShouldBeforeTargets)">
-        <!--
-        <CreateVersions
-            ProjectDir ="$(MSBuildProjectDirectory)"
-            AssemblyName="$(AssemblyName)"
-            ProjectName="$(ProjectName)"
-            TempBuildDir ="$(BaseIntermediateOutputPath)"
-            IconPath="$(PaketIcon)">
-
-            <Output TaskParameter="ProductVersion"
-                    PropertyName="ProductVersion"/>
-            <Output TaskParameter="VerFile"
-                    PropertyName="VerFile"/>
-            <Output TaskParameter="VerAssembly"
-                    PropertyName="VerAssembly"/>
-            <Output TaskParameter="VerFile"
-                    PropertyName="VerFile"/>
-            <Output TaskParameter="DescriptionFromNuspec"
-                    PropertyName="DescriptionFromNuspec"/>
-            <Output TaskParameter="NewNuspecFile"
-                    PropertyName="NuspecFilePath"/>
-        </CreateVersions>
-        -->
 
         <Error Condition="'$(PackageVersion)' == ''" Text="Необходимо заполнить свойство PackageVersion!" />
 
@@ -282,6 +219,7 @@
         <ItemGroup>
             <Compile Include="$(VersionFile)"/>
         </ItemGroup>
+
     </Target>
 
     <ItemGroup Condition="!'$(ShouldRunTarget)'">
@@ -290,28 +228,43 @@
 
     <Target Name="PackNuget" Condition="$(ShouldRunTarget)" AfterTargets="$(ShouldAfterTargets)">
 
-        <PropertyGroup>
-
-        </PropertyGroup>
-
         <PropertyGroup Condition=" '$(OutputNuget)' == '' ">
             <OutputNuget>$([System.IO.Path]::GetPathRoot($(MSBuildProjectDirectory)))localNuget</OutputNuget>
+            <NuspecFile>$(BaseIntermediateOutputPath)$(AssemblyName).nuspec</NuspecFile>
         </PropertyGroup>
 
-        <Message Text="Создание файла $(AssemblyName).nuspec" Importance="High"/>
 
-        <Message Text="@(PackageReference)" Importance="High"/>
-        <!--
-        <Exec Command="&quot;$(PkgNuGet_CommandLine)\tools\NuGet.exe&quot; spec $(AssemblyName) -AssemblyPath &quot;$(MSBuildProjectDirectory)\$(OutputPath)$(AssemblyName).dll&quot; -Force" />
 
-        
-        OutputPath
+        <Message Text="Генерация nupkg с помощью dotnet paсk для получения корректных зависимостей в nuspec" Importance="High"/>
+
+        <Exec Command="dotnet pack --no-build -c $(Configuration) --force --nologo -o &quot;$(BaseIntermediateOutputPath)&quot;" />
+
+        <Unzip
+            SourceFiles="$(BaseIntermediateOutputPath)$(AssemblyName).$(PackageVersion).nupkg"
+            DestinationFolder="$(BaseIntermediateOutputPath)uanp"/>
+
+        <Message Text="Заполнение файла $(AssemblyName).nuspec" Importance="High"/>
+        <CombingNuspec
+            SourceNuspecFile ="$(BaseIntermediateOutputPath)uanp\$(AssemblyName).nuspec"
+            TargetNuspecFile = "$(NuspecFile)"
+
+            id = "$(AssemblyName)"
+            version = "$(PackageVersion)"
+            authors = "$(Authors)"
+            owners = "$(Authors)"
+            projectUrl = "$(RepositoryUrl)"
+            repositoryType = "git"
+            repository = "$(RepositoryUrl)"
+            iconFile = "$(PaketIcon)"
+            description = "$(Description)"
+            copyright = "$(Copyright)"
+            tags = "$(PackageTags)"
+            sourseFiles = "$(MSBuildProjectDirectory)\$(BaseOutputPath)$(Configuration)\**\$(AssemblyName).*"
+            targetPath = "lib"/>
+
         <Message Text="-Запуск пакетирования" Importance="High"/>
 
-       
-        -OutputDirectory &quot;$(BaseIntermediateOutputPath)&quot;
+        <Exec Command="dotnet pack --no-build -c $(Configuration) --force --nologo -o &quot;$(OutputNuget)&quot; /p:NuspecFile=&quot;$(NuspecFile)&quot; " />
 
-        <Exec Command="&quot;$(PkgNuGet_CommandLine)\tools\NuGet.exe&quot; pack &quot;$(NuspecFilePath)&quot; -Version $(ProductVersion) -Properties Configuration=Release -OutputDirectory $(OutputNuget) -BasePath $(OutputPath)" />
- -->
     </Target>
 </Project>

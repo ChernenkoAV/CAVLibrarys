@@ -37,6 +37,9 @@ namespace Cav
         /// </summary>
         public static object JsonDeserealize(this String s, Type type)
         {
+            if (type is null)
+                throw new ArgumentNullException(nameof(type));
+
             if (s.IsNullOrWhiteSpace())
             {
                 if (type.IsArray)
@@ -73,7 +76,7 @@ namespace Cav
             if (type is null)
                 throw new ArgumentNullException(nameof(type));
 
-            String s = null;
+            string s = null;
 
             if (File.Exists(filePath))
                 s = File.ReadAllText(filePath);

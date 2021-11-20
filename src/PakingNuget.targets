@@ -23,13 +23,10 @@
         <DebugType>pdbonly</DebugType>
         <AnalysisMode>AllEnabledByDefault</AnalysisMode>
 
-        <PaketIcon>$(SolutionDir)Cav.png</PaketIcon>
-        <Authors>ChernenkoAV</Authors>
-        <RepositoryType>git</RepositoryType>
-        <RepositoryUrl>https://github.com/ChernenkoAV/CavLibrarys</RepositoryUrl>
         <Copyright>Copyright $([System.DateTime]::Now.Year)©</Copyright>
 
         <VersionFile>$(BaseIntermediateOutputPath)$(AssemblyName).$(PackageVersion).cs</VersionFile>
+        <NuspecFile>$(BaseIntermediateOutputPath)$(AssemblyName).nuspec</NuspecFile>
     </PropertyGroup>
 
     <!--Для выполнения таргетов один раз-->
@@ -61,9 +58,9 @@
             <version ParameterType="System.String" Required="true"/>
             <authors ParameterType="System.String" Required="true"/>
             <owners ParameterType="System.String" Required="true"/>
-            <projectUrl ParameterType="System.String" Required="true"/>
+            <projectUrl ParameterType="System.String" />
             <repositoryType ParameterType="System.String" Required="true"/>
-            <repository ParameterType="System.String" Required="true"/>
+            <repositoryUrl ParameterType="System.String" />
             <iconFile ParameterType="System.String" Required="true"/>
             <description ParameterType="System.String" Required="true"/>
             <copyright ParameterType="System.String" Required="true"/>
@@ -131,23 +128,28 @@
                 filesL.Add(new XElement("file", new XAttribute("src", iconFile), new XAttribute("target", iconFileName)));
                 filesL.Add(new XElement("file", new XAttribute("src", sourseFiles), new XAttribute("target", targetPath), new XAttribute("exclude", @"**\*.json")));
 
+                var metadata = 
+                    new XElement("metadata",
+                        depensies,
+                        new XElement("id", id),
+                        new XElement("version", version),
+                        new XElement("title", id),
+                        new XElement("authors", authors),
+                        new XElement("owners", owners),
+                        new XElement("license", new XAttribute("type", "expression"), "MIT"),
+                        new XElement("repository", new XAttribute("type", repositoryType), repositoryUrl),
+                        new XElement("icon", iconFileName),
+                        new XElement("requireLicenseAcceptance", "false"),
+                        new XElement("description", description),
+                        new XElement("copyright", copyright),
+                        new XElement("tags", tags)
+                    );
+
+                if (!string.IsNullOrWhiteSpace(projectUrl))
+                    metadata.Add(new XElement("projectUrl", projectUrl));
+
                 var targetNuspec = new XElement("package",
-                        new XElement("metadata",
-                            depensies,
-                            new XElement("id", id),
-                            new XElement("version", version),
-                            new XElement("title", id),
-                            new XElement("authors", authors),
-                            new XElement("owners", owners),
-                            new XElement("license", new XAttribute("type", "expression"), "MIT"),
-                            new XElement("projectUrl", projectUrl),
-                            new XElement("repository", new XAttribute("type", repositoryType), repository),
-                            new XElement("icon", iconFileName),
-                            new XElement("requireLicenseAcceptance", "false"),
-                            new XElement("description", description),
-                            new XElement("copyright", copyright),
-                            new XElement("tags", tags)
-                        ),
+                        metadata,
                         new XElement("files", filesL)
                     );
 
@@ -230,10 +232,7 @@
 
         <PropertyGroup Condition=" '$(OutputNuget)' == '' ">
             <OutputNuget>$([System.IO.Path]::GetPathRoot($(MSBuildProjectDirectory)))localNuget</OutputNuget>
-            <NuspecFile>$(BaseIntermediateOutputPath)$(AssemblyName).nuspec</NuspecFile>
         </PropertyGroup>
-
-
 
         <Message Text="Генерация nupkg с помощью dotnet paсk для получения корректных зависимостей в nuspec" Importance="High"/>
 
@@ -251,10 +250,10 @@
             id = "$(AssemblyName)"
             version = "$(PackageVersion)"
             authors = "$(Authors)"
-            owners = "$(Authors)"
-            projectUrl = "$(RepositoryUrl)"
-            repositoryType = "git"
-            repository = "$(RepositoryUrl)"
+            owners = "$(Owners)"
+            projectUrl = "$(ProjectUrl)"
+            repositoryType = "$(RepositoryType)"
+            repositoryUrl = "$(RepositoryUrl)"
             iconFile = "$(PaketIcon)"
             description = "$(Description)"
             copyright = "$(Copyright)"

@@ -1,0 +1,3 @@
+<Project>
+    <Import Condition="'$(Configuration)'=='Release' AND '$(SolutionDir)' != '' " Project="$(SolutionDir)PakingNuget.targets" />
+</Project>

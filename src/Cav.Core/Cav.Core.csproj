@@ -41,7 +41,5 @@
         <Description>A set of utilities that facilitate routine operations</Description>
         <PackageTags>сav utils</PackageTags>
     </PropertyGroup>
-
-    <Import Condition="'$(Configuration)'=='Release' AND '$(SolutionDir)' != '' " Project="$(SolutionDir)PakingNuget.targets" />
-
+	
 </Project>

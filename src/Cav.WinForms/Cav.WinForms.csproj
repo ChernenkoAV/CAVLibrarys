@@ -51,6 +51,4 @@
         <PackageTags>Cav winforms dialogs</PackageTags>
     </PropertyGroup>
 
-    <Import Condition="'$(Configuration)'=='Release' AND '$(SolutionDir)' != '' " Project="$(SolutionDir)PakingNuget.targets" />
-
 </Project>

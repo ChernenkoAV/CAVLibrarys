@@ -48,6 +48,4 @@
         <PackageTags>cav tfs tfs2013 tfs2015 tfs2017 tfs2019 wrap</PackageTags>
     </PropertyGroup>
 
-    <Import Condition="'$(Configuration)'=='Release' AND '$(SolutionDir)' != '' " Project="$(SolutionDir)PakingNuget.targets" />
-
 </Project>

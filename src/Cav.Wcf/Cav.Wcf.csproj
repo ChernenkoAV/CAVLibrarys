@@ -51,7 +51,5 @@
         <Description>A set of utilities for using Wcf</Description>
         <PackageTags>Cav utils soap смев smev</PackageTags>
     </PropertyGroup>
-
-    <Import Condition="'$(Configuration)'=='Release' AND '$(SolutionDir)' != '' " Project="$(SolutionDir)PakingNuget.targets" />
-
+	
 </Project>

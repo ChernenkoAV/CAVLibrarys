@@ -1,0 +1,14 @@
+<Project>
+
+    <PropertyGroup>
+        <PaketIcon>$(SolutionDir)Cav.png</PaketIcon>
+        <Authors>ChernenkoAV</Authors>
+        <Owners>ChernenkoAV</Owners>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/ChernenkoAV/CavLibrarys</RepositoryUrl>
+        <ProjectUrl>$(RepositoryUrl)</ProjectUrl>
+        <OutputNuget></OutputNuget>
+    </PropertyGroup>
+
+    <Import Condition="'$(Configuration)'=='Release' AND '$(SolutionDir)' != '' and '$(SolutionDir)' !=  '*Undefined*' " Project="$(SolutionDir)PakingNuget.targets" />
+</Project>

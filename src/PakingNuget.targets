@@ -1,0 +1,269 @@
+<Project>
+
+    <!--
+Если файл переименовать в Directory.Build.targets
+то он юудет подхватываться автоматически.
+Но надо тогда везде прописать Condition="'$(Configuration)'=='Release'"
+Что б только при релизе отрабатывало.
+-->
+
+    <PropertyGroup>
+        <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
+        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+        <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+        <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <WarningLevel>5</WarningLevel>
+        <WarningsAsErrors />
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <Deterministic>false</Deterministic>
+        <Optimize>true</Optimize>
+        <DebugType>pdbonly</DebugType>
+        <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+
+        <Copyright>Copyright $([System.DateTime]::Now.Year)©</Copyright>
+
+        <VersionFile>$(BaseIntermediateOutputPath)$(AssemblyName).$(PackageVersion).cs</VersionFile>
+        <NuspecFile>$(BaseIntermediateOutputPath)$(AssemblyName).nuspec</NuspecFile>
+    </PropertyGroup>
+
+    <!--Для выполнения таргетов один раз-->
+    <PropertyGroup>
+        <IsMultiTarget>true</IsMultiTarget>
+        <IsMultiTarget Condition="'$(TargetFrameworks)' == ''">false</IsMultiTarget>
+
+        <IsSingleTarget>true</IsSingleTarget>
+        <IsSingleTarget Condition="'$(TargetFramework)' == ''">false</IsSingleTarget>
+
+        <ShouldBeforeTargets>BeforeBuild</ShouldBeforeTargets>
+        <ShouldBeforeTargets Condition="$(IsMultiTarget)">DispatchToInnerBuilds</ShouldBeforeTargets>
+
+        <ShouldAfterTargets>AfterBuild</ShouldAfterTargets>
+        <ShouldAfterTargets Condition="$(IsMultiTarget)">DispatchToInnerBuilds</ShouldAfterTargets>
+
+        <ShouldRunTarget>false</ShouldRunTarget>
+        <ShouldRunTarget Condition="(!'$(IsMultiTarget)' and '$(IsSingleTarget)') or ('$(IsMultiTarget)' and !'$(IsSingleTarget)')">true</ShouldRunTarget>
+    </PropertyGroup>
+
+    <UsingTask TaskName="CombingNuspec"
+         TaskFactory="CodeTaskFactory"
+         AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" >
+        <ParameterGroup>
+            <SourceNuspecFile ParameterType="System.String" Required="true"/>
+            <TargetNuspecFile ParameterType="System.String" Required="true"/>
+
+            <id ParameterType="System.String" Required="true"/>
+            <version ParameterType="System.String" Required="true"/>
+            <authors ParameterType="System.String" Required="true"/>
+            <owners ParameterType="System.String" Required="true"/>
+            <projectUrl ParameterType="System.String" />
+            <repositoryType ParameterType="System.String" Required="true"/>
+            <repositoryUrl ParameterType="System.String" />
+            <iconFile ParameterType="System.String" Required="true"/>
+            <description ParameterType="System.String" Required="true"/>
+            <copyright ParameterType="System.String" Required="true"/>
+            <tags ParameterType="System.String" Required="true"/>
+            <sourseFiles ParameterType="System.String" Required="true"/>
+            <targetPath ParameterType="System.String" Required="true"/>
+
+        </ParameterGroup>
+        <Task>
+            <Reference Include="System.Xml"/>
+            <Reference Include="System.Xml.Linq"/>
+
+            <Using Namespace="System.IO"/>
+            <Using Namespace="System.Xml.Linq"/>
+            <Using Namespace="System.Linq"/>
+            <Using Namespace="System.Collections.Generic"/>
+            <Code Type="Fragment" Language="cs">
+                <![CDATA[
+
+                //Log.LogMessage(MessageImportance.High, iconFile);
+
+                if (!File.Exists(SourceNuspecFile))
+                {
+                    Log.LogError("Не найден файл шаблонного nuspec");
+                    return false;
+                }
+
+                if (string.IsNullOrWhiteSpace(iconFile))
+                {
+                    Log.LogError("Не указан файл иконки");
+                    return false;
+                }
+
+                if (string.IsNullOrWhiteSpace(sourseFiles))
+                {
+                    Log.LogError("Не указан источник файлов");
+                    return false;
+                }
+
+                if (string.IsNullOrWhiteSpace(targetPath))
+                {
+                    Log.LogError("Не указана целевая папка пакета");
+                    return false;
+                }
+
+                if (!File.Exists(iconFile))
+                {
+                    Log.LogError("Отсутвует файл иконки");
+                    return false;
+                }
+
+                var snuspec = XElement.Load(SourceNuspecFile);
+                snuspec.DescendantsAndSelf().ToList().ForEach(el =>
+                    {
+                        el.Name = XNamespace.None.GetName(el.Name.LocalName);
+                        el.Attributes().Where(x => x.IsNamespaceDeclaration).ToList().ForEach(x => x.Remove());
+                    });
+
+                var depensies = snuspec.Descendants("dependencies").Single();
+
+                var filesL = new List<XElement>();
+
+                var iconFileName = Path.GetFileName(iconFile);
+
+                filesL.Add(new XElement("file", new XAttribute("src", iconFile), new XAttribute("target", iconFileName)));
+                filesL.Add(new XElement("file", new XAttribute("src", sourseFiles), new XAttribute("target", targetPath), new XAttribute("exclude", @"**\*.json")));
+
+                var metadata = 
+                    new XElement("metadata",
+                        depensies,
+                        new XElement("id", id),
+                        new XElement("version", version),
+                        new XElement("title", id),
+                        new XElement("authors", authors),
+                        new XElement("owners", owners),
+                        new XElement("license", new XAttribute("type", "expression"), "MIT"),
+                        new XElement("repository", new XAttribute("type", repositoryType), repositoryUrl),
+                        new XElement("icon", iconFileName),
+                        new XElement("requireLicenseAcceptance", "false"),
+                        new XElement("description", description),
+                        new XElement("copyright", copyright),
+                        new XElement("tags", tags)
+                    );
+
+                if (!string.IsNullOrWhiteSpace(projectUrl))
+                    metadata.Add(new XElement("projectUrl", projectUrl));
+
+                var targetNuspec = new XElement("package",
+                        metadata,
+                        new XElement("files", filesL)
+                    );
+
+                if (File.Exists(TargetNuspecFile))
+                    File.Delete(TargetNuspecFile);
+
+                targetNuspec.Save(TargetNuspecFile);
+
+                
+                return true;
+
+                ]]>
+            </Code>
+        </Task>
+    </UsingTask>
+
+    <Target Name="SetVersion" Condition="$(ShouldRunTarget)" BeforeTargets="$(ShouldBeforeTargets)">
+
+        <Error Condition="'$(PackageVersion)' == ''" Text="Необходимо заполнить свойство PackageVersion!" />
+
+        <PropertyGroup Condition=" '$(PackageVersion.Split(`.`)[0])' == '0' ">
+            <VerAssembly>0.1.0.0</VerAssembly>
+        </PropertyGroup>
+
+        <PropertyGroup Condition=" '$(PackageVersion.Split(`.`)[0])' != '0' ">
+            <VerAssembly>$(PackageVersion.Split(`.`, StringSplitOptions.None)[0]).0.0.0</VerAssembly>
+        </PropertyGroup>
+
+        <PropertyGroup>
+            <VerFile>$(VerAssembly.Split(`.`)[0])$([System.DateTime]::Now.Tostring(".yyyy.MM.dd"))</VerFile>
+        </PropertyGroup>
+
+        <ItemGroup>
+            <AssemblyAttributes Include="AssemblyTitle">
+                <_Parameter1>$(AssemblyName)</_Parameter1>
+            </AssemblyAttributes>
+            <AssemblyAttributes Include="AssemblyVersion">
+                <_Parameter1>$(VerAssembly)</_Parameter1>
+            </AssemblyAttributes>
+            <AssemblyAttributes Include="AssemblyFileVersion">
+                <_Parameter1>$(VerFile)</_Parameter1>
+            </AssemblyAttributes>
+            <AssemblyAttributes Include="AssemblyInformationalVersion">
+                <_Parameter1>$(PackageVersion)</_Parameter1>
+            </AssemblyAttributes>
+            <AssemblyAttributes Include="AssemblyDescription">
+                <_Parameter1>$(Description)</_Parameter1>
+            </AssemblyAttributes>
+            <AssemblyAttributes Include="AssemblyCopyright">
+                <_Parameter1>Copyright $([System.DateTime]::Now.ToString("yyyy"))©</_Parameter1>
+            </AssemblyAttributes>
+            <AssemblyAttributes Include="AssemblyProduct">
+                <_Parameter1>$(AssemblyName) $(PackageVersion)</_Parameter1>
+            </AssemblyAttributes>
+            <!--
+            <AssemblyAttributes Include="AssemblyCompany">
+                <_Parameter1>$()</_Parameter1>
+            </AssemblyAttributes>
+            -->
+        </ItemGroup>
+
+        <MakeDir Directories="$(BaseIntermediateOutputPath)"/>
+        <WriteCodeFragment Language="C#"
+                           OutputFile="$(VersionFile)"
+                           AssemblyAttributes="@(AssemblyAttributes)"/>
+
+        <Message Text="----- Сборка $(AssemblyName): версия пакета $(PackageVersion) версия сборки $(VerAssembly) версия файла $(VerFile)" Importance="High"/>
+
+        <ItemGroup>
+            <Compile Include="$(VersionFile)"/>
+        </ItemGroup>
+
+    </Target>
+
+    <ItemGroup Condition="!'$(ShouldRunTarget)'">
+        <Compile Include="$(VersionFile)"/>
+    </ItemGroup>
+
+    <Target Name="PackNuget" Condition="$(ShouldRunTarget)" AfterTargets="$(ShouldAfterTargets)">
+
+        <PropertyGroup Condition=" '$(OutputNuget)' == '' ">
+            <OutputNuget>$([System.IO.Path]::GetPathRoot($(MSBuildProjectDirectory)))localNuget</OutputNuget>
+        </PropertyGroup>
+
+        <Message Text="Генерация nupkg с помощью dotnet paсk для получения корректных зависимостей в nuspec" Importance="High"/>
+
+        <Exec Command="dotnet pack --no-build -c $(Configuration) --force --nologo -o &quot;$(BaseIntermediateOutputPath)&quot;" />
+
+        <Unzip
+            SourceFiles="$(BaseIntermediateOutputPath)$(AssemblyName).$(PackageVersion).nupkg"
+            DestinationFolder="$(BaseIntermediateOutputPath)uanp"/>
+
+        <Message Text="Заполнение файла $(AssemblyName).nuspec" Importance="High"/>
+        <CombingNuspec
+            SourceNuspecFile ="$(BaseIntermediateOutputPath)uanp\$(AssemblyName).nuspec"
+            TargetNuspecFile = "$(NuspecFile)"
+
+            id = "$(AssemblyName)"
+            version = "$(PackageVersion)"
+            authors = "$(Authors)"
+            owners = "$(Owners)"
+            projectUrl = "$(ProjectUrl)"
+            repositoryType = "$(RepositoryType)"
+            repositoryUrl = "$(RepositoryUrl)"
+            iconFile = "$(PaketIcon)"
+            description = "$(Description)"
+            copyright = "$(Copyright)"
+            tags = "$(PackageTags)"
+            sourseFiles = "$(MSBuildProjectDirectory)\$(BaseOutputPath)$(Configuration)\**\$(AssemblyName).*"
+            targetPath = "lib"/>
+
+        <Message Text="-Запуск пакетирования" Importance="High"/>
+
+        <Exec Command="dotnet pack --no-build -c $(Configuration) --force --nologo -o &quot;$(OutputNuget)&quot; /p:NuspecFile=&quot;$(NuspecFile)&quot; " />
+
+    </Target>
+</Project>

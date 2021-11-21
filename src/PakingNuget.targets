@@ -1,16 +1,8 @@
 <Project>
 
-    <!--
-Если файл переименовать в Directory.Build.targets
-то он юудет подхватываться автоматически.
-Но надо тогда везде прописать Condition="'$(Configuration)'=='Release'"
-Что б только при релизе отрабатывало.
--->
-
     <PropertyGroup>
         <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
         <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-        <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
         <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -20,13 +12,18 @@
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <Deterministic>false</Deterministic>
         <Optimize>true</Optimize>
-        <DebugType>pdbonly</DebugType>
+        <DebugType>full</DebugType>
         <AnalysisMode>AllEnabledByDefault</AnalysisMode>
 
         <Copyright>Copyright $([System.DateTime]::Now.Year)©</Copyright>
 
         <VersionFile>$(BaseIntermediateOutputPath)$(AssemblyName).$(PackageVersion).cs</VersionFile>
         <NuspecFile>$(BaseIntermediateOutputPath)$(AssemblyName).nuspec</NuspecFile>
+		
+		<!--
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		-->
     </PropertyGroup>
 
     <!--Для выполнения таргетов один раз-->
@@ -65,8 +62,6 @@
             <description ParameterType="System.String" Required="true"/>
             <copyright ParameterType="System.String" Required="true"/>
             <tags ParameterType="System.String" Required="true"/>
-            <sourseFiles ParameterType="System.String" Required="true"/>
-            <targetPath ParameterType="System.String" Required="true"/>
 
         </ParameterGroup>
         <Task>
@@ -94,18 +89,6 @@
                     return false;
                 }
 
-                if (string.IsNullOrWhiteSpace(sourseFiles))
-                {
-                    Log.LogError("Не указан источник файлов");
-                    return false;
-                }
-
-                if (string.IsNullOrWhiteSpace(targetPath))
-                {
-                    Log.LogError("Не указана целевая папка пакета");
-                    return false;
-                }
-
                 if (!File.Exists(iconFile))
                 {
                     Log.LogError("Отсутвует файл иконки");
@@ -121,12 +104,23 @@
 
                 var depensies = snuspec.Descendants("dependencies").Single();
 
-                var filesL = new List<XElement>();
+                var files = snuspec.Descendants("files").Single();
+				
+				files.DescendantNodes()
+					.Where(x => x is XElement)
+					.Select(x => x as XElement)
+					.Where(x => x.Attribute("src").Value.EndsWith("dll"))
+					.Select(x =>
+						new XElement(x.Name,
+						new XAttribute("src", new String(x.Attribute("src").Value.Reverse().Skip(3).Reverse().ToArray()) + "pdb"),
+						new XAttribute("target", new String(x.Attribute("target").Value.Reverse().Skip(3).Reverse().ToArray()) + "pdb")
+						))
+					.ToList()
+					.ForEach(x=> files.Add(x) );
 
                 var iconFileName = Path.GetFileName(iconFile);
 
-                filesL.Add(new XElement("file", new XAttribute("src", iconFile), new XAttribute("target", iconFileName)));
-                filesL.Add(new XElement("file", new XAttribute("src", sourseFiles), new XAttribute("target", targetPath), new XAttribute("exclude", @"**\*.json")));
+                files.Add(new XElement("file", new XAttribute("src", iconFile), new XAttribute("target", iconFileName)));                
 
                 var metadata = 
                     new XElement("metadata",
@@ -148,10 +142,7 @@
                 if (!string.IsNullOrWhiteSpace(projectUrl))
                     metadata.Add(new XElement("projectUrl", projectUrl));
 
-                var targetNuspec = new XElement("package",
-                        metadata,
-                        new XElement("files", filesL)
-                    );
+                var targetNuspec = new XElement("package", metadata, files);
 
                 if (File.Exists(TargetNuspecFile))
                     File.Delete(TargetNuspecFile);
@@ -234,17 +225,13 @@
             <OutputNuget>$([System.IO.Path]::GetPathRoot($(MSBuildProjectDirectory)))localNuget</OutputNuget>
         </PropertyGroup>
 
-        <Message Text="Генерация nupkg с помощью dotnet paсk для получения корректных зависимостей в nuspec" Importance="High"/>
+        <Message Text="----- Генерация $(AssemblyName).nupkg с помощью dotnet paсk для получения корректных зависимостей в nuspec" Importance="High"/>
+		
+		<Exec Command="dotnet pack --no-build -c $(Configuration) --force --nologo -o &quot;$(BaseIntermediateOutputPath)&quot;" />
 
-        <Exec Command="dotnet pack --no-build -c $(Configuration) --force --nologo -o &quot;$(BaseIntermediateOutputPath)&quot;" />
-
-        <Unzip
-            SourceFiles="$(BaseIntermediateOutputPath)$(AssemblyName).$(PackageVersion).nupkg"
-            DestinationFolder="$(BaseIntermediateOutputPath)uanp"/>
-
-        <Message Text="Заполнение файла $(AssemblyName).nuspec" Importance="High"/>
+        <Message Text="----- Заполнение файла $(AssemblyName).nuspec" Importance="High"/>
         <CombingNuspec
-            SourceNuspecFile ="$(BaseIntermediateOutputPath)uanp\$(AssemblyName).nuspec"
+            SourceNuspecFile ="$(BaseIntermediateOutputPath)$(Configuration)\$(AssemblyName).$(PackageVersion).nuspec"
             TargetNuspecFile = "$(NuspecFile)"
 
             id = "$(AssemblyName)"
@@ -257,13 +244,11 @@
             iconFile = "$(PaketIcon)"
             description = "$(Description)"
             copyright = "$(Copyright)"
-            tags = "$(PackageTags)"
-            sourseFiles = "$(MSBuildProjectDirectory)\$(BaseOutputPath)$(Configuration)\**\$(AssemblyName).*"
-            targetPath = "lib"/>
+            tags = "$(PackageTags)"/>
 
-        <Message Text="-Запуск пакетирования" Importance="High"/>
+        <Message Text="----- Запуск пакетирования" Importance="High"/>
 
-        <Exec Command="dotnet pack --no-build -c $(Configuration) --force --nologo -o &quot;$(OutputNuget)&quot; /p:NuspecFile=&quot;$(NuspecFile)&quot; " />
+        <Exec Command="dotnet pack --no-build -c $(Configuration) --force --nologo -o &quot;$(OutputNuget)&quot; /p:NuspecFile=&quot;$(NuspecFile)&quot; -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg" />
 
     </Target>
 </Project>

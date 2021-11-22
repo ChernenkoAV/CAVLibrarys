@@ -12,18 +12,19 @@
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <Deterministic>false</Deterministic>
         <Optimize>true</Optimize>
-        <DebugType>full</DebugType>
+        <DebugType>portable</DebugType>
         <AnalysisMode>AllEnabledByDefault</AnalysisMode>
 
         <Copyright>Copyright $([System.DateTime]::Now.Year)©</Copyright>
 
         <VersionFile>$(BaseIntermediateOutputPath)$(AssemblyName).$(PackageVersion).cs</VersionFile>
         <NuspecFile>$(BaseIntermediateOutputPath)$(AssemblyName).nuspec</NuspecFile>
-		
-		<!--
-		<IncludeSymbols>true</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-		-->
+        
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <!--
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        -->
     </PropertyGroup>
 
     <!--Для выполнения таргетов один раз-->
@@ -105,18 +106,18 @@
                 var depensies = snuspec.Descendants("dependencies").Single();
 
                 var files = snuspec.Descendants("files").Single();
-				
-				files.DescendantNodes()
-					.Where(x => x is XElement)
-					.Select(x => x as XElement)
-					.Where(x => x.Attribute("src").Value.EndsWith("dll"))
-					.Select(x =>
-						new XElement(x.Name,
-						new XAttribute("src", new String(x.Attribute("src").Value.Reverse().Skip(3).Reverse().ToArray()) + "pdb"),
-						new XAttribute("target", new String(x.Attribute("target").Value.Reverse().Skip(3).Reverse().ToArray()) + "pdb")
-						))
-					.ToList()
-					.ForEach(x=> files.Add(x) );
+                
+                files.DescendantNodes()
+                    .Where(x => x is XElement)
+                    .Select(x => x as XElement)
+                    .Where(x => x.Attribute("src").Value.EndsWith("dll"))
+                    .Select(x =>
+                        new XElement(x.Name,
+                        new XAttribute("src", new String(x.Attribute("src").Value.Reverse().Skip(3).Reverse().ToArray()) + "pdb"),
+                        new XAttribute("target", new String(x.Attribute("target").Value.Reverse().Skip(3).Reverse().ToArray()) + "pdb")
+                        ))
+                    .ToList()
+                    .ForEach(x=> files.Add(x) );
 
                 var iconFileName = Path.GetFileName(iconFile);
 
@@ -226,8 +227,8 @@
         </PropertyGroup>
 
         <Message Text="----- Генерация $(AssemblyName).nupkg с помощью dotnet paсk для получения корректных зависимостей в nuspec" Importance="High"/>
-		
-		<Exec Command="dotnet pack --no-build -c $(Configuration) --force --nologo -o &quot;$(BaseIntermediateOutputPath)&quot;" />
+        
+        <Exec Command="dotnet pack --no-build -c $(Configuration) --force --nologo -o &quot;$(BaseIntermediateOutputPath)&quot;" />
 
         <Message Text="----- Заполнение файла $(AssemblyName).nuspec" Importance="High"/>
         <CombingNuspec

@@ -1,5 +1,9 @@
 <Project>
 
+    <ItemGroup>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
+    </ItemGroup>
+
     <PropertyGroup>
         <PaketIcon>$(SolutionDir)Cav.png</PaketIcon>
         <Authors>ChernenkoAV</Authors>

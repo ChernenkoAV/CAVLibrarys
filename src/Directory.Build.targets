@@ -5,14 +5,19 @@
     </ItemGroup>
 
     <PropertyGroup>
-        <PaketIcon>$(SolutionDir)Cav.png</PaketIcon>
+        <PackageIcon>Cav.png</PackageIcon>
         <Authors>ChernenkoAV</Authors>
         <Owners>ChernenkoAV</Owners>
         <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/ChernenkoAV/CavLibrarys</RepositoryUrl>
-        <ProjectUrl>$(RepositoryUrl)</ProjectUrl>
+        <PackageProjectUrl >https://github.com/ChernenkoAV/CavLibrarys</PackageProjectUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <OutputNuget></OutputNuget>
     </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="..\Cav.png" Pack="true" PackagePath="\"/>
+    </ItemGroup>
 
     <Import Condition="'$(Configuration)'=='Release' AND '$(SolutionDir)' != '' and '$(SolutionDir)' !=  '*Undefined*' " Project="$(SolutionDir)PakingNuget.targets" />
 </Project>

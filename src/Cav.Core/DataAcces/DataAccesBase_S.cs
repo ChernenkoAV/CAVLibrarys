@@ -202,7 +202,7 @@ namespace Cav.DataAcces
             }
 
             var p_rowObg = property.Parameters.First();
-            var p_dbRow = Expression.Parameter(typeof(DbDataReader));
+            var p_dbRow = Expression.Parameter(typeof(DataRow));
 
             Delegate expConv = null;
 

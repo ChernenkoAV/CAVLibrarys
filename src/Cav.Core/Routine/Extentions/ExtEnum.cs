@@ -18,8 +18,11 @@ namespace Cav
         /// </summary>
         /// <param name="value">Значение злемента перечесления</param>
         /// <returns>Содержимое <see cref="DescriptionAttribute"/>, либо, если атрибут отсутствует - ToString() элемента</returns>
-        public static string GetEnumDescription<T>(this T value) where T : Enum
+        public static string GetEnumDescription(this Enum value)
         {
+            if (value is null)
+                return null;
+
             var fi = value.GetType().GetField(value.ToString());
 
             var attributes = fi.GetCustomAttributes<DescriptionAttribute>();

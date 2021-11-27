@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using System.ServiceModel;
 
 namespace Cav
 {
@@ -35,6 +36,23 @@ namespace Cav
 
             if (!ex.StackTrace.IsNullOrWhiteSpace())
                 res += $"StackTrace->{ex.StackTrace}{Environment.NewLine}";
+
+            if (ex is FaultException commEx &&
+                commEx.GetPropertyValueNestedObject("Detail") is ExceptionDetail exdetail)
+            {
+                res += Environment.NewLine.PadLeft(5, '*');
+
+                while (exdetail != null)
+                {
+                    res += $"Detail Type: {exdetail.Type}{Environment.NewLine}";
+                    res += $"Detail Message: {exdetail.Message}{Environment.NewLine}";
+                    if (!exdetail.StackTrace.IsNullOrWhiteSpace())
+                        res += $"Detail StackTrace->{Environment.NewLine}{exdetail.StackTrace}{Environment.NewLine}";
+                    if (exdetail.InnerException != null)
+                        res += $"***{Environment.NewLine}Detail InnerException->{Environment.NewLine}";
+                    exdetail = exdetail.InnerException;
+                }
+            }
 
             if (ex is ReflectionTypeLoadException reflectEx && reflectEx.LoaderExceptions != null)
             {

@@ -3,7 +3,7 @@
     <PropertyGroup>
         <Configuration Condition=" '$(Configuration)' == '' ">Dev</Configuration>
         <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-        <TargetFramework>net4.8</TargetFramework>
+        <TargetFramework>net4.6.1</TargetFramework>
         <SignAssembly>true</SignAssembly>
         <DelaySign>false</DelaySign>
         <AssemblyOriginatorKeyFile>..\cav.snk</AssemblyOriginatorKeyFile>
@@ -35,7 +35,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Cav.Core" Version="7.3.4" />
+        <PackageReference Include="Cav.Core" Version="8.0.1" />
     </ItemGroup>
 
     <ItemGroup>
@@ -47,9 +47,9 @@
     </ItemGroup>
 
     <PropertyGroup>
-        <PackageVersion>1.0.1</PackageVersion>
+        <PackageVersion>2.0.0</PackageVersion>
         <Description>A set of utilities for using Wcf</Description>
         <PackageTags>Cav utils soap смев smev</PackageTags>
     </PropertyGroup>
-	
+    
 </Project>

@@ -3,7 +3,7 @@
     <PropertyGroup>
         <Configuration Condition=" '$(Configuration)' == '' ">Dev</Configuration>
         <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-        <TargetFrameworks>net4.8;net5.0</TargetFrameworks>
+        <TargetFrameworks>net4.6.1;net5.0</TargetFrameworks>
         <SignAssembly>true</SignAssembly>
         <DelaySign>false</DelaySign>
         <AssemblyOriginatorKeyFile>..\cav.snk</AssemblyOriginatorKeyFile>
@@ -33,13 +33,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Newtonsoft.Json" Version="13.*" />        
+        <PackageReference Include="Newtonsoft.Json" Version="13.*" />
+        <PackageReference Include="System.ServiceModel.Primitives" Version="4.*" />
+        
     </ItemGroup>
 
     <PropertyGroup>
-        <PackageVersion>8.0.0</PackageVersion>
+        <PackageVersion>8.0.1</PackageVersion>
         <Description>A set of utilities that facilitate routine operations</Description>
         <PackageTags>сav utils</PackageTags>
     </PropertyGroup>
-	
+
 </Project>

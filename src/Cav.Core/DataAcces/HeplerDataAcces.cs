@@ -70,7 +70,7 @@ namespace Cav
 
         internal static object FromField(Type returnType, DataRow dbRow, String fieldName, Delegate conv)
         {
-            if (dbRow.Table.Columns.Contains(fieldName))
+            if (!dbRow.Table.Columns.Contains(fieldName))
                 return returnType.GetDefault();
 
             var val = dbRow[fieldName];

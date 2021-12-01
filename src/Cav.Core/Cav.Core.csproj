@@ -36,16 +36,8 @@
         <PackageReference Include="Newtonsoft.Json" Version="13.*" />
     </ItemGroup>
 
-    <ItemGroup Condition="'$(TargetFramework)' == 'net4.6.1'">
-        <Reference Include="System.ServiceModel" />
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
-        <PackageReference Include="System.ServiceModel.Primitives" Version="4.*" />
-    </ItemGroup>
-
     <PropertyGroup>
-        <PackageVersion>8.0.2</PackageVersion>
+        <PackageVersion>8.0.2.1</PackageVersion>
         <Description>A set of utilities that facilitate routine operations</Description>
         <PackageTags>сav utils</PackageTags>
     </PropertyGroup>

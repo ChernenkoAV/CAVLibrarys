@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using System.ServiceModel;
 
 namespace Cav
 {
@@ -37,20 +36,22 @@ namespace Cav
             if (!ex.StackTrace.IsNullOrWhiteSpace())
                 res += $"StackTrace->{ex.StackTrace}{Environment.NewLine}";
 
-            if (ex is FaultException commEx &&
-                commEx.GetPropertyValueNestedObject("Detail") is ExceptionDetail exdetail)
+            if (ex.GetType().BaseType.Name == "FaultException" &&
+                ex.GetPropertyValueNestedObject("Detail")?.GetType().Name == "ExceptionDetail")
             {
                 res += Environment.NewLine.PadLeft(5, '*');
 
+                var exdetail = ex.GetPropertyValueNestedObject("Detail");
+
                 while (exdetail != null)
                 {
-                    res += $"Detail Type: {exdetail.Type}{Environment.NewLine}";
-                    res += $"Detail Message: {exdetail.Message}{Environment.NewLine}";
-                    if (!exdetail.StackTrace.IsNullOrWhiteSpace())
-                        res += $"Detail StackTrace->{Environment.NewLine}{exdetail.StackTrace}{Environment.NewLine}";
-                    if (exdetail.InnerException != null)
+                    res += $"Detail Type: {exdetail.GetPropertyValueNestedObject("Type")}{Environment.NewLine}";
+                    res += $"Detail Message: {exdetail.GetPropertyValueNestedObject("Message")}{Environment.NewLine}";
+                    if (!(exdetail.GetPropertyValueNestedObject("StackTrace") as string).IsNullOrWhiteSpace())
+                        res += $"Detail StackTrace->{Environment.NewLine}{exdetail.GetPropertyValueNestedObject("StackTrace")}{Environment.NewLine}";
+                    if (exdetail.GetPropertyValueNestedObject("InnerException") != null)
                         res += $"***{Environment.NewLine}Detail InnerException->{Environment.NewLine}";
-                    exdetail = exdetail.InnerException;
+                    exdetail = exdetail.GetPropertyValueNestedObject("InnerException");
                 }
             }
 

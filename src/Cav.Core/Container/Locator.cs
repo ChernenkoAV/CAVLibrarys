@@ -157,10 +157,12 @@ namespace Cav.Container
 
             pathDependency.Value.Push(typeInstance.FullName);
         }
+
         /// <summary>
-        /// Получить экземпляры объектов типа - наследника указанного
+        /// Получить экземпляры объектов типа - наследника указанного. 
+        /// Если наследники не найдены и родитель имеет открытый конструктор, то создается экземпляр родителя.
         /// </summary>
-        /// <param name="typeParent">Тип-родитель</param>
+        /// <param name="typeParent">Тип-родитель(класс или интерфейс)</param>
         /// <returns>Массив экземпляров</returns>
         public static Array GetInstances(Type typeParent)
         {
@@ -182,11 +184,11 @@ namespace Cav.Container
                 .Where(predicat)
                 .ToList();
 
-            if (typeForCreate.Count == 0 && typeParent.IsClass && !typeParent.IsAbstract)
+            if (typeForCreate.Count == 0 &&
+                typeParent.IsClass &&
+                !typeParent.IsAbstract &&
+                typeParent.GetConstructor(Array.Empty<Type>()) != null)
                 typeForCreate.Add(typeParent);
-
-            if (typeForCreate.Count == 0)
-                throw new ArgumentException($"Из типа {typeParent.FullName} нельзя получить экземпляр объекта");
 
             var res = Array.CreateInstance(typeParent, typeForCreate.Count);
 
@@ -206,7 +208,7 @@ namespace Cav.Container
         /// </summary>
         /// <typeparam name="T">Тип-родитель</typeparam>
         /// <returns>Массив объектов типов-наследников</returns>
-        public static T[] GetInstances<T>() => GetInstances(typeof(T)).OfType<T>().ToArray();
+        public static T[] GetInstances<T>() => GetInstances(typeof(T)).Cast<T>().ToArray();
 
         /// <summary>
         /// Хелпер для локатора

@@ -9,14 +9,19 @@ using Newtonsoft.Json.Serialization;
 namespace Cav.Json
 {
     /// <summary>
-    /// Конвертирование <see cref="DateTime"/> по фомату "yyyy-MM-dd"
+    /// Конвертирование <see cref="DateTime"/> по фомату. По умолчанию "yyyy-MM-dd". Для указания своего формата используйте параметризированный конструктор
     /// </summary>
     public class DateConverter : IsoDateTimeConverter
     {
         /// <summary>
         /// 
         /// </summary>
-        public DateConverter() => DateTimeFormat = "yyyy-MM-dd";
+        public DateConverter() : this("yyyy-MM-dd") { }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public DateConverter(string dateTimeFormat) => DateTimeFormat = dateTimeFormat;
     }
 
     internal class FlagEnumStringConverter : StringEnumConverter

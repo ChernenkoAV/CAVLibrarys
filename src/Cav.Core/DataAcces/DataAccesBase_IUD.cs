@@ -32,9 +32,7 @@ namespace Cav.DataAcces
             var execCom = AddParamToCommand(CommandActionType.Insert, insertExpression, newObj);
             if (insertPropKeyFieldMap.Any())
             {
-#pragma warning disable CS0618 // Тип или член устарел
                 using (var resExec = FillTable(execCom))
-#pragma warning restore CS0618 // Тип или член устарел
                     foreach (DataRow dbrow in resExec.Rows)
                         foreach (var ff in insertPropKeyFieldMap)
                             ff.Value(newObj, dbrow);

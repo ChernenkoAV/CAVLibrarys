@@ -78,7 +78,11 @@ namespace Cav
         /// <param name="xmlNamespace"></param>
         /// <returns></returns>
         public static Expression XNamespace(this string xmlNamespace) =>
-            Expression.Convert(Expression.Constant(xmlNamespace), typeof(XNamespace));
+            xmlNamespace == null
+#pragma warning disable IDE0004 // Удалить ненужное приведение (для net 5 ругается так, для net 4.6.1 - этак)
+            ? (Expression)Expression.Constant(System.Xml.Linq.XNamespace.None)
+            : (Expression)Expression.Convert(Expression.Constant(xmlNamespace), typeof(XNamespace));
+#pragma warning restore IDE0004 // Удалить ненужное приведение
 
         /// <summary>
         /// Получение выражения пребразования строк в <see cref="System.Xml.Linq.XName"/> 

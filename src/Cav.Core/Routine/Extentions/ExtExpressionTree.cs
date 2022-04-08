@@ -13,26 +13,20 @@ namespace Cav
     /// </summary>
     public static class ExtExpressionTree
     {
+
+        #region Потом удалить
+
         /// <summary>
-        /// Добавление <see cref="XElement"/> с контентом в указанный <see cref="XElement"/>>
+        /// Добавление <see cref="XElement"/> с контентом в указанный <see cref="XElement"/>
         /// </summary>
         /// <param name="instanseXElement">экземляр <see cref="XElement"/>, в который буде производиться добавление дочерненго элемента</param>
         /// <param name="newElementName">имя нового элемента</param>
         /// <param name="xmlNamespace">пространство имен нового элемента</param>
-        /// <param name="contentValue">контент тового элемента</param>
+        /// <param name="contentValue">контент нового элемента</param>
         /// <returns></returns>
-        public static Expression XElement_AddContentValue(this Expression instanseXElement, string newElementName, string xmlNamespace, Expression contentValue)
-        {
-            var ns = xmlNamespace.GetNullIfIsNullOrWhiteSpace() ?? XNamespace.None;
-
-            return Expression.Call(
-                        instanseXElement,
-                        typeof(XElement).GetMethod(nameof(XElement.Add), new[] { typeof(object) }),
-                        Expression.New(
-                            typeof(XElement).GetConstructor(new[] { typeof(XName), typeof(object) }),
-                            Expression.Convert(Expression.Add(Expression.Constant(ns), Expression.Constant(newElementName)), typeof(XName)),
-                            Expression.Convert(contentValue, typeof(object))));
-        }
+        [Obsolete("Будет удалено. Используйте XElementAddContentValue")]
+        public static Expression XElement_AddContentValue(this Expression instanseXElement, string newElementName, string xmlNamespace, Expression contentValue) =>
+            instanseXElement.XElementAddContentValue(newElementName, xmlNamespace, contentValue);
 
         /// <summary>
         /// Добавление контента в существующий экземпляр <see cref="XElement"/>
@@ -40,7 +34,85 @@ namespace Cav
         /// <param name="instanseXElement">экземляр <see cref="XElement"/>, в который буде производиться добавление контента</param>
         /// <param name="contentValue">контент</param>
         /// <returns></returns>
+        [Obsolete("Будет удалено. Используйте XElementAddContent")]
         public static Expression XElement_AddContent(this Expression instanseXElement, Expression contentValue) =>
+            instanseXElement.XElementAddContent(contentValue);
+
+        /// <summary>
+        /// Создание нового элемента <see cref="XElement"/> с указанным именем и пространсвом имен
+        /// </summary>
+        /// <param name="newElementName">имя еэлемента</param>
+        /// <param name="xNamespace">Выражение, содержащее пространство имен</param>
+        /// <returns></returns>
+        [Obsolete("Будет удалено")]
+        public static Expression XElementNew(this string newElementName, Expression xNamespace) =>
+            Expression.New(
+                typeof(XElement).GetConstructor(new[] { typeof(XName) }),
+                Expression.Convert(Expression.Add(xNamespace, Expression.Constant(newElementName)), typeof(XName)));
+
+        /// <summary>
+        /// Вызов <see cref="XContainer.Elements(XName)"/> для <see cref="XElement"/>
+        /// </summary>
+        /// <param name="sourceXml">экземпляр <see cref="XElement"/></param>
+        /// <param name="termName">терм поиска имени</param>
+        /// <returns></returns>
+        [Obsolete("Будет удалено. Используйте XElementElements")]
+        public static Expression XElement_Elements(this Expression sourceXml, string termName) =>
+            sourceXml.XElementElements(termName);
+
+        /// <summary>
+        /// Вызов <see cref="XContainer.Element(XName)"/> для <see cref="XElement"/>
+        /// </summary>
+        /// <param name="sourceXml">экземпляр <see cref="XElement"/></param>
+        /// <param name="termName">терм поиска имени</param>
+        /// <returns></returns>
+        [Obsolete("Будет удалено. Используйте XElementElement")]
+        public static Expression XElement_Element(this Expression sourceXml, string termName) =>
+            sourceXml.XElementElement(termName);
+
+        #endregion
+
+        /// <summary>
+        /// Получение выражения преобразования строки в пространство имен <see cref="System.Xml.Linq.XNamespace"/> 
+        /// </summary>
+        /// <param name="xmlNamespace"></param>
+        /// <returns></returns>
+        public static Expression XNamespace(this string xmlNamespace) =>
+            Expression.Convert(Expression.Constant(xmlNamespace), typeof(XNamespace));
+
+        /// <summary>
+        /// Получение выражения пребразования строк в <see cref="System.Xml.Linq.XName"/> 
+        /// </summary>
+        /// <param name="xmlElementName"></param>
+        /// <param name="xmlNamespace"></param>
+        /// <returns></returns>
+        public static Expression XName(this string xmlElementName, string xmlNamespace = null) =>
+            Expression.Convert(Expression.Add(xmlNamespace.XNamespace(), Expression.Constant(xmlElementName)), typeof(XName));
+
+        /// <summary>
+        /// Добавление <see cref="XElement"/> с контентом в указанный <see cref="XElement"/>
+        /// </summary>
+        /// <param name="instanseXElement">экземляр <see cref="XElement"/>, в который буде производиться добавление дочерненго элемента</param>
+        /// <param name="newElementName">имя нового элемента</param>
+        /// <param name="xmlNamespace">пространство имен нового элемента</param>
+        /// <param name="contentValue">контент нового элемента</param>
+        /// <returns></returns>
+        public static Expression XElementAddContentValue(this Expression instanseXElement, string newElementName, string xmlNamespace, Expression contentValue) =>
+            Expression.Call(
+                instanseXElement,
+                typeof(XElement).GetMethod(nameof(XElement.Add), new[] { typeof(object) }),
+                Expression.New(
+                    typeof(XElement).GetConstructor(new[] { typeof(XName), typeof(object) }),
+                    newElementName.XName(xmlNamespace),
+                    Expression.Convert(contentValue, typeof(object))));
+
+        /// <summary>
+        /// Добавление контента в существующий экземпляр <see cref="XElement"/>
+        /// </summary>
+        /// <param name="instanseXElement">экземляр <see cref="XElement"/>, в который буде производиться добавление контента</param>
+        /// <param name="contentValue">контент</param>
+        /// <returns></returns>
+        public static Expression XElementAddContent(this Expression instanseXElement, Expression contentValue) =>
             Expression.Call(
                 instanseXElement,
                 typeof(XElement).GetMethod(nameof(XElement.Add), new[] { typeof(object) }),
@@ -52,22 +124,36 @@ namespace Cav
         /// <param name="newElementName">имя еэлемента</param>
         /// <param name="xmlNamespace">пространство имен</param>
         /// <returns></returns>
-        public static Expression XElement_New(this string newElementName, string xmlNamespace = null)
-        {
-            xmlNamespace = xmlNamespace.GetNullIfIsNullOrWhiteSpace() ?? String.Empty;
-            return newElementName.XElementNew(Expression.Convert(Expression.Constant(xmlNamespace), typeof(XNamespace)));
-        }
-
-        /// <summary>
-        /// Создание нового элемента <see cref="XElement"/> с указанным именем и пространсвом имен
-        /// </summary>
-        /// <param name="newElementName">имя еэлемента</param>
-        /// <param name="xNamespace">Выражение, содержащее пространство имен</param>
-        /// <returns></returns>
-        public static Expression XElementNew(this string newElementName, Expression xNamespace) =>
+        public static Expression XElementNew(this string newElementName, string xmlNamespace) =>
             Expression.New(
                 typeof(XElement).GetConstructor(new[] { typeof(XName) }),
-                Expression.Convert(Expression.Add(xNamespace, Expression.Constant(newElementName)), typeof(XName)));
+                newElementName.XName(xmlNamespace));
+
+        /// <summary>
+        /// Вызов <see cref="XContainer.Elements(XName)"/> для <see cref="XElement"/>
+        /// </summary>
+        /// <param name="sourceXml">экземпляр <see cref="XElement"/></param>
+        /// <param name="termName">терм поиска имени</param>
+        /// <param name="xmlNamespace">пространство имен</param>
+        /// <returns></returns>
+        public static Expression XElementElements(this Expression sourceXml, string termName, string xmlNamespace = null) =>
+            Expression.Call(
+                sourceXml,
+                typeof(XElement).GetMethod(nameof(XElement.Elements), new[] { typeof(XName) }),
+                termName.XName(xmlNamespace));
+
+        /// <summary>
+        /// Вызов <see cref="XContainer.Element(XName)"/> для <see cref="XElement"/>
+        /// </summary>
+        /// <param name="sourceXml">экземпляр <see cref="XElement"/></param>
+        /// <param name="termName">терм поиска имени</param>
+        /// <param name="xmlNamespace">пространство имен</param>
+        /// <returns></returns>
+        public static Expression XElementElement(this Expression sourceXml, string termName, string xmlNamespace = null) =>
+            Expression.Call(
+                sourceXml,
+                typeof(XElement).GetMethod(nameof(XElement.Element), new[] { typeof(XName) }),
+                termName.XName(xmlNamespace));
 
         /// <summary>
         /// Реализация выражения цикла обхода коллекци
@@ -154,30 +240,6 @@ namespace Cav
                     .MakeGenericMethod(resType.GetEnumeratedType()),
                 iEnumerableCollection);
         }
-
-        /// <summary>
-        /// Вызов <see cref="XContainer.Elements(XName)"/> для <see cref="XElement"/>
-        /// </summary>
-        /// <param name="sourceXml">экземпляр <see cref="XElement"/></param>
-        /// <param name="termName">терм поиска имени</param>
-        /// <returns></returns>
-        public static Expression XElement_Elements(this Expression sourceXml, string termName) =>
-            Expression.Call(
-                sourceXml,
-                typeof(XElement).GetMethod(nameof(XElement.Elements), new[] { typeof(XName) }),
-                Expression.Convert(Expression.Constant(termName), typeof(XName)));
-
-        /// <summary>
-        /// Вызов <see cref="XContainer.Element(XName)"/> для <see cref="XElement"/>
-        /// </summary>
-        /// <param name="sourceXml">экземпляр <see cref="XElement"/></param>
-        /// <param name="termName">терм поиска имени</param>
-        /// <returns></returns>
-        public static Expression XElement_Element(this Expression sourceXml, string termName) =>
-            Expression.Call(
-                sourceXml,
-                typeof(XElement).GetMethod(nameof(XElement.Element), new[] { typeof(XName) }),
-                Expression.Convert(Expression.Constant(termName), typeof(XName)));
 
         /// <summary>
         /// Вызов <see cref="List{T}.Add(T)"/> для <see cref="List{T}"/>

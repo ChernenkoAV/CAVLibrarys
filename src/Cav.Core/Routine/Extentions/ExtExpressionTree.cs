@@ -134,17 +134,21 @@ namespace Cav
                 newElementName.XName(xmlNamespace));
 
         /// <summary>
-        /// Вызов <see cref="XContainer.Elements(XName)"/> для <see cref="XElement"/>
+        /// Вызов <see cref="XContainer.Elements(XName)"/>/<see cref="XContainer.Elements()"/> для <see cref="XElement"/>
         /// </summary>
         /// <param name="sourceXml">экземпляр <see cref="XElement"/></param>
-        /// <param name="termName">терм поиска имени</param>
+        /// <param name="termName">терм поиска имени, null - вызов <see cref="XContainer.Elements()"/></param>
         /// <param name="xmlNamespace">пространство имен</param>
         /// <returns></returns>
-        public static Expression XElementElements(this Expression sourceXml, string termName, string xmlNamespace = null) =>
-            Expression.Call(
-                sourceXml,
-                typeof(XElement).GetMethod(nameof(XElement.Elements), new[] { typeof(XName) }),
-                termName.XName(xmlNamespace));
+        public static Expression XElementElements(this Expression sourceXml, string termName = null, string xmlNamespace = null) =>
+            termName.IsNullOrWhiteSpace()
+                ? Expression.Call(
+                    sourceXml,
+                    typeof(XContainer).GetMethod(nameof(XContainer.Elements), Array.Empty<Type>()))
+                : Expression.Call(
+                    sourceXml,
+                    typeof(XContainer).GetMethod(nameof(XContainer.Elements), new[] { typeof(XName) }),
+                    termName.XName(xmlNamespace));
 
         /// <summary>
         /// Вызов <see cref="XContainer.Element(XName)"/> для <see cref="XElement"/>
@@ -156,7 +160,7 @@ namespace Cav
         public static Expression XElementElement(this Expression sourceXml, string termName, string xmlNamespace = null) =>
             Expression.Call(
                 sourceXml,
-                typeof(XElement).GetMethod(nameof(XElement.Element), new[] { typeof(XName) }),
+                typeof(XContainer).GetMethod(nameof(XContainer.Element), new[] { typeof(XName) }),
                 termName.XName(xmlNamespace));
 
         /// <summary>
@@ -180,23 +184,23 @@ namespace Cav
             var enumeratorType = typeof(IEnumerator<>).MakeGenericType(elementType);
 
             var enumeratorVar = Expression.Variable(enumeratorType, "enumerator");
-            var getEnumeratorCall = Expression.Call(collection, enumerableType.GetMethod("GetEnumerator"));
+            var getEnumeratorCall = Expression.Call(collection, enumerableType.GetMethod(nameof(IEnumerable.GetEnumerator)));
             var enumeratorAssign = Expression.Assign(enumeratorVar, getEnumeratorCall);
 
             // The MoveNext method's actually on IEnumerator, not IEnumerator<T>
-            var moveNextCall = Expression.Call(enumeratorVar, typeof(IEnumerator).GetMethod("MoveNext"));
+            var moveNextCall = Expression.Call(enumeratorVar, typeof(IEnumerator).GetMethod(nameof(IEnumerator.MoveNext)));
 
             var breakLabel = Expression.Label("LoopBreak");
 
-            var loop = Expression.Block(new[] { enumeratorVar },
+            var loop = Expression.Block(
+                new[] { enumeratorVar },
                 enumeratorAssign,
                 Expression.Loop(
                     Expression.IfThenElse(
                         Expression.Equal(moveNextCall, Expression.Constant(true)),
                         Expression.Block(new[] { loopVar },
-                            Expression.Assign(loopVar, Expression.Property(enumeratorVar, "Current")),
-                            loopContent
-                        ),
+                            Expression.Assign(loopVar, Expression.Property(enumeratorVar, nameof(IEnumerator.Current))),
+                            loopContent),
                         Expression.Break(breakLabel)
                     ),
                 breakLabel)
@@ -218,9 +222,7 @@ namespace Cav
             var resType = iEnumerableCollection.Type;
 
             return Expression.Call(
-                typeof(Enumerable)
-                    .GetMethods()
-                    .Single(m => m.Name == nameof(Enumerable.Count) && m.GetParameters().Length == 1)
+                typeof(Enumerable).GetMethods().Single(m => m.Name == nameof(Enumerable.Count) && m.GetParameters().Length == 1)
                     .MakeGenericMethod(resType.GetEnumeratedType()),
                 iEnumerableCollection);
         }

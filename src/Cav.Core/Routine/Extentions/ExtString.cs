@@ -250,8 +250,9 @@ namespace Cav
 
             if (str.IndexOf(termVal) != 0)
                 return str;
-
+#pragma warning disable IDE0057 // Substring можно упростить
             return str.Substring(termVal.Length);
+#pragma warning restore IDE0057 // Substring можно упростить
         }
     }
 }

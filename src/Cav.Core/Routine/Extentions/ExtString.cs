@@ -233,5 +233,25 @@ namespace Cav
 
             directory.Delete(true);
         }
+
+        /// <summary>
+        /// Удаление из начала строи совпадающей строки. Если исходная строка или терм замены <see cref="String.Empty"/> или null - возвращается исходная строка
+        /// </summary>
+        /// <param name="str">Исхоная строка</param>
+        /// <param name="termVal">Терм замены</param>
+        /// <returns></returns>
+        public static string TrimStart2(this string str, string termVal)
+        {
+            if (string.IsNullOrEmpty(termVal))
+                return str;
+
+            if (string.IsNullOrEmpty(str))
+                return str;
+
+            if (str.IndexOf(termVal) != 0)
+                return str;
+
+            return str.Substring(termVal.Length);
+        }
     }
 }

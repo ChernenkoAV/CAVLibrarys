@@ -96,6 +96,26 @@ namespace Cav.Json
         }
     }
 
+    internal class StringNullEmtyValueProvider : IValueProvider
+    {
+        private IValueProvider valueProvider;
+
+        public StringNullEmtyValueProvider(JsonProperty jsonProperty) =>
+            valueProvider = jsonProperty.ValueProvider;
+        public object GetValue(object target)
+        {
+            var inst = valueProvider.GetValue(target);
+
+            return ((string)inst).GetNullIfIsNullOrWhiteSpace();
+        }
+        public void SetValue(object target, object value)
+        {
+            value = ((String)value).GetNullIfIsNullOrWhiteSpace();
+
+            valueProvider.SetValue(target, value);
+        }
+    }
+
     internal class CustomJsonContractResolver : DefaultContractResolver
     {
         public override JsonContract ResolveContract(Type type) => base.ResolveContract(type);
@@ -117,6 +137,9 @@ namespace Cav.Json
                 jProperty.NullValueHandling = NullValueHandling.Include;
                 jProperty.DefaultValueHandling = DefaultValueHandling.Populate;
             }
+
+            if (jProperty.PropertyType == typeof(string))
+                jProperty.ValueProvider = new StringNullEmtyValueProvider(jProperty);
 
             return jProperty;
         }

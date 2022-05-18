@@ -21,7 +21,7 @@ namespace Cav
             if (obj == null)
                 return null;
 
-            var keyByte = Encoding.UTF8.GetBytes(key).ComputeMD5Checksum().ToByteArray();
+            var keyByte = key.ComputeMD5ChecksumString().ToByteArray();
             var ivByte = keyByte.ComputeMD5Checksum().ToByteArray();
             var data = Encoding.UTF8.GetBytes(obj.JsonSerialize()).GZipCompress();
 
@@ -57,10 +57,10 @@ namespace Cav
             if (data == null)
                 return default;
 
-            var keyByte = Encoding.UTF8.GetBytes(key).ComputeMD5Checksum().ToByteArray();
+            var keyByte = key.ComputeMD5ChecksumString().ToByteArray();
             var ivByte = keyByte.ComputeMD5Checksum().ToByteArray();
 
-            using (var aes = new AesCryptoServiceProvider())
+            using (var aes = Aes.Create())
             {
                 using (var crtr = aes.CreateDecryptor(keyByte, ivByte))
                 using (var memres = new MemoryStream())

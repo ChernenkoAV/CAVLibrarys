@@ -77,11 +77,6 @@ namespace Cav.Configuration
         /// </summary>
         public event Action<ProgramSettingsBase<T>> ReloadEvent;
 
-        /// <summary>
-        /// Ограничение конструктора
-        /// </summary>
-        internal ProgramSettingsBase() { }
-
         private static Lazy<T> instance = new Lazy<T>(initInstasnce, LazyThreadSafetyMode.ExecutionAndPublication);
 
         /// <summary>
@@ -155,7 +150,12 @@ namespace Cav.Configuration
                 var prinfs = GetType().GetProperties();
 
                 foreach (var pinfo in prinfs)
+                {
                     pinfo.SetValue(this, pinfo.PropertyType.GetDefault());
+
+                    if (pinfo.PropertyType.IsClass && pinfo.PropertyType != typeof(string))
+                        pinfo.SetValue(this, Activator.CreateInstance(pinfo.PropertyType));
+                }
 
                 var settingsFiles =
                     new[] { fileNameApp, fileNameAppCommon, fileNameUserRoaming, fileNameUserLocal }
@@ -237,7 +237,14 @@ namespace Cav.Configuration
                     var proxyObj = targetJson.ToString().JsonDeserealize<T>();
 
                     foreach (var pi in prinfs)
-                        pi.SetValue(this, pi.GetValue(proxyObj));
+                    {
+                        var prpVal = pi.GetValue(proxyObj);
+
+                        if (prpVal == null && pi.PropertyType.IsClass && pi.PropertyType != typeof(string))
+                            prpVal = Activator.CreateInstance(pi.PropertyType);
+
+                        pi.SetValue(this, prpVal);
+                    }
                 }
             }
             finally
@@ -248,7 +255,7 @@ namespace Cav.Configuration
                 }
                 finally
                 {
-                    loker.ExitReadLock();
+                    loker.ExitWriteLock();
                 }
             }
         }

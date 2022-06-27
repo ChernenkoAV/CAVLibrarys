@@ -196,9 +196,6 @@ namespace Cav.DataAcces
             {
                 if (convertProperty == null)
                     throw new ArgumentException($"Для типа {typeT.FullName} свойства {paramName}, связываемого с полем {fieldName}, должен быть указан конвертор");
-
-                if (!typeT.IsArray && typeT.GetConstructor(Array.Empty<Type>()) == null)
-                    throw new ArgumentException($"Тип {typeT.FullName} для свойства {paramName} должен иметь открытый конструктор без параметров");
             }
 
             var p_rowObg = property.Parameters.First();
@@ -214,9 +211,8 @@ namespace Cav.DataAcces
                     typeof(HeplerDataAcces).GetMethod(nameof(HeplerDataAcces.FromField), BindingFlags.Static | BindingFlags.NonPublic),
                     Expression.Constant(propBody.Type, typeof(Type)),
                     p_dbRow,
-                    Expression.Constant(fieldName, fieldName.GetType()),
-                    Expression.Constant(expConv, typeof(Delegate))
-                    );
+                    Expression.Constant(fieldName, typeof(string)),
+                    Expression.Constant(expConv, typeof(Delegate)));
 
             Expression assToProp = Expression.Assign(propBody, Expression.Convert(fromfield, propBody.Type));
 
@@ -232,8 +228,13 @@ namespace Cav.DataAcces
         /// <param name="property">Свойство</param>
         /// <param name="paramName">Имя параметра</param>
         /// <param name="typeParam">Тип параметра в БД</param>
-        protected void MapSelectParam<T>(Expression<Func<TSelectParams, T>> property, String paramName, DbType? typeParam = null) =>
-            MapParam<T>(CommandActionType.Select, property, paramName, typeParam);
+        /// <param name="addedConvertFunct">Конвертер для пролучения значения для запроса</param>
+        protected void MapSelectParam<T>(
+            Expression<Func<TSelectParams, T>> property,
+            String paramName,
+            DbType? typeParam = null,
+            Expression<Func<T, object>> addedConvertFunct = null) =>
+            MapParam<T>(CommandActionType.Select, property, paramName, typeParam, addedConvertFunct);
 
         internal void MapParam<T>(CommandActionType actionType, Expression property, String paramName, DbType? typeParam = null, Expression convertProperty = null)
         {

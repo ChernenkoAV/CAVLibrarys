@@ -52,7 +52,11 @@ namespace Cav.DataAcces
         /// <param name="paramName">Имя параметра</param>
         /// <param name="typeParam">Тип параметра в БД</param>
         /// <param name="addedConvertFunct">Дополнительная функция преобразования</param> 
-        protected void MapInsertParam<T>(Expression<Func<TRow, T>> property, String paramName, DbType? typeParam = null, Expression<Func<T, Object>> addedConvertFunct = null)
+        protected void MapInsertParam<T>(
+            Expression<Func<TRow, T>> property,
+            String paramName,
+            DbType? typeParam = null,
+            Expression<Func<T, Object>> addedConvertFunct = null)
         {
             MapParam<T>(CommandActionType.Insert, property, paramName, typeParam, addedConvertFunct);
 
@@ -108,8 +112,13 @@ namespace Cav.DataAcces
         /// <param name="property">Свойство</param>
         /// <param name="paramName">Имя параметра</param>
         /// <param name="typeParam">Тип параметра в БД</param>
-        protected void MapDeleteParam<T>(Expression<Func<TDeleteParams, T>> property, String paramName, DbType? typeParam = null) =>
-            MapParam<T>(CommandActionType.Delete, property, paramName, typeParam);
+        /// <param name="addedConvertFunct">Дополнительная функция преобразования</param>
+        protected void MapDeleteParam<T>(
+            Expression<Func<TDeleteParams, T>> property,
+            String paramName,
+            DbType? typeParam = null,
+            Expression<Func<T, object>> addedConvertFunct = null) =>
+            MapParam<T>(CommandActionType.Delete, property, paramName, typeParam, addedConvertFunct);
 
         #endregion
 

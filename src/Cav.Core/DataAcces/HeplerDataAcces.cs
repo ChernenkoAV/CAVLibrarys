@@ -87,7 +87,7 @@ namespace Cav
                 val = conv.DynamicInvoke(val);
 
             if (val == null && !IsCanMappedDbType(returnType))
-                val = Activator.CreateInstance(returnType);
+                val = Activator.CreateInstance(returnType, true);
 
             return val;
         }

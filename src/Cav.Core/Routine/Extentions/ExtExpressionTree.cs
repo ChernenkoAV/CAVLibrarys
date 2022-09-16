@@ -180,17 +180,18 @@ namespace Cav
                 throw new ArgumentNullException(nameof(loopContent));
 
             var elementType = loopVar.Type;
+            var enumeratorName = "enmtr_" + loopVar.Name;
             var enumerableType = typeof(IEnumerable<>).MakeGenericType(elementType);
             var enumeratorType = typeof(IEnumerator<>).MakeGenericType(elementType);
 
-            var enumeratorVar = Expression.Variable(enumeratorType, "enumerator");
+            var enumeratorVar = Expression.Variable(enumeratorType, enumeratorName);
             var getEnumeratorCall = Expression.Call(collection, enumerableType.GetMethod(nameof(IEnumerable.GetEnumerator)));
             var enumeratorAssign = Expression.Assign(enumeratorVar, getEnumeratorCall);
 
             // The MoveNext method's actually on IEnumerator, not IEnumerator<T>
             var moveNextCall = Expression.Call(enumeratorVar, typeof(IEnumerator).GetMethod(nameof(IEnumerator.MoveNext)));
 
-            var breakLabel = Expression.Label("LoopBreak");
+            var breakLabel = Expression.Label("LoopBreak_" + enumeratorName);
 
             var loop = Expression.Block(
                 new[] { enumeratorVar },

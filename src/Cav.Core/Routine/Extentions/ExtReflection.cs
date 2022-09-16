@@ -229,5 +229,50 @@ namespace Cav.ReflectHelpers
             return type.GetElementType() ??
             (typeof(IEnumerable).IsAssignableFrom(type) ? type.GenericTypeArguments.FirstOrDefault() : null);
         }
+
+        /// <summary>
+        /// Реализует ли тип коллекцию через интерфейс <see cref="IList"/> (почти все коллекции, но в основном для класса <see cref="List{T}"/>)
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static bool IsIList(this Type type)
+        {
+            if (type is null)
+                throw new ArgumentNullException(nameof(type));
+
+            return typeof(IList).IsAssignableFrom(type);
+        }
+
+        /// <summary>
+        /// Распокавать тип из <see cref="Nullable{T}"/>, либо получить тип из коллекции <see cref="IList"/>
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static Type UnWrapType(this Type type)
+        {
+            if (type is null)
+                throw new ArgumentNullException(nameof(type));
+
+            var res = Nullable.GetUnderlyingType(type) ?? type;
+            if (type.IsIList())
+                res = res.GetGenericArguments().Single();
+
+            return res;
+        }
+
+        /// <summary>
+        /// Является ли тип "простым" - типы значений (<see cref="Type.IsValueType"/>)/строки (<see cref="String"/>)
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static bool IsSimpleType(this Type type)
+        {
+            if (type is null)
+                throw new ArgumentNullException(nameof(type));
+
+            var res = Nullable.GetUnderlyingType(type) ?? type;
+
+            return res.IsValueType || typeof(string) == res;
+        }
     }
 }

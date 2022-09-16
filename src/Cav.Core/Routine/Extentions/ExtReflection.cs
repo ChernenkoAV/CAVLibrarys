@@ -245,6 +245,7 @@ namespace Cav.ReflectHelpers
 
         /// <summary>
         /// Распокавать тип из <see cref="Nullable{T}"/>, либо получить тип из коллекции <see cref="IList"/>
+        /// Если тип приводится к <see cref="IList"/>, но не является <see cref="List{T}"/>, то вернется исходный тип
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
@@ -254,7 +255,8 @@ namespace Cav.ReflectHelpers
                 throw new ArgumentNullException(nameof(type));
 
             var res = Nullable.GetUnderlyingType(type) ?? type;
-            if (type.IsIList())
+            if (type.IsIList() &&
+                res.GetGenericArguments().Length == 1)
                 res = res.GetGenericArguments().Single();
 
             return res;

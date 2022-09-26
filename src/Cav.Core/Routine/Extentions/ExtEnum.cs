@@ -39,14 +39,16 @@ namespace Cav
         /// <remarks>В коллекцию не возвращается элемент со значением <see cref="int"/> = 0.</remarks>
         /// <param name="flag"></param>
         /// <returns></returns>
-        public static IEnumerable<Enum> FlagToList<T>(this T flag) where T : Enum =>
+        public static IEnumerable<T> FlagToList<T>(this T flag) where T : Enum =>
             Enum.GetValues(flag.GetType())
-                .Cast<Enum>()
-                .Where(m => Convert.ToUInt64(m) != 0L && flag.HasFlag(m));
+                .Cast<T>()
+#pragma warning disable CA2248 // Укажите правильный аргумент "enum" для "Enum.HasFlag"
+                .Where(x => Convert.ToUInt64(x) != 0L && flag.HasFlag(x)).ToArray();
+#pragma warning restore CA2248 // Укажите правильный аргумент "enum" для "Enum.HasFlag"
 
         /// <summary>
         /// Получение коллекции значений-описаний (атрибут <see cref="DescriptionAttribute"/>) для типа перечесления.
-        /// </summary>        
+        /// </summary>
         /// <param name="enumType">Тип перечисления</param>
         /// <param name="skipEmptyDescription">Пропускать значения с незаполненым описанием</param>
         /// <returns>Словарь значений и описаний перечисления</returns>

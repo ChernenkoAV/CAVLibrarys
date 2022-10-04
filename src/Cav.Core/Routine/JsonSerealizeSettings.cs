@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -165,6 +166,11 @@ namespace Cav.Json
                 return instance;
             }
         }
+
+        internal GenericJsonSerializerSetting(
+            StreamingContextStates state,
+            object additional) : this() =>
+            Context = new StreamingContext(state, additional);
 
         private GenericJsonSerializerSetting()
         {

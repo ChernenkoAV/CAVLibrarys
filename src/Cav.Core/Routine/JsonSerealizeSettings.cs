@@ -175,7 +175,7 @@ namespace Cav.Json
         private GenericJsonSerializerSetting()
         {
             NullValueHandling = NullValueHandling.Ignore;
-            DefaultValueHandling = DefaultValueHandling.Ignore;
+            DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate;
             Converters.Add(new FlagEnumStringConverter());
             ContractResolver = new CustomJsonContractResolver();
         }

@@ -142,6 +142,11 @@ namespace Cav.Json
             if (jProperty.PropertyType == typeof(string))
                 jProperty.ValueProvider = new StringNullEmtyValueProvider(jProperty);
 
+            if (jProperty.PropertyType.IsEnum)
+            {
+                jProperty.DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate;
+            }
+
             return jProperty;
         }
     }
@@ -175,7 +180,7 @@ namespace Cav.Json
         private GenericJsonSerializerSetting()
         {
             NullValueHandling = NullValueHandling.Ignore;
-            DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate;
+            DefaultValueHandling = DefaultValueHandling.Ignore;
             Converters.Add(new FlagEnumStringConverter());
             ContractResolver = new CustomJsonContractResolver();
         }

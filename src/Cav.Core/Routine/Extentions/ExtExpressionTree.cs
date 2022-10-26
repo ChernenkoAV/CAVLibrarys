@@ -272,5 +272,48 @@ namespace Cav
                 resType.GetMethod(nameof(IList.Add), new[] { itemType }),
                 value);
         }
+
+        /// <summary>
+        /// Вызов расширения <see cref="ExtString.IsNullOrWhiteSpace(string)"/> для строки
+        /// </summary>
+        /// <param name="stringValue">Выражение-строка (<see cref="string"/>)</param>
+        /// <returns></returns>
+        public static Expression IsNullOrWhiteSpace(this Expression stringValue)
+        {
+            if (stringValue is null)
+                throw new ArgumentNullException(nameof(stringValue));
+
+            return Expression.Call(typeof(ExtString).GetMethod(nameof(ExtString.IsNullOrWhiteSpace)), stringValue);
+
+        }
+
+        /// <summary>
+        /// Вызов расширения <see cref="ExtCollection.JoinValuesToString{T}(IEnumerable{T}, string, bool, string)"/> для строки
+        /// </summary>
+        /// <param name="collection">Выражение-коллекция</param>
+        /// <param name="separator">Разделитель</param>
+        /// <param name="distinct">Только уникальные значения</param>
+        /// <param name="format">Формат преобразования к строке каждого объекта в коллекции(по умолчанию "{0}")</param>
+        /// <returns></returns>
+        public static Expression JoinValuesToString(this Expression collection, string separator = ",", bool distinct = true, string format = null)
+        {
+            if (collection is null)
+                throw new ArgumentNullException(nameof(collection));
+
+            return Expression.Call(typeof(ExtCollection).GetMethod(nameof(ExtCollection.JoinValuesToString)).MakeGenericMethod(collection.Type.GenericTypeArguments),
+                collection,
+                Expression.Constant(separator, typeof(string)),
+                Expression.Constant(distinct),
+                Expression.Constant(format, typeof(string)));
+        }
+
+        /// <summary>
+        /// Блок if (value != null) { then })
+        /// </summary>
+        /// <param name="value">Проверяемое значение</param>
+        /// <param name="ifNotNull">Блок выражений, если значение value != null</param>
+        /// <returns></returns>
+        public static Expression IfNotNullThen(this Expression value, Expression ifNotNull) =>
+            Expression.IfThen(Expression.NotEqual(value, Expression.Constant(null)), ifNotNull);
     }
 }

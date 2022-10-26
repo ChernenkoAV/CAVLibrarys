@@ -16,7 +16,7 @@ namespace Cav
         /// Соеденяет значения в коллекции с заданым разделителем
         /// </summary>
         /// <typeparam name="T">Тип идентификатора</typeparam>
-        /// <param name="source">Значения</param>
+        /// <param name="source">Коллекция значений</param>
         /// <param name="separator">Разделитель</param>
         /// <param name="distinct">Только уникальные значения</param>
         /// <param name="format">Формат преобразования к строке каждого объекта в коллекции(по умолчанию "{0}")</param>

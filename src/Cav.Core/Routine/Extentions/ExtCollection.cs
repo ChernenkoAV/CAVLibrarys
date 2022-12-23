@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Cav
@@ -50,7 +49,7 @@ namespace Cav
         /// </summary>
         /// <param name="target">Целевая коллекция</param>
         /// <param name="source">Коллекция для вставки</param>
-        public static void AddRange<T>(this Collection<T> target, IEnumerable<T> source)
+        public static void AddRange<T>(this ICollection<T> target, IEnumerable<T> source)
         {
             if (target is null)
                 throw new ArgumentNullException(nameof(target));

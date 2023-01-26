@@ -22,7 +22,7 @@ namespace Cav.DataAcces
         /// Получение данных из БД с записью в класс Trow, либо в его наследники
         /// </summary>
         /// <typeparam name="THeritorType">Указание типа для оторажения данных. Должен быть Trow или его наследником </typeparam>
-        /// <param name="selectParams">Выражение на основе типа парамеров адаптера на выборку. Если null, то всем параметров присваивается DbNull</param>
+        /// <param name="selectParams">Выражение на основе типа парамеров адаптера на выборку. Если null, то всем параметрам присваивается DbNull</param>
         /// <returns>Коллекция объектов типа THeritorType</returns>
         public IEnumerable<THeritorType> Get<THeritorType>(
                 Expression<Action<TSelectParams>> selectParams = null)
@@ -44,6 +44,21 @@ namespace Cav.DataAcces
                 }
 
             return res.ToArray();
+        }
+
+        /// <summary>
+        /// Выполняет запрос и возвращает первый столбец первой строки результирующего набора, возвращаемого запросом. Все другие столбцы и строки игнорируются.
+        /// По сути вызов <see cref="DbCommand.ExecuteScalar"/>
+        /// </summary>
+        /// <param name="selectParams">Выражение на основе типа парамеров адаптера на выборку. Если null, то всем параметрам присваивается DbNull</param>
+        /// <returns>Первый столбец первой строки в результирующем наборе</returns>
+        public Object GetScalar(
+            Expression<Action<TSelectParams>> selectParams = null)
+        {
+            Configured();
+
+            var execCom = AddParamToCommand(CommandActionType.Select, selectParams);
+            return ExecuteScalar(execCom);
         }
 
         internal DbCommand AddParamToCommand(CommandActionType actionType, Expression paramsExpr, TRow obj = null)
@@ -338,70 +353,69 @@ namespace Cav.DataAcces
             return res;
         }
 
-        /// <summary>
-        /// Класс инкапсуляции настроек адаптера
-        /// </summary>
-        protected sealed class AdapterConfig
-        {
-            /// <summary>
-            /// Текст команды
-            /// </summary>
-            public String TextCommand { get; set; }
-            /// <summary>
-            /// Таймаут команды. По умолчанию - 15
-            /// </summary>
-            public int TimeoutCommand { get; set; } = 15;
-            /// <summary>
-            /// Тип команды
-            /// </summary>
-            public DataAccesCommandType TypeCommand { get; set; }
-            /// <summary>
-            /// Тип действия команды
-            /// </summary>
-            public CommandActionType ActionType { get; set; }
-        }
-
-        /// <summary>
-        /// Тип команды в адаптере
-        /// </summary>
-        protected enum DataAccesCommandType
-        {
-            /// <summary>
-            /// Текстовая строка
-            /// </summary>
-            Text,
-            /// <summary>
-            /// Хранимая процедура
-            /// </summary>
-            StoredProcedure
-        }
-
-        /// <summary>
-        /// Тип действия адаптера
-        /// </summary>
-        public enum CommandActionType
-        {
-            /// <summary>
-            /// Выборка
-            /// </summary>
-            Select,
-            /// <summary>
-            /// Вставка
-            /// </summary>
-            Insert,
-            /// <summary>
-            /// Обновление
-            /// </summary>
-            Update,
-            /// <summary>
-            /// Удаление
-            /// </summary>
-            Delete
-        }
-
         private ConcurrentDictionary<String, Action<TRow, DataRow>> selectPropFieldMap = new ConcurrentDictionary<string, Action<TRow, DataRow>>();
         private ConcurrentDictionary<String, DbParamSetting> commandParams = new ConcurrentDictionary<string, DbParamSetting>();
         private ConcurrentDictionary<CommandActionType, AdapterConfig> comands = new ConcurrentDictionary<CommandActionType, AdapterConfig>();
+    }
+
+    /// <summary>
+    /// Класс инкапсуляции настроек адаптера
+    /// </summary>
+    public sealed class AdapterConfig
+    {
+        /// <summary>
+        /// Текст команды
+        /// </summary>
+        public String TextCommand { get; set; }
+        /// <summary>
+        /// Таймаут команды. По умолчанию - 15
+        /// </summary>
+        public int TimeoutCommand { get; set; } = 15;
+        /// <summary>
+        /// Тип команды
+        /// </summary>
+        public DataAccesCommandType TypeCommand { get; set; }
+        /// <summary>
+        /// Тип действия команды
+        /// </summary>
+        public CommandActionType ActionType { get; set; }
+    }
+    /// <summary>
+    /// Тип команды в адаптере
+    /// </summary>
+    public enum DataAccesCommandType
+    {
+        /// <summary>
+        /// Текстовая строка
+        /// </summary>
+        Text,
+        /// <summary>
+        /// Хранимая процедура
+        /// </summary>
+        StoredProcedure
+    }
+
+    /// <summary>
+    /// Тип действия адаптера
+    /// </summary>
+    public enum CommandActionType
+    {
+        /// <summary>
+        /// Выборка
+        /// </summary>
+        Select,
+        /// <summary>
+        /// Вставка
+        /// </summary>
+        Insert,
+        /// <summary>
+        /// Обновление
+        /// </summary>
+        Update,
+        /// <summary>
+        /// Удаление
+        /// </summary>
+        Delete
     }
 
     internal struct DbParamSetting

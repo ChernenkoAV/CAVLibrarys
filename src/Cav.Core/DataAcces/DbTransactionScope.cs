@@ -56,9 +56,10 @@ namespace Cav
                 connectionName = DbContext.defaultNameConnection;
 
             var tran = TransactionGet(connectionName);
-            return tran != null
-                ? tran.Connection
-                : DbContext.Connection(connectionName);
+
+            return tran == null
+                ? DbContext.Connection(connectionName)
+                : tran.Connection ?? throw new InvalidOperationException("Несогласованное состояние транзакции. Соедиение с БД сброшено.");
         }
 
         internal static DbTransaction TransactionGet(String connectionName = null)

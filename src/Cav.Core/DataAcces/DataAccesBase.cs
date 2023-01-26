@@ -89,6 +89,10 @@ namespace Cav.DataAcces
 
             return providerFactory;
         }
+        /// <summary>
+        /// Выполнять команды в изолированном соедении к БД. (То есть, вне транзакции, которая может быть начата)
+        /// </summary>
+        protected Boolean ExecuteIsolationConnection { get; set; }
 
         /// <summary>
         /// Имя соединения, с которым будет работать текущий объект
@@ -202,9 +206,9 @@ namespace Cav.DataAcces
         }
 
         /// <summary>
-        /// Получение результата в DataTable
+        /// Получение результата в <see cref="DataTable"/>. (Заполняется через <see cref="DataTable.Load(IDataReader)"/> из результата типа <see cref="DbDataReader"/> метода <see cref="DbCommand.ExecuteReader()"/>)
         /// </summary>
-        /// <param name="cmd">Команда на выполенение. Присваевается в SelectCommand DbDataAdapter`а</param>
+        /// <param name="cmd">Команда на выполенение.</param>
         /// <returns>Результат работы команды</returns>
         protected DataTable FillTable(DbCommand cmd)
         {
@@ -217,16 +221,12 @@ namespace Cav.DataAcces
                 var res = new DataTable();
 #pragma warning restore CA2000 // Ликвидировать объекты перед потерей области
 
-                using (var adapter = DbProviderFactoryGet().CreateDataAdapter())
-                {
-                    adapter.SelectCommand = tuneCommand(cmd);
+                var correlationObject = monitorHelperBefore();
 
-                    var correlationObject = monitorHelperBefore();
+                using (var reader = ExecuteReader(cmd))
+                    res.Load(reader);
 
-                    adapter.Fill(res);
-
-                    monitorHelperAfter(cmd, correlationObject);
-                }
+                monitorHelperAfter(cmd, correlationObject);
 
                 return res;
             }
@@ -286,14 +286,13 @@ namespace Cav.DataAcces
 
         private DbCommand tuneCommand(DbCommand cmd)
         {
-            var tran = DbTransactionScope.TransactionGet(ConnectionName);
-
-            if (tran != null && tran.Connection == null)
-                throw new InvalidOperationException("Несогласованное состояние транзакции. Соедиение с БД сброшено.");
-
-            cmd.Connection = tran?.Connection ?? DbTransactionScope.Connection(ConnectionName);
-
-            cmd.Transaction = tran;
+            if (ExecuteIsolationConnection)
+                cmd.Connection = DbContext.Connection(ConnectionName);
+            else
+            {
+                cmd.Connection = DbTransactionScope.Connection(ConnectionName);
+                cmd.Transaction = DbTransactionScope.TransactionGet(ConnectionName);
+            }
 
             return cmd;
         }

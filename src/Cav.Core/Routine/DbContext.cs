@@ -62,8 +62,11 @@ namespace Cav
                 if (setCon.ConnectionString == connectionString && setCon.ConnectionType == typeConnection)
                     return;
 
-            using (var conn = (DbConnection)Activator.CreateInstance(typeConnection, connectionString))
+            using (var conn = (DbConnection)Activator.CreateInstance(typeConnection))
+            {
+                conn.ConnectionString = connectionString;
                 conn.Open();
+            }
 
             setCon = new SettingConnection()
             {
@@ -87,7 +90,8 @@ namespace Cav
             if (!dcsb.TryGetValue(connectionName, out var setCon))
                 throw new InvalidOperationException("Соединение с БД не настроено");
 
-            var connection = (DbConnection)Activator.CreateInstance(setCon.ConnectionType, setCon.ConnectionString);
+            var connection = (DbConnection)Activator.CreateInstance(setCon.ConnectionType);
+            connection.ConnectionString = setCon.ConnectionString;
             connection.Open();
             return connection;
         }

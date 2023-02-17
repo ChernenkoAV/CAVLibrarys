@@ -40,11 +40,18 @@ namespace Cav.Container
             if ((Nullable.GetUnderlyingType(typeInstance) ?? typeInstance).IsValueType || typeInstance == typeof(string))
                 return typeInstance.GetDefault();
 
-            if (!typeInstance.IsClass)
-                throw new ArgumentException($"{nameof(typeInstance)} {typeInstance.FullName} должен быть класс или интерфейс");
+            if (typeInstance.IsInterface || typeInstance.IsAbstract)
+            {
+                var insAbsO = GetInstances(typeInstance);
+                if (insAbsO.Length > 1)
+                    throw new ArgumentException($"{(typeInstance.IsInterface ? "Интерфейс" : "Абстрактный класс")} {typeInstance.FullName} имеет более одной реализации");
+                if (insAbsO.Length == 0)
+                    throw new ArgumentException($"{(typeInstance.IsInterface ? "Интерфейс" : "Абстрактный класс")} {typeInstance.FullName} не имеет реализаций");
+                return insAbsO.GetValue(0);
+            }
 
-            if (typeInstance.IsAbstract)
-                throw new ArgumentException($"{nameof(typeInstance)} {typeInstance.FullName}  не может бать абстрактным классом");
+            if (!typeInstance.IsClass)
+                throw new ArgumentException($"{nameof(typeInstance)} {typeInstance.FullName} должен быть класс");
 
             var akaSingleton = typeInstance.GetCustomAttribute<AlwaysNewAttribute>() == null;
 
@@ -79,16 +86,6 @@ namespace Cav.Container
                 {
                     if (typeof(IEnumerable).IsAssignableFrom(paramType))
                         throw new ArgumentOutOfRangeException($"тип {typeInstance.FullName}. в конструкторе поддерживаются только массивы");
-                }
-
-                if (paramType.IsInterface)
-                {
-                    var instsesInterface = GetInstances(paramType);
-                    if (instsesInterface.Length > 1)
-                        throw new ArgumentException($"Интерфейс {paramType.FullName} имеет более одной реализации");
-                    if (instsesInterface.Length == 0)
-                        throw new ArgumentException($"Интерфейс {paramType.FullName} не имеет реализаций");
-                    paramInstance = instsesInterface.GetValue(0);
                 }
 
                 if (paramInstance == null)

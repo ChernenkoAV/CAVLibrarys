@@ -168,18 +168,18 @@ namespace Cav.Configuration
                             continue;
                         }
                     }
+                }
 
-                    var proxyObj = targetJson.ToString().JsonDeserealize<T>();
+                var proxyObj = targetJson.ToString().JsonDeserealize<T>();
 
-                    foreach (var pi in prinfs)
-                    {
-                        var prpVal = pi.GetValue(proxyObj);
+                foreach (var pi in prinfs)
+                {
+                    var prpVal = pi.GetValue(proxyObj);
 
-                        if (prpVal == null && pi.PropertyType.IsClass && pi.PropertyType != typeof(string))
-                            prpVal = Activator.CreateInstance(pi.PropertyType);
+                    if (prpVal == null && pi.PropertyType.IsClass && pi.PropertyType != typeof(string))
+                        prpVal = Activator.CreateInstance(pi.PropertyType);
 
-                        pi.SetValue(this, prpVal);
-                    }
+                    pi.SetValue(this, prpVal);
                 }
             }
             finally

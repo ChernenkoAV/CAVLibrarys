@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -67,9 +66,7 @@ namespace Cav.Configuration
     /// Базовый класс для сохранения настроек
     /// </summary>
     /// <typeparam name="T"></typeparam>
-#pragma warning disable CA1063 // Правильно реализуйте IDisposable
     public abstract class ProgramSettingsBase<T> : IDisposable
-#pragma warning restore CA1063 // Правильно реализуйте IDisposable
         where T : ProgramSettingsBase<T>, new()
     {
         /// <summary>
@@ -110,34 +107,6 @@ namespace Cav.Configuration
 
         private ReaderWriterLockSlim loker = new ReaderWriterLockSlim();
 
-        private void fromJsonDeserialize(String fileName, PropertyInfo[] prinfs)
-        {
-            if (!prinfs.Any())
-                return;
-
-            if (!File.Exists(fileName))
-                return;
-
-            var filebody = File.ReadAllText(fileName);
-
-            var pvl = fileName.JsonDeserealizeFromFile<Dictionary<String, String>>();
-
-            if (pvl == null)
-            {
-                File.Delete(fileName);
-                return;
-            }
-
-            foreach (var pv in pvl)
-            {
-                var pi = prinfs.FirstOrDefault(x => x.Name == pv.Key);
-                if (pi == null)
-                    continue;
-
-                pi.SetValue(this, pv.Value.JsonDeserealize(pi.PropertyType));
-            }
-        }
-
         /// <summary>
         /// Перезагрузить настройки
         /// </summary>
@@ -167,70 +136,36 @@ namespace Cav.Configuration
 
                 var joS = JToken.Parse(File.ReadAllText(settingsFiles.First()));
 
-                if (joS.Type == JTokenType.Array)
+                var targetJson = new JObject();
+
+                foreach (var jo in settingsFiles
+                    .SelectMany(x => JObject.Parse(File.ReadAllText(x)).Children())
+                    .Select(x => (JProperty)x)
+                    .GroupBy(x => x.Name)
+                    .ToArray())
                 {
-                    // Если внутри массив - значит json старого формата.
-                    fromJsonDeserialize(fileNameApp,
-                        prinfs
-                        .Where(pinfo =>
-                            pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>() != null && pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>().AreaSetting == Area.App
-                            ).ToArray()
-                        );
-
-                    fromJsonDeserialize(fileNameAppCommon,
-                        prinfs
-                        .Where(pinfo =>
-                            pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>() != null && pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>().AreaSetting == Area.CommonApp
-                            ).ToArray()
-                        );
-
-                    fromJsonDeserialize(fileNameUserRoaming,
-                        prinfs
-                        .Where(pinfo =>
-                            pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>() == null || pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>().AreaSetting == Area.UserRoaming
-                            ).ToArray()
-                        );
-
-                    fromJsonDeserialize(fileNameUserLocal,
-                    prinfs
-                    .Where(pinfo =>
-                            pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>() == null || pinfo.GetCustomAttribute<ProgramSettingsAreaAttribute>().AreaSetting == Area.UserLocal
-                        ).ToArray()
-                    );
-                }
-                else
-                {
-                    var targetJson = new JObject();
-
-                    foreach (var jo in settingsFiles
-                        .SelectMany(x => JObject.Parse(File.ReadAllText(x)).Children())
-                        .Select(x => (JProperty)x)
-                        .GroupBy(x => x.Name)
-                        .ToArray())
+                    if (jo.Count() == 1)
                     {
-                        if (jo.Count() == 1)
+                        targetJson.Add(jo.Single());
+                        continue;
+                    }
+
+                    var prop = prinfs.FirstOrDefault(x => x.Name == jo.Key);
+
+                    if (prop == null)
+                        continue;
+
+                    foreach (var joitem in jo)
+                    {
+                        try
                         {
-                            targetJson.Add(jo.Single());
-                            continue;
+                            joitem.Value.ToString().JsonDeserealize(prop.PropertyType);
+                            targetJson.Add(joitem);
+                            break;
                         }
-
-                        var prop = prinfs.FirstOrDefault(x => x.Name == jo.Key);
-
-                        if (prop == null)
-                            continue;
-
-                        foreach (var joitem in jo)
+                        catch
                         {
-                            try
-                            {
-                                joitem.Value.ToString().JsonDeserealize(prop.PropertyType);
-                                targetJson.Add(joitem);
-                                break;
-                            }
-                            catch
-                            {
-                                continue;
-                            }
+                            continue;
                         }
                     }
 
@@ -280,7 +215,7 @@ namespace Cav.Configuration
                     .Select(x => new { PropertyName = x.Name, Area = x.GetCustomAttribute<ProgramSettingsAreaAttribute>()?.AreaSetting ?? Area.UserLocal })
                     .ToList();
 
-                var jsInstSetting = instance.JsonSerialize();
+                var jsInstSetting = instance.Value.JsonSerialize();
 
                 foreach (var setFile in settingsFiles)
                 {
@@ -308,13 +243,36 @@ namespace Cav.Configuration
                 loker.ExitWriteLock();
             }
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-#pragma warning disable CA1063 // Правильно реализуйте IDisposable
-#pragma warning disable CA1816 // Методы Dispose должны вызывать SuppressFinalize
-#pragma warning disable CS1591 // Отсутствует комментарий XML для открытого видимого типа или члена
-        public void Dispose() => loker?.Dispose();
-#pragma warning restore CS1591 // Отсутствует комментарий XML для открытого видимого типа или члена
-#pragma warning restore CA1816 // Методы Dispose должны вызывать SuppressFinalize
-#pragma warning restore CA1063 // Правильно реализуйте IDisposable
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (isDisposed)
+                return;
+
+            loker?.Dispose();
+
+            isDisposed = true;
+        }
+        private bool isDisposed;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        ~ProgramSettingsBase()
+        {
+            Dispose(false);
+        }
     }
 }

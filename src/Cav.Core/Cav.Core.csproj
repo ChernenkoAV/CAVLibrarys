@@ -45,7 +45,7 @@
     </ItemGroup>
 
     <PropertyGroup>
-        <PackageVersion>8.11.0</PackageVersion>
+        <PackageVersion>8.11.1</PackageVersion>
         <Description>A set of utilities that facilitate routine operations</Description>
         <PackageTags>сav utils</PackageTags>
     </PropertyGroup>

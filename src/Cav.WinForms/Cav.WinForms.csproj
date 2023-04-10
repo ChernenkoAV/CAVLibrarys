@@ -3,7 +3,7 @@
     <PropertyGroup>
         <Configuration Condition=" '$(Configuration)' == '' ">Dev</Configuration>
         <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-        <TargetFramework>net4.6.1</TargetFramework>
+        <TargetFrameworks>net4.6.1;net4.8</TargetFrameworks>
         <SignAssembly>true</SignAssembly>
         <DelaySign>false</DelaySign>
         <AssemblyOriginatorKeyFile>..\cav.snk</AssemblyOriginatorKeyFile>
@@ -35,7 +35,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Cav.Core" Version="8.0.1" />
+        <PackageReference Include="Cav.Core" Version="*" />
     </ItemGroup>
 
     <ItemGroup>
@@ -46,7 +46,7 @@
     </ItemGroup>
 
     <PropertyGroup>
-        <PackageVersion>5.0.0</PackageVersion>
+        <PackageVersion>5.1.0</PackageVersion>
         <Description>Утилиты для Windows и базовые окна для построения интерфейса на WinForms</Description>
         <PackageTags>Cav winforms dialogs</PackageTags>
     </PropertyGroup>

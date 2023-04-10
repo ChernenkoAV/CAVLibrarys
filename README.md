@@ -7,9 +7,6 @@
 [Публикация Cav.WinForms](https://www.nuget.org/packages/Cav.WinForms/)
 <img alt="NuGet Version" src="https://img.shields.io/nuget/v/Cav.WinForms.svg" />
 
-[Публикация Cav.Tfs](https://www.nuget.org/packages/Cav.Tfs/)
-<img alt="NuGet Version" src="https://img.shields.io/nuget/v/Cav.Tfs.svg" />
-
 [Публикация Cav.Wcf](https://www.nuget.org/packages/Cav.Wcf/)
 <img alt="NuGet Version" src="https://img.shields.io/nuget/v/Cav.Wcf.svg" />
 

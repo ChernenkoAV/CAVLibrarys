@@ -5,7 +5,7 @@
         <Authors>ChernenkoAV</Authors>
         <Owners>ChernenkoAV</Owners>
         <RepositoryType>git</RepositoryType>
-        <RepositoryUrl>https://github.com/ChernenkoAV/CavLibrarys</RepositoryUrl>
+        <RepositoryUrl>https://github.com/ChernenkoAV/CAVLibrarys.git</RepositoryUrl>
         <PackageProjectUrl >https://github.com/ChernenkoAV/CavLibrarys</PackageProjectUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <!--<PackageReadmeFile>readme.md</PackageReadmeFile>-->

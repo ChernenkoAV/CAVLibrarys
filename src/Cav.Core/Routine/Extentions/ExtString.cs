@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace Cav
 {
@@ -10,47 +9,6 @@ namespace Cav
     /// </summary>
     public static class ExtString
     {
-        [ThreadStatic]
-        private static Regex rexp = null;
-        [ThreadStatic]
-        private static String prn = null;
-        /// <summary>
-        /// Соответствие поисковому шаблону (формируется в регулярку)
-        /// </summary>
-        /// <param name="text"></param>
-        /// <param name="pattern"></param>
-        /// <returns></returns>
-        public static Boolean MatchText(this String text, String pattern)
-        {
-            if (pattern.IsNullOrWhiteSpace())
-                return true;
-
-            if (rexp == null || pattern != prn)
-            {
-                prn = pattern;
-                rexp = new Regex(pattern.FormatRegexPattern(), RegexOptions.IgnoreCase | RegexOptions.Singleline);
-            }
-
-            return rexp.Matches(text).Count > 0;
-        }
-
-        /// <summary>
-        /// Форматирование строки для передачи в качестве паттерна для регулярного выражения.
-        /// Применять для передачи в хранимые процедуры, в которых используется Regex
-        /// </summary>
-        /// <param name="text"></param>
-        /// <returns></returns>
-        public static String FormatRegexPattern(this String text)
-        {
-            if (text.IsNullOrWhiteSpace())
-                return null;
-            var res = text.Replace("^", "\\^").Replace(".", "\\.").Replace("$", "\\$").Replace("?", ".{1}").Replace("*", ".*");
-            var mc = new Regex(@"\(.+?\)", RegexOptions.IgnoreCase | RegexOptions.Singleline).Matches(text);
-            foreach (Match item in mc)
-                res = res.Replace(item.Value, item.Value.Replace(" ", @"\W+").Replace("(", @"(\b").Replace(")", @"\b)"));
-            return res.Replace(" ", @"\W+");
-        }
-
         /// <summary>
         /// Усечение начальных и конечных пробелов и преводов кареток. Если строка null или состояла из пробелов и/или переводов кареток - вернет null.
         /// </summary>

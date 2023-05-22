@@ -128,9 +128,7 @@ namespace Cav.Json
                 (typeof(IEnumerable).IsAssignableFrom(jProperty.PropertyType) &&
                 jProperty.PropertyType.GetConstructor(Array.Empty<Type>()) != null))
             {
-                var olsShouldSerialise = jProperty.ShouldSerialize;
-                if (olsShouldSerialise == null)
-                    olsShouldSerialise = x => true;
+                var olsShouldSerialise = jProperty.ShouldSerialize ?? (x => true);
 
                 jProperty.ShouldSerialize = obj => olsShouldSerialise(obj) && jProperty.ValueProvider.GetValue(obj) != null;
 

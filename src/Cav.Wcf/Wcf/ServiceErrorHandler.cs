@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
@@ -10,7 +11,7 @@ namespace Cav.Wcf
     /// <summary>
     /// Подключение обработчика ошибок, произошедших во времы выполнения методов службы (для обработки и логирования)
     /// </summary>
-    internal class ServiceErrorHandler : IErrorHandler, IServiceBehavior
+    internal sealed class ServiceErrorHandler : IErrorHandler, IServiceBehavior
     {
         public ServiceErrorHandler(Action<Exception> handler) => this.handler = handler;
 
@@ -31,7 +32,7 @@ namespace Cav.Wcf
 
         public void ApplyDispatchBehavior(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase)
         {
-            foreach (ChannelDispatcher chanDisp in serviceHostBase.ChannelDispatchers)
+            foreach (var chanDisp in serviceHostBase.ChannelDispatchers.Cast<ChannelDispatcher>())
                 chanDisp.ErrorHandlers.Add(this);
         }
     }

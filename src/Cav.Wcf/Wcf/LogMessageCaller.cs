@@ -11,7 +11,7 @@ using System.Xml;
 
 namespace Cav.Wcf
 {
-    internal class LogMessageCaller : IDispatchMessageInspector, IClientMessageInspector, IEndpointBehavior
+    internal sealed class LogMessageCaller : IDispatchMessageInspector, IClientMessageInspector, IEndpointBehavior
     {
         internal LogMessageCaller(Action<MessageLogData> logger) => this.logger = logger;
 
@@ -53,7 +53,7 @@ namespace Cav.Wcf
             var to = curOpContext.IncomingMessageProperties.Via;
 
             string operationName = null;
-            if (curOpContext.IncomingMessageProperties.Keys.Contains("HttpOperationName"))
+            if (curOpContext.IncomingMessageProperties.ContainsKey("HttpOperationName"))
                 operationName = (string)curOpContext.IncomingMessageProperties["HttpOperationName"];
             else
             {

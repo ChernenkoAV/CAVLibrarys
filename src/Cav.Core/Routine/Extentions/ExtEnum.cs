@@ -25,12 +25,8 @@ namespace Cav
 
             var fi = value.GetType().GetField(value.ToString());
 
-            var attributes = fi.GetCustomAttributes<DescriptionAttribute>();
-
-            if (attributes.Any())
-                return attributes.First().Description;
-            else
-                return value.ToString();
+            return fi.GetCustomAttributes<DescriptionAttribute>().FirstOrDefault()?.Description ??
+                value.ToString();
         }
 
         /// <summary>
@@ -42,9 +38,7 @@ namespace Cav
         public static IEnumerable<T> FlagToList<T>(this T flag) where T : Enum =>
             Enum.GetValues(flag.GetType())
                 .Cast<T>()
-#pragma warning disable CA2248 // Укажите правильный аргумент "enum" для "Enum.HasFlag"
                 .Where(x => Convert.ToUInt64(x) != 0L && flag.HasFlag(x)).ToArray();
-#pragma warning restore CA2248 // Укажите правильный аргумент "enum" для "Enum.HasFlag"
 
         /// <summary>
         /// Получение коллекции значений-описаний (атрибут <see cref="DescriptionAttribute"/>) для типа перечесления.

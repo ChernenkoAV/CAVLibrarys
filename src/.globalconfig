@@ -59,5 +59,8 @@ dotnet_diagnostic.IDE0090.severity = suggestion
 # IDE0063: Оператор using можно упростить (в net4.8 еще нету)
 dotnet_diagnostic.IDE0063.severity = suggestion
 
+# CA1852: Тип "name" может быть запечатанным, так как у него нет подтипов в содержащей его сборке и он невидим извне (прост бесит)
+dotnet_diagnostic.CA1852.severity = suggestion
+
 
 

@@ -300,12 +300,7 @@ namespace Cav.Wcf
             String recipientActor = "http://smev.gosuslugi.ru/actors/smev",
             SecurityAlgorithmSuite algorithmSuite = null)
         {
-            var cert = DSGeneric.FindCertByThumbprint(servSert);
-
-            if (cert == null)
-#pragma warning disable IDE0016 // Использовать выражение "throw"
-                throw new InvalidOperationException("Не найден сертификат");
-#pragma warning restore IDE0016 // Использовать выражение "throw"
+            var cert = DSGeneric.FindCertByThumbprint(servSert) ?? throw new InvalidOperationException("Не найден сертификат");
 
             if (contractType == null)
                 contractType = implementType;

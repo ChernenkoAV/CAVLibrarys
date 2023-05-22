@@ -128,7 +128,7 @@ namespace Cav.Configuration
 
                 var settingsFiles =
                     new[] { fileNameApp, fileNameAppCommon, fileNameUserRoaming, fileNameUserLocal }
-                    .Where(x => File.Exists(x))
+                    .Where(File.Exists)
                     .ToList();
 
                 if (!settingsFiles.Any())

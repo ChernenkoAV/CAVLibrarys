@@ -3,7 +3,7 @@
     <PropertyGroup>
         <Configuration Condition=" '$(Configuration)' == '' ">Dev</Configuration>
         <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-        <TargetFrameworks>net4.6.1;net4.8;net5.0</TargetFrameworks>
+        <TargetFrameworks>net4.8;netstandard2.1</TargetFrameworks>
         <SignAssembly>true</SignAssembly>
         <DelaySign>false</DelaySign>
         <AssemblyOriginatorKeyFile>..\cav.snk</AssemblyOriginatorKeyFile>
@@ -26,26 +26,22 @@
         <DefineConstants>DEBUG;TRACE</DefineConstants>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prod|AnyCPU'">
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
         <DebugType>pdbonly</DebugType>
         <Optimize>true</Optimize>
-        <DefineConstants>TRACE;PROD</DefineConstants>
+        <DefineConstants>TRACE</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Newtonsoft.Json" Version="13.*" />
     </ItemGroup>
 
-    <ItemGroup Condition="'$(TargetFramework)' != 'net5.0'">
+    <ItemGroup Condition="'$(TargetFramework)' == 'net4.8'">
         <Reference Include="System.IO.Compression" />
     </ItemGroup>
 
-    <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
-        <PackageReference Include="System.IO.Compression" Version="*"/>
-    </ItemGroup>
-
     <PropertyGroup>
-        <PackageVersion>8.11.2</PackageVersion>
+        <PackageVersion>9.0.0</PackageVersion>
         <Description>A set of utilities that facilitate routine operations</Description>
         <PackageTags>сav utils</PackageTags>
     </PropertyGroup>

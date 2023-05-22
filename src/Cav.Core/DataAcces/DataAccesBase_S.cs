@@ -199,7 +199,7 @@ namespace Cav.DataAcces
 
             var paramName = (propBody as MemberExpression).Member.Name;
 
-            if (selConvertHand.Keys.Contains(paramName))
+            if (selConvertHand.ContainsKey(paramName))
                 throw new ArgumentException($"Для свойства {paramName} уже определна связка");
 
             var typeT = typeof(T);

@@ -66,8 +66,7 @@ namespace Cav.Container
 
             puhStackAndCheckRecursion(typeInstance);
 
-            var constructor = typeInstance.GetConstructors().OrderBy(x => x.GetParameters().Length).FirstOrDefault();
-            if (constructor == null)
+            var constructor = typeInstance.GetConstructors().OrderBy(x => x.GetParameters().Length).FirstOrDefault() ??
                 throw new ArgumentOutOfRangeException($"У типа {typeInstance.FullName} нет открытого конструктора");
 
             var paramConstr = new List<object>();
@@ -225,7 +224,9 @@ namespace Cav.Container
 
                 #region Прогружаем референсные сборки в домен приложения
 
+#pragma warning disable IDE0039 // Использовать локальную функцию
                 Action<Assembly> recursionLoadAssembly = null;
+#pragma warning restore IDE0039 // Использовать локальную функцию
                 recursionLoadAssembly = asbly =>
                 {
                     var referAss = asbly
@@ -253,6 +254,7 @@ namespace Cav.Container
 
                 var res = new List<Type>();
 
+#pragma warning disable IDE0039 // Использовать локальную функцию
                 Func<IEnumerable<Type>, List<Type>> filterTypes = inLi => inLi
                     .Where(x =>
                         !x.IsAbstract &&
@@ -263,6 +265,7 @@ namespace Cav.Container
                         !x.GetTypeInfo().GenericTypeParameters.Any() &&
                         x.GetConstructors().Any())
                     .ToList();
+#pragma warning restore IDE0039 // Использовать локальную функцию
 
                 foreach (var aitem in assemblysForWork)
                 {

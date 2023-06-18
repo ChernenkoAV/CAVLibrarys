@@ -28,7 +28,7 @@
 
         <Copyright>Copyright $([System.DateTime]::Now.Year)©</Copyright>
 
-        <VersionFile>$(BaseIntermediateOutputPath)$(AssemblyName).$(PackageVersion).cs</VersionFile>
+        <VersionFile>$([System.IO.Path]::Combine('$(IntermediateOutputPath)','$(AssemblyName)_$(PackageVersion)_$(TargetFramework)$(DefaultLanguageSourceExtension)'))</VersionFile>
     </PropertyGroup>
 
     <ItemGroup>
@@ -53,7 +53,7 @@
         <ShouldRunTarget Condition="(!'$(IsMultiTarget)' and '$(IsSingleTarget)') or ('$(IsMultiTarget)' and !'$(IsSingleTarget)')">true</ShouldRunTarget>
     </PropertyGroup>
 
-    <Target Name="SetVersion" Condition="$(ShouldRunTarget)" BeforeTargets="$(ShouldBeforeTargets)">
+    <Target Name="SetVersion" BeforeTargets="Compile">
 
         <Error Condition="'$(PackageVersion)' == ''" Text="Необходимо заполнить свойство PackageVersion!" />
 
@@ -71,7 +71,7 @@
 
         <ItemGroup>
             <AssemblyAttributes Include="AssemblyTitle">
-                <_Parameter1>$(AssemblyName)</_Parameter1>
+                <_Parameter1>$(AssemblyName) $(PackageVersion) $(TargetFramework)</_Parameter1>
             </AssemblyAttributes>
             <AssemblyAttributes Include="AssemblyVersion">
                 <_Parameter1>$(VerAssembly)</_Parameter1>

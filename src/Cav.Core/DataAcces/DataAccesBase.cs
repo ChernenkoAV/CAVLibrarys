@@ -62,33 +62,6 @@ namespace Cav.DataAcces
             catch { }
         }
 
-        private DbProviderFactory providerFactory;
-
-        internal DbProviderFactory DbProviderFactoryGet()
-        {
-            if (providerFactory != null)
-                return providerFactory;
-
-            var tran = DbTransactionScope.TransactionGet(ConnectionName);
-            if (tran != null)
-                providerFactory = DbProviderFactories.GetFactory(tran.Connection);
-
-            if (providerFactory == null)
-            {
-                var conn = DbTransactionScope.Connection(ConnectionName);
-                providerFactory = DbProviderFactories.GetFactory(conn);
-                if (DbTransactionScope.TransactionGet(ConnectionName) == null)
-                    if (conn != null)
-                        try
-                        {
-                            conn.Close();
-                            conn.Dispose();
-                        }
-                        catch { }
-            }
-
-            return providerFactory;
-        }
         /// <summary>
         /// Выполнять команды в изолированном соедении к БД. (То есть, вне транзакции, которая может быть начата)
         /// </summary>
@@ -102,7 +75,7 @@ namespace Cav.DataAcces
         /// Получение объекта DbCommand при наличии настроенного соединения с БД
         /// </summary>
         /// <returns></returns>
-        protected DbCommand CreateCommandObject() => DbProviderFactoryGet().CreateCommand();
+        protected DbCommand CreateCommandObject() => DbContext.DbProviderFactory(ConnectionName).CreateCommand();
 
         /// <summary>
         /// Выполняет запрос и возвращает первый столбец первой строки результирующего набора, возвращаемого запросом. Все другие столбцы и строки игнорируются.

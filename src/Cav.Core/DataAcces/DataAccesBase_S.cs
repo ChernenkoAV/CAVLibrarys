@@ -346,7 +346,7 @@ namespace Cav.DataAcces
 
         private DbParameter createParametr(DbParamSetting paramSetting)
         {
-            var res = DbProviderFactoryGet().CreateParameter();
+            var res = DbContext.DbProviderFactory(ConnectionName).CreateParameter();
             res.ParameterName = paramSetting.ParamName;
             res.DbType = paramSetting.ParamType;
             res.Value = DBNull.Value;

@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Data.Common;
 using System.Linq;
+using System.Reflection;
 
 namespace Cav
 {
@@ -20,7 +21,7 @@ namespace Cav
         private struct SettingConnection
         {
             public string ConnectionString { get; set; }
-            public Type ConnectionType { get; set; }
+            public DbProviderFactory ProviderFactory { get; set; }
         }
 
         /// <summary>
@@ -58,23 +59,21 @@ namespace Cav
             if (connectionName.IsNullOrWhiteSpace())
                 connectionName = defaultNameConnection;
 
-            if (dcsb.TryGetValue(connectionName, out var setCon))
-                if (setCon.ConnectionString == connectionString && setCon.ConnectionType == typeConnection)
-                    return;
-
             using (var conn = (DbConnection)Activator.CreateInstance(typeConnection))
             {
                 conn.ConnectionString = connectionString;
                 conn.Open();
+
+                var pinfo = conn.GetType().GetProperty("DbProviderFactory", BindingFlags.NonPublic | BindingFlags.Instance);
+                var setCon = new SettingConnection()
+                {
+                    ConnectionString = connectionString,
+                    ProviderFactory = pinfo.GetValue(conn) as DbProviderFactory
+                };
+
+                dcsb.TryRemove(connectionName, out _);
+                dcsb.TryAdd(connectionName, setCon);
             }
-
-            setCon = new SettingConnection()
-            {
-                ConnectionString = connectionString,
-                ConnectionType = typeConnection
-            };
-
-            dcsb.AddOrUpdate(connectionName, setCon, (k, v) => setCon);
         }
 
         /// <summary>
@@ -90,10 +89,21 @@ namespace Cav
             if (!dcsb.TryGetValue(connectionName, out var setCon))
                 throw new InvalidOperationException("Соединение с БД не настроено");
 
-            var connection = (DbConnection)Activator.CreateInstance(setCon.ConnectionType);
+            var connection = setCon.ProviderFactory.CreateConnection();
             connection.ConnectionString = setCon.ConnectionString;
             connection.Open();
             return connection;
+        }
+
+        internal static DbProviderFactory DbProviderFactory(String connectionName = null)
+        {
+            if (connectionName.IsNullOrWhiteSpace())
+                connectionName = defaultNameConnection;
+
+            if (!dcsb.TryGetValue(connectionName, out var setCon))
+                throw new InvalidOperationException("Соединение с БД не настроено");
+
+            return setCon.ProviderFactory;
         }
 
         /// <summary>

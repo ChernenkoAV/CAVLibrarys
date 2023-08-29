@@ -231,7 +231,7 @@ namespace Cav.ReflectHelpers
         }
 
         /// <summary>
-        /// Реализует ли тип коллекцию через интерфейс <see cref="IList"/> (почти все коллекции, но в основном для класса <see cref="List{T}"/>)
+        /// Является ли тип <see cref="List{T}"/> или <see cref="HashSet{T}"/>
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
@@ -240,12 +240,12 @@ namespace Cav.ReflectHelpers
             if (type is null)
                 throw new ArgumentNullException(nameof(type));
 
-            return typeof(IList).IsAssignableFrom(type);
+            return type.IsGenericType && (type.GetGenericTypeDefinition() == typeof(List<>) || type.GetGenericTypeDefinition() == typeof(HashSet<>));
         }
 
         /// <summary>
-        /// Распокавать тип из <see cref="Nullable{T}"/>, либо получить тип из коллекции <see cref="IList"/>
-        /// Если тип приводится к <see cref="IList"/>, но не является <see cref="List{T}"/>, то вернется исходный тип
+        /// Распаковать тип из <see cref="Nullable{T}"/>, либо получить тип из коллекции.
+        /// Если тип НЕ приводится к <see cref="List{T}"/> или <see cref="HashSet{T}"/>, то вернется исходный тип
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>

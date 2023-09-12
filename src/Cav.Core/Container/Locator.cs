@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading;
 
 namespace Cav.Container
 {
@@ -15,13 +11,13 @@ namespace Cav.Container
     {
         private class PropSetDataT
         {
-            public PropertyInfo Property { get; set; }
-            public Object InstatnceObject { get; set; }
+            public PropertyInfo? Property { get; set; }
+            public object? InstatnceObject { get; set; }
         }
 
-        private static ConcurrentDictionary<Type, Object> cacheObjects = new ConcurrentDictionary<Type, object>();
+        private static ConcurrentDictionary<Type, object> cacheObjects = new();
 
-        private static Object getObjectFromCache(Type type)
+        private static object? getObjectFromCache(Type type)
         {
             cacheObjects.TryGetValue(type, out var res);
             return res;
@@ -32,7 +28,7 @@ namespace Cav.Container
         /// </summary>
         /// <param name="typeInstance"></param>
         /// <returns></returns>
-        public static object GetInstance(Type typeInstance)
+        public static object? GetInstance(Type typeInstance)
         {
             if (typeInstance == null)
                 throw new ArgumentNullException(nameof(typeInstance));
@@ -55,7 +51,7 @@ namespace Cav.Container
 
             var akaSingleton = typeInstance.GetCustomAttribute<AlwaysNewAttribute>() == null;
 
-            object res = null;
+            object? res = null;
 
             if (akaSingleton && typeInstance.IsClass)
             {
@@ -73,13 +69,13 @@ namespace Cav.Container
 
             foreach (var constParam in constructor.GetParameters())
             {
-                Object paramInstance = null;
+                object? paramInstance = null;
                 var paramType = constParam.ParameterType;
 
                 if (paramType.IsArray)
                 {
                     var typeInArray = paramType.GetElementType();
-                    paramInstance = Convert.ChangeType(GetInstances(typeInArray), paramType);
+                    paramInstance = Convert.ChangeType(GetInstances(typeInArray!), paramType);
                 }
                 else
                 {
@@ -90,7 +86,7 @@ namespace Cav.Container
                 if (paramInstance == null)
                     paramInstance = GetInstance(paramType);
 
-                paramConstr.Add(paramInstance);
+                paramConstr.Add(paramInstance!);
             }
 
             res = constructor.Invoke(paramConstr.ToArray());
@@ -106,7 +102,7 @@ namespace Cav.Container
                 if (!propInfo.CanWrite)
                     throw new InvalidOperationException($"свойство {typeInstance.FullName}.{propInfo.Name} должно быть доступно для записи");
 
-                propSetData.Value.Add(new PropSetDataT() { Property = propInfo, InstatnceObject = res });
+                propSetData.Value!.Add(new PropSetDataT() { Property = propInfo, InstatnceObject = res });
             }
 
             popStack();
@@ -116,33 +112,33 @@ namespace Cav.Container
             return res;
         }
 
-        private static ThreadLocal<Stack<String>> pathDependency = new ThreadLocal<Stack<string>>(() => new Stack<string>());
-        private static ThreadLocal<List<PropSetDataT>> propSetData = new ThreadLocal<List<PropSetDataT>>(() => new List<PropSetDataT>());
+        private static ThreadLocal<Stack<string>> pathDependency = new(() => new Stack<string>());
+        private static ThreadLocal<List<PropSetDataT>> propSetData = new(() => new List<PropSetDataT>());
 
         private static void popStack()
         {
-            if (pathDependency.Value.Any())
-                pathDependency.Value.Pop();
+            if (pathDependency.Value!.Any())
+                pathDependency.Value!.Pop();
 
-            if (!pathDependency.Value.Any())
-                foreach (var prpData in propSetData.Value.ToArray())
+            if (!pathDependency.Value!.Any())
+                foreach (var prpData in propSetData.Value!.ToArray())
                 {
-                    prpData.Property.SetValue(prpData.InstatnceObject, GetInstance(prpData.Property.PropertyType));
+                    prpData.Property!.SetValue(prpData.InstatnceObject, GetInstance(prpData.Property.PropertyType));
                     propSetData.Value.Remove(prpData);
                 }
         }
 
         private static void puhStackAndCheckRecursion(Type typeInstance)
         {
-            var type = pathDependency.Value.FirstOrDefault(x => x == typeInstance.FullName);
+            var type = pathDependency.Value!.FirstOrDefault(x => x == typeInstance.FullName);
             if (type != null)
             {
-                var promDep = new List<String>();
-                string parDep = null;
+                var promDep = new List<string>();
+                string? parDep = null;
 
                 do
                 {
-                    parDep = pathDependency.Value.Pop();
+                    parDep = pathDependency.Value!.Pop();
                     promDep.Add(parDep);
 
                 } while (parDep != type);
@@ -151,7 +147,7 @@ namespace Cav.Container
                 throw new InvalidOperationException("Обнаружена рекурсивная зависимость: " + msg);
             }
 
-            pathDependency.Value.Push(typeInstance.FullName);
+            pathDependency.Value!.Push(typeInstance.FullName!);
         }
 
         /// <summary>
@@ -165,7 +161,7 @@ namespace Cav.Container
             if (typeParent is null)
                 throw new ArgumentNullException(nameof(typeParent));
 
-            Func<Type, bool> predicat = null;
+            Func<Type, bool> predicat = null!;
 
             if (typeParent.IsClass)
                 predicat = (t) => t.IsSubclassOf(typeParent);
@@ -198,7 +194,7 @@ namespace Cav.Container
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static T GetInstance<T>() where T : class => (T)GetInstance(typeof(T));
+        public static T? GetInstance<T>() where T : class => (T?)GetInstance(typeof(T));
         /// <summary>
         /// Получить экземпляры объектов типа - наследника указанного
         /// </summary>
@@ -211,7 +207,7 @@ namespace Cav.Container
         /// </summary>
         internal static class CashTypesOnDomain
         {
-            private static Lazy<List<Type>> cashTypes = new Lazy<List<Type>>(valueFactory: allCreatedTypeInDomain, mode: LazyThreadSafetyMode.ExecutionAndPublication);
+            private static Lazy<List<Type>> cashTypes = new(valueFactory: allCreatedTypeInDomain, mode: LazyThreadSafetyMode.ExecutionAndPublication);
 
             public static ICollection<Type> AllCreatedType => cashTypes.Value;
             /// <summary>
@@ -225,7 +221,7 @@ namespace Cav.Container
                 #region Прогружаем референсные сборки в домен приложения
 
 #pragma warning disable IDE0039 // Использовать локальную функцию
-                Action<Assembly> recursionLoadAssembly = null;
+                Action<Assembly> recursionLoadAssembly = null!;
 #pragma warning restore IDE0039 // Использовать локальную функцию
                 recursionLoadAssembly = asbly =>
                 {

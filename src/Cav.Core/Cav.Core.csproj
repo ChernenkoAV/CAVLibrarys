@@ -1,34 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <Configuration Condition=" '$(Configuration)' == '' ">Dev</Configuration>
-        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
         <TargetFrameworks>netstandard2.0;net7.0</TargetFrameworks>
-        <SignAssembly>true</SignAssembly>
-        <DelaySign>false</DelaySign>
-        <AssemblyOriginatorKeyFile>..\cav.snk</AssemblyOriginatorKeyFile>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <WarningLevel>5</WarningLevel>
-        <WarningsAsErrors />
-        <DebugSymbols>true</DebugSymbols>
-        <DebugType>full</DebugType>
-        <Optimize>false</Optimize>
-        <AssemblyName>Cav.Core</AssemblyName>
-        <RootNamespace>Cav.Core</RootNamespace>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <DefineConstants>TRACE</DefineConstants>
-        <AnalysisMode>AllEnabledByDefault</AnalysisMode>
-        <EnableNETAnalyzers>true</EnableNETAnalyzers>
-        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dev|AnyCPU'">
-        <DefineConstants>DEBUG;TRACE</DefineConstants>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-        <DebugType>pdbonly</DebugType>
-        <Optimize>true</Optimize>
         <DefineConstants>TRACE</DefineConstants>
     </PropertyGroup>
 
@@ -37,7 +13,7 @@
     </ItemGroup>
 
     <PropertyGroup>
-        <PackageVersion>9.2.0</PackageVersion>
+        <PackageVersion>9.2.1</PackageVersion>
         <Description>A set of utilities that facilitate routine operations</Description>
         <PackageTags>сav utils</PackageTags>
     </PropertyGroup>

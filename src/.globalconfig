@@ -15,52 +15,70 @@ dotnet_diagnostic.CA1052.severity = silent
 
 # правила глобализации
 dotnet_diagnostic.CA1303.severity = silent
+dotnet_diagnostic.CA1304.severity = silent
 dotnet_diagnostic.CA1305.severity = silent
+dotnet_diagnostic.CA1307.severity = silent # CA1307 Используйте StringComparison, чтобы ясно указать намерение
+dotnet_diagnostic.CA1308.severity = silent # CA1308 Нормализуйте строки в верхний регистр
 dotnet_diagnostic.CA1310.severity = silent
+dotnet_diagnostic.CA1311.severity = silent #CA1311 Укажите язык и региональные параметры или используйте инвариантную версию
 
-#CA1307 Используйте StringComparison, чтобы ясно указать намерение.
-dotnet_diagnostic.CA1307.severity = silent
-
-# Свойства коллекций должны быть доступны только для чтения
-dotnet_diagnostic.CA2227.severity = silent
-
-#Идентификаторы не должны содержать символы подчеркивания
-dotnet_diagnostic.CA1707.severity = silent
-
-#Не предоставляйте универсальные списки
+# Не предоставляйте универсальные списки
 dotnet_diagnostic.CA1002.severity = silent
-
-# CA2008: Не создавайте задачи без передачи TaskScheduler
-dotnet_diagnostic.CA2008.severity = suggestion
 
 # Измените "Main", чтобы перехватывать исключение более конкретного типа или выдать исключение повторно.
 dotnet_diagnostic.CA1031.severity = silent
 
-# CA1716: Идентификаторы не должны совпадать с ключевыми словами
-dotnet_diagnostic.CA1716.severity = silent
+# Не создавайте задачи без передачи TaskScheduler
+dotnet_diagnostic.CA2008.severity = silent
 
+# CA1822: Пометьте члены как статические
+dotnet_diagnostic.CA1822.severity = silent
 
+# CA2201: Не порождайте исключения зарезервированных типов
+dotnet_diagnostic.CA2201.severity = silent
 
-# Пространство имен (namespace) не соответствует структуре папок
-dotnet_diagnostic.IDE0130.severity = silent
+# CA3075: Небезопасная обработка DTD в формате XML
+dotnet_diagnostic.CA3075.severity = silent
 
-# Использовать ключевые слова языка вместо имен типов платформы для ссылок на типы
-dotnet_diagnostic.IDE0049.severity = silent
+# Не встраивайте значение SecurityProtocolType.
+dotnet_diagnostic.CA5386.severity = silent
 
-# Добавление недостающих вариантов в выражение switch
-dotnet_diagnostic.IDE0010.severity = silent
+# Не используйте нерекомендуемые протоколы безопасности
+dotnet_diagnostic.CA5364.severity = silent
 
-# IDE0046: Преобразовать в условное выражение
-dotnet_diagnostic.IDE0046.severity = suggestion
+# CA1834: Рекомендация использовать метод "StringBuilder.Append(char)" по мере возможности
+dotnet_diagnostic.CA1834.severity = none
 
-# IDE0090: выражение new можно упростить (в net4.8 еще нету)
-dotnet_diagnostic.IDE0090.severity = suggestion
+# Свойства, возвращающие коллекции, должны быть доступными только для чтения
+dotnet_diagnostic.CA2227.severity = silent
 
-# IDE0063: Оператор using можно упростить (в net4.8 еще нету)
-dotnet_diagnostic.IDE0063.severity = suggestion
+# Для перегрузок операторов существуют варианты с именами
+dotnet_diagnostic.CA2225.severity = suggestion
+# Не используйте пустые интерфейсы
+dotnet_diagnostic.CA1040.severity = silent
 
-# CA1852: Тип "name" может быть запечатанным, так как у него нет подтипов в содержащей его сборке и он невидим извне (прост бесит)
-dotnet_diagnostic.CA1852.severity = suggestion
+# CA1851: возможные несколько перечислений IEnumerable коллекции
+dotnet_diagnostic.CA1851.severity = silent
 
+# CA1716: идентификаторы не должны совпадать с ключевыми словами
+dotnet_diagnostic.CA1716.severity = suggestion
 
+# CA1852 Тип может быть запечатанным (sealed), так как у него нет подтипов в содержащей его сборке и он невидим извне (internal, private)
+dotnet_diagnostic.CA1852.severity = silent
+# CA1812 Избегайте неиспользуемых внутренних классов
+dotnet_diagnostic.CA1812.severity = silent
+#CA2007 Попробуйте вызвать ConfigureAwait для ожидаемой задачи
+dotnet_diagnostic.CA2007.severity = suggestion
 
+dotnet_diagnostic.IDE0130.severity = silent # Пространство имен (namespace) не соответствует структуре папок
+
+dotnet_diagnostic.IDE0049.severity = suggestion # Использовать ключевые слова языка вместо имен типов платформы для ссылок на типы
+
+dotnet_diagnostic.IDE0010.severity = suggestion # IDE0010 Добавление недостающих вариантов в выражение switch
+dotnet_diagnostic.IDE0072.severity = suggestion # IDE0072 Добавление недостающих вариантов в выражение switch
+
+dotnet_diagnostic.IDE0011.severity = silent # Добавление фигурных скобок
+
+dotnet_diagnostic.IDE0046.severity = suggestion # IDE0046: Преобразовать в условное выражение
+
+dotnet_diagnostic.IDE0160.severity = suggestion # IDE0160 Использование пространства имен с блочного уровня

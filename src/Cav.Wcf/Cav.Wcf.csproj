@@ -1,36 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <Configuration Condition=" '$(Configuration)' == '' ">Dev</Configuration>
-        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
         <TargetFrameworks>net4.8</TargetFrameworks>
-        <SignAssembly>true</SignAssembly>
-        <DelaySign>false</DelaySign>
-        <AssemblyOriginatorKeyFile>..\cav.snk</AssemblyOriginatorKeyFile>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <WarningLevel>5</WarningLevel>
-        <WarningsAsErrors />
-        <DebugSymbols>true</DebugSymbols>
-        <DebugType>full</DebugType>
-        <Optimize>false</Optimize>
-        <AssemblyName>Cav.Wcf</AssemblyName>
-        <RootNamespace>Cav.Wcf</RootNamespace>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <DefineConstants>TRACE</DefineConstants>
-        <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
-        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-        <AnalysisMode>AllEnabledByDefault</AnalysisMode>
-        <EnableNETAnalyzers>true</EnableNETAnalyzers>
-        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dev|AnyCPU'">
-        <DefineConstants>DEBUG;TRACE</DefineConstants>
-    </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-        <DebugType>pdbonly</DebugType>
-        <Optimize>true</Optimize>
         <DefineConstants>TRACE</DefineConstants>
     </PropertyGroup>
 

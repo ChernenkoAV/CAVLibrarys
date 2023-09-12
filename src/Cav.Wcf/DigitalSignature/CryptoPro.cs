@@ -2,6 +2,8 @@
 using System.ServiceModel.Security;
 using Cav.ReflectHelpers;
 
+#pragma warning disable CA1707 // Идентификаторы не должны содержать символы подчеркивания
+
 namespace Cav.DigitalSignature
 {
     /// <summary>

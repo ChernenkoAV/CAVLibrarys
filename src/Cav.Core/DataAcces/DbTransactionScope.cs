@@ -1,146 +1,141 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Threading;
+﻿using System.Data.Common;
 
 #pragma warning disable CA1003 // Используйте экземпляры обработчика универсальных событий
 
-namespace Cav
+namespace Cav;
+
+/// <summary>
+/// Делегат окончания работы транзакции
+/// </summary>
+/// <param name="connName">Имя соединения с БД</param>
+public delegate void DbTransactionScopeEnd(string connName);
+
+/// <summary>
+/// "Груповая" транзакция. Обертка для вызовов в БД. Только для одного DbConnection
+/// </summary>
+public sealed class DbTransactionScope : IDisposable
 {
     /// <summary>
-    /// Делегат окончания работы транзакции
+    /// Создание нового экземпляра обертки транзации
     /// </summary>
-    /// <param name="connName">Имя соединения с БД</param>
-    public delegate void DbTransactionScopeEnd(String connName);
+    /// <param name="connectionName">Имя соедиенения, для которого назначается транзакция</param>
+    public DbTransactionScope(string? connectionName = null)
+    {
+        currentTran = Guid.NewGuid();
+        if (connectionName.IsNullOrWhiteSpace())
+            connectionName = DbContext.defaultNameConnection;
+
+        if (!rootTran.Value.HasValue)
+            rootTran.Value = currentTran;
+
+        if (rootTran.Value != currentTran)
+            return;
+
+        if (TransactionGet(connectionName) == null)
+        {
+            transactions.Value!.Add(connectionName!, Connection(connectionName).BeginTransaction());
+            connName = connectionName!;
+        }
+    }
+
+    private bool complete;
+    private string? connName;
+    private static ThreadLocal<Guid?> rootTran = new(() => null);
+
+    private static ThreadLocal<Dictionary<string, DbTransaction>> transactions = new(() => new Dictionary<string, DbTransaction>());
+
+    private readonly Guid currentTran;
+
+    internal static DbConnection Connection(string? connectionName = null)
+    {
+        if (connectionName.IsNullOrWhiteSpace())
+            connectionName = DbContext.defaultNameConnection;
+
+        var tran = TransactionGet(connectionName);
+
+        return tran == null
+            ? DbContext.Connection(connectionName)
+            : tran.Connection ?? throw new InvalidOperationException("Несогласованное состояние транзакции. Соедиение с БД сброшено.");
+    }
+
+    internal static DbTransaction? TransactionGet(string? connectionName = null)
+    {
+        if (connectionName.IsNullOrWhiteSpace())
+            connectionName = DbContext.defaultNameConnection;
+
+        transactions.Value!.TryGetValue(connectionName!, out var tran);
+        return tran;
+    }
+
+    #region Члены IDisposable
 
     /// <summary>
-    /// "Груповая" транзакция. Обертка для вызовов в БД. Только для одного DbConnection
+    /// Пометить, что транзакцию можно закомитеть
     /// </summary>
-    public sealed class DbTransactionScope : IDisposable
+    public void Complete() => complete = true;
+
+    /// <summary>
+    /// Реализация IDisposable
+    /// </summary>
+    public void Dispose()
     {
-        /// <summary>
-        /// Создание нового экземпляра обертки транзации
-        /// </summary>
-        /// <param name="connectionName">Имя соедиенения, для которого назначается транзакция</param>
-        public DbTransactionScope(String connectionName = null)
+        var connNameEv = connName;
+
+        if (connName.IsNullOrWhiteSpace())
+            connName = DbContext.defaultNameConnection;
+
+        var tran = TransactionGet(connName);
+
+        if (tran != null && !complete)
         {
-            currentTran = Guid.NewGuid();
-            if (connectionName.IsNullOrWhiteSpace())
-                connectionName = DbContext.defaultNameConnection;
+            transactions.Value!.Remove(connName!);
+            rootTran.Value = null;
 
-            if (!rootTran.Value.HasValue)
-                rootTran.Value = currentTran;
-
-            if (rootTran.Value != currentTran)
-                return;
-
-            if (TransactionGet(connectionName) == null)
+            var conn = tran.Connection;
+            if (conn != null)
             {
-                transactions.Value.Add(connectionName, Connection(connectionName).BeginTransaction());
-                connName = connectionName;
+                tran.Rollback();
+                tran.Dispose();
+
+                conn.Close();
+                conn.Dispose();
+
+                TransactionRollback?.Invoke(connNameEv!);
             }
         }
 
-        private Boolean complete;
-        private String connName;
-        private static ThreadLocal<Guid?> rootTran = new ThreadLocal<Guid?>(() => null);
+        if (rootTran.Value != currentTran)
+            return;
 
-        private static ThreadLocal<Dictionary<String, DbTransaction>> transactions =
-            new ThreadLocal<Dictionary<string, DbTransaction>>(() => new Dictionary<string, DbTransaction>());
-
-        private readonly Guid currentTran;
-
-        internal static DbConnection Connection(String connectionName = null)
+        tran = TransactionGet(connName);
+        if (tran != null)
         {
-            if (connectionName.IsNullOrWhiteSpace())
-                connectionName = DbContext.defaultNameConnection;
+            transactions.Value!.Remove(connName!);
+            rootTran.Value = null;
 
-            var tran = TransactionGet(connectionName);
-
-            return tran == null
-                ? DbContext.Connection(connectionName)
-                : tran.Connection ?? throw new InvalidOperationException("Несогласованное состояние транзакции. Соедиение с БД сброшено.");
-        }
-
-        internal static DbTransaction TransactionGet(String connectionName = null)
-        {
-            if (connectionName.IsNullOrWhiteSpace())
-                connectionName = DbContext.defaultNameConnection;
-
-            transactions.Value.TryGetValue(connectionName, out var tran);
-            return tran;
-        }
-
-        #region Члены IDisposable
-
-        /// <summary>
-        /// Пометить, что транзакцию можно закомитеть
-        /// </summary>
-        public void Complete() => complete = true;
-
-        /// <summary>
-        /// Реализация IDisposable
-        /// </summary>
-        public void Dispose()
-        {
-            var connNameEv = connName;
-
-            if (connName.IsNullOrWhiteSpace())
-                connName = DbContext.defaultNameConnection;
-
-            var tran = TransactionGet(connName);
-
-            if (tran != null && !complete)
+            var conn = tran.Connection;
+            if (conn != null)
             {
-                transactions.Value.Remove(connName);
-                rootTran.Value = null;
+                tran.Commit();
+                tran.Dispose();
 
-                var conn = tran.Connection;
-                if (conn != null)
-                {
-                    tran.Rollback();
-                    tran.Dispose();
+                conn.Close();
+                conn.Dispose();
 
-                    conn.Close();
-                    conn.Dispose();
-
-                    TransactionRollback?.Invoke(connNameEv);
-                }
-            }
-
-            if (rootTran.Value != currentTran)
-                return;
-
-            tran = TransactionGet(connName);
-            if (tran != null)
-            {
-                transactions.Value.Remove(connName);
-                rootTran.Value = null;
-
-                var conn = tran.Connection;
-                if (conn != null)
-                {
-                    tran.Commit();
-                    tran.Dispose();
-
-                    conn.Close();
-                    conn.Dispose();
-
-                    TransactionCommit?.Invoke(connNameEv);
-                }
+                TransactionCommit?.Invoke(connNameEv!);
             }
         }
-
-        #endregion
-
-        /// <summary>
-        /// Событие окончания транзакции комитом
-        /// </summary>
-        public static event DbTransactionScopeEnd TransactionCommit;
-
-        /// <summary>
-        /// Событие окончание транзакции откатом
-        /// </summary>
-        public static event DbTransactionScopeEnd TransactionRollback;
     }
+
+    #endregion
+
+    /// <summary>
+    /// Событие окончания транзакции комитом
+    /// </summary>
+    public static event DbTransactionScopeEnd TransactionCommit = null!;
+
+    /// <summary>
+    /// Событие окончание транзакции откатом
+    /// </summary>
+    public static event DbTransactionScopeEnd TransactionRollback = null!;
 }

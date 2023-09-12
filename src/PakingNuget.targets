@@ -1,18 +1,11 @@
 <Project>
 
     <PropertyGroup>
-        <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
-        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
         <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <WarningLevel>5</WarningLevel>
         <WarningsAsErrors />
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-        <Optimize>true</Optimize>
-        <DebugType>portable</DebugType>
-        <AnalysisMode>AllEnabledByDefault</AnalysisMode>
 
         <Deterministic>false</Deterministic>
         <IncludeSymbols>true</IncludeSymbols>

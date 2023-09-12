@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
@@ -57,8 +58,10 @@ namespace Cav.Wcf
             basicHttpBinding.Security.Message.ClientCredentialType = BasicHttpMessageCredentialType.Certificate;
             basicHttpBinding.Security.Message.AlgorithmSuite = algorithmSuite;
 
-            var binding = new SmevBinding(basicHttpBinding);
-            binding.Name = "SmevBinding_" + Guid.NewGuid().ToShortString();
+            var binding = new SmevBinding(basicHttpBinding)
+            {
+                Name = "SmevBinding_" + Guid.NewGuid().ToShortString()
+            };
 
             binding.Elements.Remove<TextMessageEncodingBindingElement>();
             binding.Elements.Insert(0, new SMEVMessageEncodingBindingElement()
@@ -102,8 +105,10 @@ namespace Cav.Wcf
     {
         public SMEVMessageEncodingBindingElement()
         {
-            var tmebe = new TextMessageEncodingBindingElement();
-            tmebe.MessageVersion = messageVer;
+            var tmebe = new TextMessageEncodingBindingElement
+            {
+                MessageVersion = messageVer
+            };
             tmebe.ReaderQuotas.MaxStringContentLength = int.MaxValue - 1;
             tmebe.ReaderQuotas.MaxArrayLength = int.MaxValue - 1;
             tmebe.ReaderQuotas.MaxBytesPerRead = int.MaxValue - 1;
@@ -143,10 +148,12 @@ namespace Cav.Wcf
 
         public override BindingElement Clone()
         {
-            var clone = new SMEVMessageEncodingBindingElement(innerBindingElement);
-            clone.MessageVersion = MessageVersion;
-            clone.RecipientActor = RecipientActor;
-            clone.SenderActor = SenderActor;
+            var clone = new SMEVMessageEncodingBindingElement(innerBindingElement)
+            {
+                MessageVersion = MessageVersion,
+                RecipientActor = RecipientActor,
+                SenderActor = SenderActor
+            };
             return clone;
         }
 
@@ -209,13 +216,15 @@ namespace Cav.Wcf
         {
             this.factory = factory;
 
-            writerSettings = new XmlWriterSettings();
-            writerSettings.ConformanceLevel = ConformanceLevel.Fragment;
-            writerSettings.OmitXmlDeclaration = true;
-            writerSettings.NewLineHandling = NewLineHandling.Entitize;
-            writerSettings.Encoding = this.factory.CharSet.Trim().ToLower() == "utf-8"
+            writerSettings = new XmlWriterSettings
+            {
+                ConformanceLevel = ConformanceLevel.Fragment,
+                OmitXmlDeclaration = true,
+                NewLineHandling = NewLineHandling.Entitize,
+                Encoding = this.factory.CharSet.Trim().ToLower(CultureInfo.CurrentCulture) == "utf-8"
                 ? new UTF8Encoding(false)
-                : Encoding.GetEncoding(this.factory.CharSet);
+                : Encoding.GetEncoding(this.factory.CharSet)
+            };
 
             theContentType = string.Format("{0}; charset={1}", this.factory.MediaType, writerSettings.Encoding.HeaderName);
         }
@@ -243,8 +252,10 @@ namespace Cav.Wcf
 
         public override Message ReadMessage(Stream stream, int maxSizeOfHeaders, string contentType)
         {
-            var xmlDocument = new XmlDocument();
-            xmlDocument.PreserveWhitespace = true;
+            var xmlDocument = new XmlDocument
+            {
+                PreserveWhitespace = true
+            };
 #pragma warning disable CA3075 // Небезопасная обработка DTD в формате XML
             xmlDocument.Load(stream);
 #pragma warning restore CA3075 // Небезопасная обработка DTD в формате XML
@@ -297,8 +308,10 @@ namespace Cav.Wcf
 
         public override void WriteMessage(Message message, Stream stream)
         {
-            var xmlDocument = new XmlDocument();
-            xmlDocument.PreserveWhitespace = true;
+            var xmlDocument = new XmlDocument
+            {
+                PreserveWhitespace = true
+            };
 
             using (var memstr = new MemoryStream())
             {

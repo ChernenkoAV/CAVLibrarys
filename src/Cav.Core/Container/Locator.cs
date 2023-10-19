@@ -102,30 +102,37 @@ namespace Cav.Container
                 if (!propInfo.CanWrite)
                     throw new InvalidOperationException($"свойство {typeInstance.FullName}.{propInfo.Name} должно быть доступно для записи");
 
-                propSetData.Value!.Add(new PropSetDataT() { Property = propInfo, InstatnceObject = res });
+                propSetData.Value!.Push(new PropSetDataT() { Property = propInfo, InstatnceObject = res });
             }
 
-            popStack();
+            if (res is IInitInstance ires)
+                initialInstanses.Value!.Push(ires);
 
-            (res as IInitInstance)?.InitInstance();
+            popStack();
 
             return res;
         }
 
         private static ThreadLocal<Stack<string>> pathDependency = new(() => new Stack<string>());
-        private static ThreadLocal<List<PropSetDataT>> propSetData = new(() => new List<PropSetDataT>());
+        private static ThreadLocal<Stack<PropSetDataT>> propSetData = new(() => new Stack<PropSetDataT>());
+        private static ThreadLocal<Stack<IInitInstance>> initialInstanses = new(() => new Stack<IInitInstance>());
 
         private static void popStack()
         {
             if (pathDependency.Value!.Any())
                 pathDependency.Value!.Pop();
 
-            if (!pathDependency.Value!.Any())
-                foreach (var prpData in propSetData.Value!.ToArray())
-                {
-                    prpData.Property!.SetValue(prpData.InstatnceObject, GetInstance(prpData.Property.PropertyType));
-                    propSetData.Value.Remove(prpData);
-                }
+            if (pathDependency.Value!.Any())
+                return;
+
+            while (propSetData.Value!.Any())
+            {
+                var prpData = propSetData.Value!.Pop();
+                prpData.Property!.SetValue(prpData.InstatnceObject, GetInstance(prpData.Property.PropertyType));
+            }
+
+            while (initialInstanses.Value!.Any())
+                initialInstanses.Value!.Pop().InitInstance();
         }
 
         private static void puhStackAndCheckRecursion(Type typeInstance)

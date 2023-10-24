@@ -106,7 +106,14 @@ namespace Cav.Container
             }
 
             if (res is IInitInstance ires)
-                initialInstanses.Value!.Push(ires);
+                try
+                {
+                    ires.InitInstance();
+                }
+                catch
+                {
+                    initialInstanses.Value!.Push(ires);
+                }
 
             popStack();
 

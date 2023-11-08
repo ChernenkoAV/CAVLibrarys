@@ -90,7 +90,6 @@ public static class HeplerDataAcces
         return val;
     }
 
-#pragma warning disable CA1801 // Проверьте неиспользуемые параметры
 #pragma warning disable IDE0060 // Удалите неиспользуемый параметр
     internal static T ForParceParams<T>(this T obj, Expression prop, object val) where T : class => obj;
 
@@ -102,5 +101,5 @@ public static class HeplerDataAcces
     /// <param name="setProp">Свойство, которое необходимо настроить</param>
     /// <param name="value">Значения свойства</param>
     /// <returns></returns>
-    public static T SetParam<T>(this T instParam, Expression<Func<T, object>> setProp, object value) where T : IAdapterParametrs => instParam;
+    public static T SetParam<T>(this T instParam, Expression<Func<T, object?>> setProp, object? value) where T : IAdapterParametrs => instParam;
 }

@@ -13,7 +13,7 @@
     </ItemGroup>
 
     <PropertyGroup>
-        <PackageVersion>9.2.3</PackageVersion>
+        <PackageVersion>9.3.0</PackageVersion>
         <Description>A set of utilities that facilitate routine operations</Description>
         <PackageTags>сav utils</PackageTags>
     </PropertyGroup>

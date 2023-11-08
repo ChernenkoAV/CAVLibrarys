@@ -28,13 +28,16 @@ namespace Cav.Container
         /// </summary>
         /// <param name="typeInstance"></param>
         /// <returns></returns>
-        public static object? GetInstance(Type typeInstance)
+        public static object GetInstance(Type typeInstance)
         {
             if (typeInstance == null)
                 throw new ArgumentNullException(nameof(typeInstance));
 
             if ((Nullable.GetUnderlyingType(typeInstance) ?? typeInstance).IsValueType || typeInstance == typeof(string))
-                return typeInstance.GetDefault();
+                return typeInstance.GetDefault()!;
+
+            if (typeInstance.IsArray)
+                return GetInstances(typeInstance.GetElementType()!);
 
             if (typeInstance.IsInterface || typeInstance.IsAbstract)
             {
@@ -43,7 +46,7 @@ namespace Cav.Container
                     throw new ArgumentException($"{(typeInstance.IsInterface ? "Интерфейс" : "Абстрактный класс")} {typeInstance.FullName} имеет более одной реализации");
                 if (insAbsO.Length == 0)
                     throw new ArgumentException($"{(typeInstance.IsInterface ? "Интерфейс" : "Абстрактный класс")} {typeInstance.FullName} не имеет реализаций");
-                return insAbsO.GetValue(0);
+                return insAbsO.GetValue(0)!;
             }
 
             if (!typeInstance.IsClass)
@@ -208,7 +211,7 @@ namespace Cav.Container
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static T? GetInstance<T>() where T : class => (T?)GetInstance(typeof(T));
+        public static T GetInstance<T>() where T : class => (T)GetInstance(typeof(T));
         /// <summary>
         /// Получить экземпляры объектов типа - наследника указанного
         /// </summary>
@@ -234,10 +237,7 @@ namespace Cav.Container
 
                 #region Прогружаем референсные сборки в домен приложения
 
-#pragma warning disable IDE0039 // Использовать локальную функцию
-                Action<Assembly> recursionLoadAssembly = null!;
-#pragma warning restore IDE0039 // Использовать локальную функцию
-                recursionLoadAssembly = asbly =>
+                void recursionLoadAssembly(Assembly asbly)
                 {
                     var referAss = asbly
                         .GetReferencedAssemblies()
@@ -253,7 +253,7 @@ namespace Cav.Container
                         }
                         catch { }
                     }
-                };
+                }
 
                 foreach (var aitem in AppDomain.CurrentDomain.GetAssemblies().ToArray())
                     recursionLoadAssembly(aitem);
@@ -264,8 +264,7 @@ namespace Cav.Container
 
                 var res = new List<Type>();
 
-#pragma warning disable IDE0039 // Использовать локальную функцию
-                Func<IEnumerable<Type>, List<Type>> filterTypes = inLi => inLi
+                List<Type> filterTypes(IEnumerable<Type> inLi) => inLi
                     .Where(x =>
                         !x.IsAbstract &&
                         !x.IsInterface &&
@@ -275,7 +274,6 @@ namespace Cav.Container
                         !x.GetTypeInfo().GenericTypeParameters.Any() &&
                         x.GetConstructors().Any())
                     .ToList();
-#pragma warning restore IDE0039 // Использовать локальную функцию
 
                 foreach (var aitem in assemblysForWork)
                 {

@@ -47,6 +47,8 @@ public static class ExtObject
         where T : struct =>
         val ?? operand;
 
+    private static readonly char[] separator = ['.'];
+
     /// <summary>
     /// Получение свойства у объекта. Обработка вложеных объектов
     /// </summary>
@@ -59,7 +61,7 @@ public static class ExtObject
         if (pathProperty.IsNullOrWhiteSpace())
             return null;
 
-        var elnts = pathProperty.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+        var elnts = pathProperty.Split(separator, StringSplitOptions.RemoveEmptyEntries);
 
         object? res = obj;
 

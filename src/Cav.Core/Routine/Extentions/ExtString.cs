@@ -5,6 +5,8 @@
 /// </summary>
 public static class ExtString
 {
+    private static readonly char[] trimChars = [' ', '\r', '\n'];
+
     /// <summary>
     /// Усечение начальных и конечных пробелов и преводов кареток. Если строка null или состояла из пробелов и/или переводов кареток - вернет null.
     /// </summary>
@@ -15,7 +17,7 @@ public static class ExtString
         if (str == null)
             return null;
 
-        str = str.Trim(new[] { ' ', '\r', '\n' });
+        str = str.Trim(trimChars);
         return str.GetNullIfIsNullOrWhiteSpace();
     }
 
@@ -190,7 +192,7 @@ public static class ExtString
     }
 
     /// <summary>
-    /// Удаление из начала строи совпадающей строки. Если исходная строка или терм замены <see cref="string.Empty"/> или null - возвращается исходная строка
+    /// Удаление из начала строки совпадающей строки. Если исходная строка или терм замены <see cref="string.Empty"/> или null - возвращается исходная строка
     /// </summary>
     /// <param name="str">Исхоная строка</param>
     /// <param name="termVal">Терм замены</param>
@@ -203,10 +205,9 @@ public static class ExtString
         if (string.IsNullOrEmpty(str))
             return str;
 
-        if (str!.IndexOf(termVal) != 0)
+        if (!str!.StartsWith(termVal))
             return str;
-#pragma warning disable IDE0057 // Substring можно упростить
-        return str.Substring(termVal!.Length);
-#pragma warning restore IDE0057 // Substring можно упростить
+
+        return str[termVal!.Length..];
     }
 }

@@ -35,7 +35,7 @@ public static class ExtEnum
     public static IEnumerable<T> FlagToList<T>(this T flag) where T : Enum =>
         Enum.GetValues(flag.GetType())
             .Cast<T>()
-            .Where(x => Convert.ToUInt64(x) != 0L && flag.HasFlag(x)).ToArray();
+            .Where(x => Convert.ToInt64(x) != 0L && flag.HasFlag(x)).ToArray();
 
     /// <summary>
     /// Получение коллекции значений-описаний (атрибут <see cref="DescriptionAttribute"/>) для типа перечесления.

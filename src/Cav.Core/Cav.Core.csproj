@@ -8,12 +8,16 @@
         <DefineConstants>TRACE</DefineConstants>
     </PropertyGroup>
 
+    <ItemGroup Condition="'$(TargetFramework)' != 'netstandard2.0'">
+      <Compile Remove="ForNetstadard20.cs" />
+    </ItemGroup>
+
     <ItemGroup>
         <PackageReference Include="Newtonsoft.Json" Version="13.*" />
     </ItemGroup>
 
     <PropertyGroup>
-        <PackageVersion>9.3.0</PackageVersion>
+        <PackageVersion>9.3.1</PackageVersion>
         <Description>A set of utilities that facilitate routine operations</Description>
         <PackageTags>сav utils</PackageTags>
     </PropertyGroup>

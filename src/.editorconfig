@@ -22,6 +22,9 @@ dotnet_separate_import_directive_groups = false
 dotnet_sort_system_directives_first = true
 file_header_template = unset
 
+# Объявления пространств имен должны иметь область действия файла.
+csharp_style_namespace_declarations = file_scoped
+
 # Предпочтения для this. и Me.
 dotnet_style_qualification_for_event = false:warning
 dotnet_style_qualification_for_field = false

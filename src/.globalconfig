@@ -10,6 +10,8 @@ dotnet_analyzer_diagnostic.severity = error
 #Пометить сборки как CLSCompliant
 dotnet_diagnostic.CA1014.severity = none
 
+dotnet_diagnostic.CA1510.severity = none #CA1510: Use ArgumentNullException throw helper
+
 # Тип "Program" относится к статическим заполнителям, однако не является ни Static, ни NotInheritable
 dotnet_diagnostic.CA1052.severity = silent
 
@@ -21,6 +23,7 @@ dotnet_diagnostic.CA1307.severity = silent # CA1307 Используйте Strin
 dotnet_diagnostic.CA1308.severity = silent # CA1308 Нормализуйте строки в верхний регистр
 dotnet_diagnostic.CA1310.severity = silent
 dotnet_diagnostic.CA1311.severity = silent #CA1311 Укажите язык и региональные параметры или используйте инвариантную версию
+dotnet_diagnostic.CA1862.severity = silent # CA1862: Используйте перегрузки метода "StringComparison" для сравнения строк без учета регистра
 
 # Не предоставляйте универсальные списки
 dotnet_diagnostic.CA1002.severity = silent
@@ -59,7 +62,6 @@ dotnet_diagnostic.CA1040.severity = silent
 
 # CA1851: возможные несколько перечислений IEnumerable коллекции
 dotnet_diagnostic.CA1851.severity = silent
-
 # CA1716: идентификаторы не должны совпадать с ключевыми словами
 dotnet_diagnostic.CA1716.severity = suggestion
 
@@ -69,6 +71,12 @@ dotnet_diagnostic.CA1852.severity = silent
 dotnet_diagnostic.CA1812.severity = silent
 #CA2007 Попробуйте вызвать ConfigureAwait для ожидаемой задачи
 dotnet_diagnostic.CA2007.severity = suggestion
+
+
+dotnet_diagnostic.CA1860.severity = none #CA1860 Для ясности и для обеспечения производительности старайтесь сравнивать 'Length' с 0 вместо того, чтобы использовать 'Any()'
+
+dotnet_diagnostic.CA1721.severity = silent #CA1721: имена свойств не должны совпадать с именами методов get
+dotnet_diagnostic.CA5394.severity = suggestion #CA5394 Не используйте небезопасные генераторы случайных чисел.
 
 dotnet_diagnostic.IDE0130.severity = silent # Пространство имен (namespace) не соответствует структуре папок
 
@@ -81,4 +89,12 @@ dotnet_diagnostic.IDE0011.severity = silent # Добавление фигурн�
 
 dotnet_diagnostic.IDE0046.severity = suggestion # IDE0046: Преобразовать в условное выражение
 
-dotnet_diagnostic.IDE0160.severity = suggestion # IDE0160 Использование пространства имен с блочного уровня
+dotnet_diagnostic.IDE0160.severity = silent # IDE0160 Использование пространства имен с блочного уровня
+
+dotnet_diagnostic.IDE0032.severity = error #IDE0032 Использование автоматически реализуемого свойства. Включено в editorconfig, но что-то не отрабатывает
+dotnet_diagnostic.IDE0028.severity = warning #IDE0028 Используйте инициализаторы коллекций
+dotnet_diagnostic.IDE0290.severity = suggestion #IDE0290: Использовать основной конструктор
+dotnet_diagnostic.IDE0300.severity = suggestion #IDE0300: Инициализацию коллекции можно упростить.
+dotnet_diagnostic.IDE0301.severity = suggestion #IDE0301 Инициализацию коллекции можно упростить.
+dotnet_diagnostic.IDE0305.severity = suggestion #IDE0305: Инициализацию коллекции можно упростить.
+dotnet_diagnostic.IDE0090.severity = suggestion #IDE0090: выражение new можно упростить

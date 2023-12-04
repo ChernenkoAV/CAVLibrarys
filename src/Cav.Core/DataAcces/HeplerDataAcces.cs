@@ -31,7 +31,7 @@ public static class HeplerDataAcces
         typeMaps[typeof(byte[])] = DbType.Binary;
     }
 
-    private static Dictionary<Type, DbType> typeMaps = new();
+    private static Dictionary<Type, DbType> typeMaps = [];
 
     /// <summary>
     /// Возможность сопоставить тип <see cref="Type"/>  с типом <see cref="DbType"/> 

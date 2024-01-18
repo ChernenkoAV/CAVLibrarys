@@ -23,13 +23,17 @@ public static class ExtJson
     /// <param name="obj"></param>
     /// <param name="state">Заданное состояние контекста</param>
     /// <param name="additional">Любые дополнительные сведения</param>
+    /// <param name="pretty">форматировать вывод</param>
     /// <returns></returns>
-    public static string? JsonSerialize(this object? obj, StreamingContextStates state, object? additional = null) =>
+    public static string? JsonSerialize(this object? obj, StreamingContextStates state, object? additional = null, bool pretty = false) =>
         obj is null
             ? null
             : obj is IEnumerable ien && !ien.GetEnumerator().MoveNext()
                 ? null
-                : JsonConvert.SerializeObject(obj, getJsetting(state, additional));
+                : JsonConvert.SerializeObject(
+                    obj,
+                    pretty ? Formatting.Indented : Formatting.None,
+                    getJsetting(state, additional));
 
     /// <summary>
     /// Json сериализация. null не выводятся. Пустые <see cref="IEnumerable"/> тождественны null.
@@ -37,6 +41,13 @@ public static class ExtJson
     /// <param name="obj"></param>
     /// <returns></returns>
     public static string? JsonSerialize(this object? obj) => obj.JsonSerialize(0, null);
+    /// <summary>
+    /// Json сериализация. null не выводятся. Пустые <see cref="IEnumerable"/> тождественны null.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="pretty">форматировать вывод</param>
+    /// <returns></returns>
+    public static string? JsonSerialize(this object? obj, bool pretty) => obj.JsonSerialize(0, null, pretty);
 
     /// <summary>
     /// Json десериализация (c наполением контекста). возврат: Если тип реализует <see cref="IList"/> - пустую коллекцию(что б в коде не проверять на null и сразу юзать foreach)

@@ -96,9 +96,14 @@ public static class ExtJson
                 return Array.CreateInstance(type.GetElementType()!, 0);
 
             // Для всяких HashList и тд
-            if (type.IsGenericType &&
-                type.GetGenericTypeDefinition() == typeof(IEnumerable<>) &&
-                type.GetGenericArguments().Length == 1)
+            if (
+                    ( // этот код и массивы определяет, но не пропусает на ограничении, что генерик аргумент должен быть один
+                        (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>)) ||
+                        type.GetInterfaces().Any(x => x.IsConstructedGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                    ) &&
+                    type.GetGenericArguments().Length == 1 &&
+                    type != typeof(string)
+                )
                 return Array.CreateInstance(type.GetGenericArguments().Single(), 0);
 
             //Для Dictionary<> и тд

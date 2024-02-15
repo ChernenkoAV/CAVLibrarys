@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using System.Data;
 using System.Linq.Expressions;
 
@@ -68,7 +68,7 @@ public class DataAccesBase<TRow, TSelectParams, TUpdateParams, TDeleteParams> : 
                 Expression.Call(
                     typeof(HeplerDataAcces),
                     nameof(HeplerDataAcces.ForParceParams),
-                    new Type[] { typeof(TRow) },
+                    [typeof(TRow)],
                     insadeCall,
                     Expression.Quote(property),
                     Expression.Quote(property));

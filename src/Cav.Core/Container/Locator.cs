@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Reflection;
 
@@ -42,11 +42,11 @@ public static class Locator
         if (typeInstance.IsInterface || typeInstance.IsAbstract)
         {
             var insAbsO = GetInstances(typeInstance);
-            if (insAbsO.Length > 1)
-                throw new ArgumentException($"{(typeInstance.IsInterface ? "Интерфейс" : "Абстрактный класс")} {typeInstance.FullName} имеет более одной реализации");
-            if (insAbsO.Length == 0)
-                throw new ArgumentException($"{(typeInstance.IsInterface ? "Интерфейс" : "Абстрактный класс")} {typeInstance.FullName} не имеет реализаций");
-            return insAbsO.GetValue(0)!;
+            return insAbsO.Length > 1
+                ? throw new ArgumentException($"{(typeInstance.IsInterface ? "Интерфейс" : "Абстрактный класс")} {typeInstance.FullName} имеет более одной реализации")
+                : insAbsO.Length == 0
+                    ? throw new ArgumentException($"{(typeInstance.IsInterface ? "Интерфейс" : "Абстрактный класс")} {typeInstance.FullName} не имеет реализаций")
+                    : insAbsO.GetValue(0)!;
         }
 
         if (!typeInstance.IsClass)
@@ -196,7 +196,7 @@ public static class Locator
         if (typeForCreate.Count == 0 &&
             typeParent.IsClass &&
             !typeParent.IsAbstract &&
-            typeParent.GetConstructor(Array.Empty<Type>()) != null)
+            typeParent.GetConstructor([]) != null)
             typeForCreate.Add(typeParent);
 
         var res = Array.CreateInstance(typeParent, typeForCreate.Count);

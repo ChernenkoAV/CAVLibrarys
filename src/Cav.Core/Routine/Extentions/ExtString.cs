@@ -192,22 +192,13 @@ public static class ExtString
     }
 
     /// <summary>
-    /// Удаление из начала строки совпадающей строки. Если исходная строка или терм замены <see cref="string.Empty"/> или null - возвращается исходная строка
+    /// Удаление из начала строки совпадающей строки. Если исходная строка или терм замены <see cref="string.Empty"/> или <see langword="null"/> - возвращается исходная строка
     /// </summary>
     /// <param name="str">Исхоная строка</param>
     /// <param name="termVal">Терм замены</param>
     /// <returns></returns>
-    public static string? TrimStart2(this string? str, string? termVal)
-    {
-        if (string.IsNullOrEmpty(termVal))
-            return str;
-
-        if (string.IsNullOrEmpty(str))
-            return str;
-
-        if (!str!.StartsWith(termVal))
-            return str;
-
-        return str[termVal!.Length..];
-    }
+    public static string? TrimStart2(this string? str, string? termVal) =>
+        string.IsNullOrEmpty(termVal) || string.IsNullOrEmpty(str) || !str!.StartsWith(termVal)
+            ? str
+            : str[termVal!.Length..];
 }

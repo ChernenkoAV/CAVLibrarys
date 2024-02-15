@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Linq.Expressions;
 using System.Xml.Linq;
 using Cav.ReflectHelpers;
@@ -46,7 +46,7 @@ public static class ExtExpressionTree
     [Obsolete("Будет удалено")]
     public static Expression XElementNew(this string newElementName, Expression xNamespace) =>
         Expression.New(
-            typeof(XElement).GetConstructor(new[] { typeof(XName) })!,
+            typeof(XElement).GetConstructor([typeof(XName)])!,
             Expression.Convert(Expression.Add(xNamespace, Expression.Constant(newElementName)), typeof(XName)));
 
     /// <summary>
@@ -103,9 +103,9 @@ public static class ExtExpressionTree
     public static Expression XElementAddContentValue(this Expression instanseXElement, string newElementName, string xmlNamespace, Expression contentValue) =>
         Expression.Call(
             instanseXElement,
-            typeof(XElement).GetMethod(nameof(XElement.Add), new[] { typeof(object) })!,
+            typeof(XElement).GetMethod(nameof(XElement.Add), [typeof(object)])!,
             Expression.New(
-                typeof(XElement).GetConstructor(new[] { typeof(XName), typeof(object) })!,
+                typeof(XElement).GetConstructor([typeof(XName), typeof(object)])!,
                 newElementName.XName(xmlNamespace),
                 Expression.Convert(contentValue, typeof(object))));
 
@@ -118,7 +118,7 @@ public static class ExtExpressionTree
     public static Expression XElementAddContent(this Expression instanseXElement, Expression contentValue) =>
         Expression.Call(
             instanseXElement,
-            typeof(XElement).GetMethod(nameof(XElement.Add), new[] { typeof(object) })!,
+            typeof(XElement).GetMethod(nameof(XElement.Add), [typeof(object)])!,
             Expression.Convert(contentValue, typeof(object)));
 
     /// <summary>
@@ -129,7 +129,7 @@ public static class ExtExpressionTree
     /// <returns></returns>
     public static Expression XElementNew(this string newElementName, string xmlNamespace) =>
         Expression.New(
-            typeof(XElement).GetConstructor(new[] { typeof(XName) })!,
+            typeof(XElement).GetConstructor([typeof(XName)])!,
             newElementName.XName(xmlNamespace));
 
     /// <summary>
@@ -143,10 +143,10 @@ public static class ExtExpressionTree
         termName.IsNullOrWhiteSpace()
             ? Expression.Call(
                 sourceXml,
-                typeof(XContainer).GetMethod(nameof(XContainer.Elements), Array.Empty<Type>())!)
+                typeof(XContainer).GetMethod(nameof(XContainer.Elements), [])!)
             : Expression.Call(
                 sourceXml,
-                typeof(XContainer).GetMethod(nameof(XContainer.Elements), new[] { typeof(XName) })!,
+                typeof(XContainer).GetMethod(nameof(XContainer.Elements), [typeof(XName)])!,
                 termName!.XName(xmlNamespace));
 
     /// <summary>
@@ -159,7 +159,7 @@ public static class ExtExpressionTree
     public static Expression XElementElement(this Expression sourceXml, string termName, string? xmlNamespace = null) =>
         Expression.Call(
             sourceXml,
-            typeof(XContainer).GetMethod(nameof(XContainer.Element), new[] { typeof(XName) })!,
+            typeof(XContainer).GetMethod(nameof(XContainer.Element), [typeof(XName)])!,
             termName.XName(xmlNamespace));
 
     /// <summary>
@@ -193,12 +193,12 @@ public static class ExtExpressionTree
         var breakLabel = Expression.Label("LoopBreak_" + enumeratorName);
 
         var loop = Expression.Block(
-            new[] { enumeratorVar },
+            [enumeratorVar],
             enumeratorAssign,
             Expression.Loop(
                 Expression.IfThenElse(
                     Expression.Equal(moveNextCall, Expression.Constant(true)),
-                    Expression.Block(new[] { loopVar },
+                    Expression.Block([loopVar],
                         Expression.Assign(loopVar, Expression.Property(enumeratorVar, nameof(IEnumerator.Current))),
                         loopContent),
                     Expression.Break(breakLabel)
@@ -268,7 +268,7 @@ public static class ExtExpressionTree
 
         return Expression.Call(
             listCollection,
-            resType.GetMethod(nameof(IList.Add), new[] { itemType })!,
+            resType.GetMethod(nameof(IList.Add), [itemType])!,
             value);
     }
 
@@ -277,14 +277,10 @@ public static class ExtExpressionTree
     /// </summary>
     /// <param name="stringValue">Выражение-строка (<see cref="string"/>)</param>
     /// <returns></returns>
-    public static Expression IsNullOrWhiteSpace(this Expression stringValue)
-    {
-        if (stringValue is null)
-            throw new ArgumentNullException(nameof(stringValue));
-
-        return Expression.Call(typeof(ExtString).GetMethod(nameof(ExtString.IsNullOrWhiteSpace))!, stringValue);
-
-    }
+    public static Expression IsNullOrWhiteSpace(this Expression stringValue) =>
+        stringValue is null
+            ? throw new ArgumentNullException(nameof(stringValue))
+            : Expression.Call(typeof(ExtString).GetMethod(nameof(ExtString.IsNullOrWhiteSpace))!, stringValue);
 
     /// <summary>
     /// Вызов расширения <see cref="ExtCollection.JoinValuesToString{T}(IEnumerable{T}, string, bool, string)"/> для строки
@@ -294,17 +290,14 @@ public static class ExtExpressionTree
     /// <param name="distinct">Только уникальные значения</param>
     /// <param name="format">Формат преобразования к строке каждого объекта в коллекции(по умолчанию "{0}")</param>
     /// <returns></returns>
-    public static Expression JoinValuesToString(this Expression collection, string separator = ",", bool distinct = true, string? format = null)
-    {
-        if (collection is null)
-            throw new ArgumentNullException(nameof(collection));
-
-        return Expression.Call(typeof(ExtCollection).GetMethod(nameof(ExtCollection.JoinValuesToString))!.MakeGenericMethod(collection.Type.GenericTypeArguments),
-            collection,
-            Expression.Constant(separator, typeof(string)),
-            Expression.Constant(distinct),
-            Expression.Constant(format, typeof(string)));
-    }
+    public static Expression JoinValuesToString(this Expression collection, string separator = ",", bool distinct = true, string? format = null) =>
+        collection is null
+            ? throw new ArgumentNullException(nameof(collection))
+            : Expression.Call(typeof(ExtCollection).GetMethod(nameof(ExtCollection.JoinValuesToString))!.MakeGenericMethod(collection.Type.GenericTypeArguments),
+                collection,
+                Expression.Constant(separator, typeof(string)),
+                Expression.Constant(distinct),
+                Expression.Constant(format, typeof(string)));
 
     /// <summary>
     /// Блок if (value != null) { then })

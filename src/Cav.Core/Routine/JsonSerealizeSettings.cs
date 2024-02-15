@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Reflection;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
@@ -57,19 +57,11 @@ internal class FlagEnumStringConverter : StringEnumConverter
     }
 }
 
-internal class NullListValueProvider : IValueProvider
+internal class NullListValueProvider(JsonProperty jsonProperty) : IValueProvider
 {
-    private readonly JsonProperty jsonProperty;
-    private readonly IValueProvider valueProvider;
-
-    public NullListValueProvider(JsonProperty jsonProperty)
-    {
-        this.jsonProperty = jsonProperty;
-        valueProvider = jsonProperty.ValueProvider!;
-    }
     public object? GetValue(object target)
     {
-        var inst = valueProvider.GetValue(target);
+        var inst = jsonProperty.ValueProvider!.GetValue(target);
 
         return inst == null
             ? null
@@ -86,24 +78,20 @@ internal class NullListValueProvider : IValueProvider
                 value = Array.CreateInstance(jsonProperty.PropertyType.GetElementType()!, 0);
             else
             {
-                if (jsonProperty.PropertyType.GetConstructor(Array.Empty<Type>()) != null)
+                if (jsonProperty.PropertyType.GetConstructor([]) != null)
                     value = Activator.CreateInstance(jsonProperty.PropertyType);
             }
         }
 
-        valueProvider.SetValue(target, value);
+        jsonProperty.ValueProvider!.SetValue(target, value);
     }
 }
 
-internal class StringNullEmtyValueProvider : IValueProvider
+internal class StringNullEmtyValueProvider(JsonProperty jsonProperty) : IValueProvider
 {
-    private readonly IValueProvider valueProvider;
-
-    public StringNullEmtyValueProvider(JsonProperty jsonProperty) =>
-        valueProvider = jsonProperty.ValueProvider!;
     public object? GetValue(object target)
     {
-        var inst = valueProvider.GetValue(target);
+        var inst = jsonProperty.ValueProvider!.GetValue(target);
 
         return ((string?)inst).GetNullIfIsNullOrWhiteSpace();
     }
@@ -111,7 +99,7 @@ internal class StringNullEmtyValueProvider : IValueProvider
     {
         value = ((string?)value).GetNullIfIsNullOrWhiteSpace();
 
-        valueProvider.SetValue(target, value);
+        jsonProperty.ValueProvider!.SetValue(target, value);
     }
 }
 
@@ -124,7 +112,7 @@ internal class CustomJsonContractResolver : DefaultContractResolver
 
         if (jProperty.PropertyType!.IsArray ||
             (typeof(IEnumerable).IsAssignableFrom(jProperty.PropertyType) &&
-            jProperty.PropertyType.GetConstructor(Array.Empty<Type>()) != null))
+            jProperty.PropertyType.GetConstructor([]) != null))
         {
             var olsShouldSerialise = jProperty.ShouldSerialize ?? (x => true);
 

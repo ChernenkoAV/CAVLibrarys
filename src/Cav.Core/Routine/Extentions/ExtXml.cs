@@ -133,15 +133,12 @@ public static class ExtXml
     /// <param name="xml">Строка, содержащая XML</param>
     /// <param name="type">Тип</param>
     /// <returns>Объект или default(T), если строка IsNullOrWhiteSpace</returns>
-    public static object? XMLDeserialize(this string xml, Type type)
-    {
-        if (type == null)
-            throw new ArgumentNullException(nameof(type));
-
-        return xml.IsNullOrWhiteSpace()
-            ? type.GetDefault()
-            : XDocument.Parse(xml).XMLDeserialize(type);
-    }
+    public static object? XMLDeserialize(this string xml, Type type) =>
+        type == null
+            ? throw new ArgumentNullException(nameof(type))
+            : xml.IsNullOrWhiteSpace()
+                ? type.GetDefault()
+                : XDocument.Parse(xml).XMLDeserialize(type);
 
     /// <summary>
     /// Десиарелизатор из файла

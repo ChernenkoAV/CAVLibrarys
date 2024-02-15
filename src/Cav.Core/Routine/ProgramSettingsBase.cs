@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Newtonsoft.Json.Linq;
 
 #pragma warning disable CA1019 // Определите методы доступа для аргументов атрибута
@@ -33,29 +33,27 @@ public enum Area
 /// <summary>
 /// Обрасть сохранения для свойства. Если не задано, то - <see cref="Area.UserLocal"/>
 /// </summary>
+/// <remarks>
+/// Указание области хранения дайла для свойства
+/// </remarks>
+/// <param name="areaSetting"></param>
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
-public sealed class ProgramSettingsAreaAttribute : Attribute
+public sealed class ProgramSettingsAreaAttribute(Area areaSetting) : Attribute
 {
-    /// <summary>
-    /// Указание области хранения дайла для свойства
-    /// </summary>
-    /// <param name="areaSetting"></param>
-    public ProgramSettingsAreaAttribute(Area areaSetting) => AreaSetting = areaSetting;
-    internal Area AreaSetting { get; private set; }
+    internal Area AreaSetting => areaSetting;
 }
 
 /// <summary>
 /// Имя файла. Если не заданно -  typeof(T).FullName + ".json"
 /// </summary>
+/// <remarks>
+/// Указание специфического имени файла хранения настроек
+/// </remarks>
+/// <param name="fileName"></param>
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-public sealed class ProgramSettingsFileAttribute : Attribute
+public sealed class ProgramSettingsFileAttribute(string fileName) : Attribute
 {
-    /// <summary>
-    /// Указание специфического имени файла хранения настроек
-    /// </summary>
-    /// <param name="fileName"></param>
-    public ProgramSettingsFileAttribute(string fileName) => FileName = fileName;
-    internal string FileName { get; private set; }
+    internal string FileName => fileName;
 }
 
 /// <summary>

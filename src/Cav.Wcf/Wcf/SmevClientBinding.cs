@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -157,13 +157,10 @@ namespace Cav.Wcf
             return clone;
         }
 
-        public override T GetProperty<T>(BindingContext context)
-        {
-            if (typeof(T) == typeof(XmlDictionaryReaderQuotas))
-                return innerBindingElement.GetProperty<T>(context);
-            else
-                return base.GetProperty<T>(context);
-        }
+        public override T GetProperty<T>(BindingContext context) =>
+            typeof(T) == typeof(XmlDictionaryReaderQuotas)
+                ? innerBindingElement.GetProperty<T>(context)
+                : base.GetProperty<T>(context);
 
         public override IChannelFactory<TChannel> BuildChannelFactory<TChannel>(BindingContext context)
         {
@@ -430,18 +427,14 @@ namespace Cav.Wcf
         /// <param name="baseAddresses"></param>
         /// <returns></returns>
 #pragma warning disable CA1725 // Имена параметров должны соответствовать базовому объявлению
-        protected override ServiceHost CreateServiceHost(Type t, Uri[] baseAddresses)
-#pragma warning restore CA1725 // Имена параметров должны соответствовать базовому объявлению
-        {
-            if (ImplemetationServiceType == null)
-                throw new InvalidOperationException("Не определен класс реализации сервиса");
-            if (CertificateServer == null)
-                throw new InvalidOperationException("Не определен сертификат сервера");
-            if (AlgorithmSuite == null)
-                throw new InvalidOperationException("Не определен набор алгоритмов");
-
-            return new SmevServiceHost(ImplemetationServiceType, baseAddresses, AlgorithmSuite, CertificateServer, SenderActor, RecipientActor);
-        }
+        protected override ServiceHost CreateServiceHost(Type t, Uri[] baseAddresses) =>
+            ImplemetationServiceType == null
+                ? throw new InvalidOperationException("Не определен класс реализации сервиса")
+                : CertificateServer == null
+                ? throw new InvalidOperationException("Не определен сертификат сервера")
+                : AlgorithmSuite == null
+                ? throw new InvalidOperationException("Не определен набор алгоритмов")
+                : (ServiceHost)new SmevServiceHost(ImplemetationServiceType, baseAddresses, AlgorithmSuite, CertificateServer, SenderActor, RecipientActor);
 
         /// <summary>
         /// Создание нового экземпляра хоста службы

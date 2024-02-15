@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Reflection;
 
 namespace Cav.ReflectHelpers;
@@ -15,15 +14,12 @@ public static class ExtReflection
     /// <param name="obj">экземпляр объекта</param>
     /// <param name="propertyName">Имя свойства</param>
     /// <returns></returns>
-    public static object? GetPropertyValue(this object obj, string propertyName)
-    {
-        if (obj is null)
-            throw new ArgumentNullException(nameof(obj));
-        if (string.IsNullOrWhiteSpace(propertyName))
-            throw new ArgumentException($"\"{nameof(propertyName)}\" не может быть пустым или содержать только пробел.", nameof(propertyName));
-
-        return obj.GetType().GetProperty(propertyName)!.GetValue(obj);
-    }
+    public static object? GetPropertyValue(this object obj, string propertyName) =>
+        obj is null
+            ? throw new ArgumentNullException(nameof(obj))
+            : string.IsNullOrWhiteSpace(propertyName)
+                ? throw new ArgumentException($"\"{nameof(propertyName)}\" не может быть пустым или содержать только пробел.", nameof(propertyName))
+                : obj.GetType().GetProperty(propertyName)!.GetValue(obj);
     /// <summary>
     /// Получение значения статического свойства / константного поля
     /// </summary>
@@ -78,13 +74,10 @@ public static class ExtReflection
     /// <typeparam name="T">Тип свойства для коллекции</typeparam>
     /// <param name="type">Просматреваемый тип</param>
     /// <returns></returns>
-    public static ReadOnlyCollection<T> GetStaticPropertys<T>(this Type type)
-    {
-        if (type is null)
-            throw new ArgumentNullException(nameof(type));
-
-        return new ReadOnlyCollection<T>(type.GetStaticPropertys(typeof(T)).Cast<T>().ToArray());
-    }
+    public static ReadOnlyCollection<T> GetStaticPropertys<T>(this Type type) =>
+        type is null
+            ? throw new ArgumentNullException(nameof(type))
+            : new ReadOnlyCollection<T>(type.GetStaticPropertys(typeof(T)).Cast<T>().ToArray());
 
     /// <summary>
     /// Получение значений статических полей коллекцией
@@ -218,27 +211,20 @@ public static class ExtReflection
     /// </summary>
     /// <param name="type"></param>
     /// <returns>Первый генерик-тип в перечеслении</returns>
-    public static Type? GetEnumeratedType(this Type type)
-    {
-        if (type is null)
-            throw new ArgumentNullException(nameof(type));
-
-        return type.GetElementType() ??
-        (typeof(IEnumerable).IsAssignableFrom(type) ? type.GenericTypeArguments.FirstOrDefault() : null);
-    }
+    public static Type? GetEnumeratedType(this Type type) =>
+        type is null
+            ? throw new ArgumentNullException(nameof(type))
+            : type.GetElementType() ?? (type.IsGenericType ? type.GenericTypeArguments.FirstOrDefault() : null);
 
     /// <summary>
     /// Является ли тип <see cref="List{T}"/> или <see cref="HashSet{T}"/>
     /// </summary>
     /// <param name="type"></param>
     /// <returns></returns>
-    public static bool IsIList(this Type type)
-    {
-        if (type is null)
-            throw new ArgumentNullException(nameof(type));
-
-        return type.IsGenericType && (type.GetGenericTypeDefinition() == typeof(List<>) || type.GetGenericTypeDefinition() == typeof(HashSet<>));
-    }
+    public static bool IsIList(this Type type) =>
+        type is null
+            ? throw new ArgumentNullException(nameof(type))
+            : type.IsGenericType && (type.GetGenericTypeDefinition() == typeof(List<>) || type.GetGenericTypeDefinition() == typeof(HashSet<>));
 
     /// <summary>
     /// Распаковать тип из <see cref="Nullable{T}"/>, либо получить тип из коллекции.

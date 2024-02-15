@@ -96,10 +96,9 @@ public static class DbContext
         if (connectionName.IsNullOrWhiteSpace())
             connectionName = defaultNameConnection;
 
-        if (!dcsb.TryGetValue(connectionName!, out var setCon))
-            throw new InvalidOperationException("Соединение с БД не настроено");
-
-        return setCon.ProviderFactory;
+        return !dcsb.TryGetValue(connectionName!, out var setCon)
+            ? throw new InvalidOperationException("Соединение с БД не настроено")
+            : setCon.ProviderFactory;
     }
 
     /// <summary>

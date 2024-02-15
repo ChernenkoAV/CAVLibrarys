@@ -1,6 +1,22 @@
 # Удалите строку ниже, если вы хотите наследовать параметры .editorconfig из каталогов, расположенных выше в иерархии
 root = true
 
+[*]
+charset = utf-8
+# Предпочтения для новых строк
+end_of_line = crlf
+insert_final_newline = false
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+tab_width = 2
+
+[*.md]
+trim_trailing_whitespace = false
+
+[*.{xml,csproj,props,targets,cshtml}]
+indent_size = 4
+
 # Файлы C#
 [*.cs]
 
@@ -8,12 +24,7 @@ root = true
 
 # Отступы и интервалы
 indent_size = 4
-indent_style = space
 tab_width = 4
-
-# Предпочтения для новых строк
-end_of_line = crlf
-insert_final_newline = false
 
 #### Рекомендации по написанию кода .NET ####
 
@@ -88,7 +99,7 @@ csharp_style_expression_bodied_constructors = true:suggestion
 csharp_style_expression_bodied_indexers = true:suggestion
 csharp_style_expression_bodied_lambdas = true:suggestion
 csharp_style_expression_bodied_local_functions = true:suggestion
-csharp_style_expression_bodied_methods = true:suggestion
+csharp_style_expression_bodied_methods = true:warning
 csharp_style_expression_bodied_operators = true:suggestion
 csharp_style_expression_bodied_properties = true:suggestion
 
@@ -314,3 +325,6 @@ dotnet_naming_style.camel_case.capitalization = camel_case
 
 # Default severity for analyzer diagnostics with category 'Globalization'
 dotnet_analyzer_diagnostic.category-Globalization.severity = silent
+
+# Используйте тело выражения для методов
+dotnet_diagnostic.IDE0022.severity = error 

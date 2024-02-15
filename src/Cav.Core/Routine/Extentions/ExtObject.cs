@@ -12,16 +12,12 @@ public static class ExtObject
     /// </summary>
     /// <param name="type">Тип, для которого необходимо получить значение</param>
     /// <returns>Значение по уполчанию</returns>
-    public static object? GetDefault(this Type type)
-    {
-        if (type is null)
-            throw new ArgumentNullException(nameof(type));
-
-        if (type.IsValueType)
-            return Activator.CreateInstance(type);
-
-        return null;
-    }
+    public static object? GetDefault(this Type type) =>
+        type is null
+            ? throw new ArgumentNullException(nameof(type))
+            : type.IsValueType
+                ? Activator.CreateInstance(type)
+                : null;
 
     /// <summary>
     /// Выражение "null если" для типов структур
@@ -32,9 +28,7 @@ public static class ExtObject
     /// <returns></returns>
     public static T? NullIf<T>(this T exp, T operand)
         where T : struct =>
-#pragma warning disable IDE0004 //: Приведение избыточно. (в 4.8 пока нету)
         exp.Equals(operand) ? null : exp;
-#pragma warning restore IDE0004 //: Приведение избыточно. (в 4.8 пока нету)
 
     /// <summary>
     /// Повтор IFNULL() из T-SQL для структур

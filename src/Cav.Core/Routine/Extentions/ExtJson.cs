@@ -107,11 +107,10 @@ public static class ExtJson
                 return Array.CreateInstance(type.GetGenericArguments().Single(), 0);
 
             //Для Dictionary<> и тд
-            if (typeof(IEnumerable).IsAssignableFrom(type) &&
-                type.GetConstructor(Array.Empty<Type>()) != null)
-                return Activator.CreateInstance(type);
-
-            return type.GetDefault();
+            return
+                typeof(IEnumerable).IsAssignableFrom(type) && type.GetConstructor([]) != null
+                    ? Activator.CreateInstance(type)
+                    : type.GetDefault();
         }
 
         return JsonConvert.DeserializeObject(s!, type, getJsetting(state, additional));
@@ -176,11 +175,6 @@ public static class ExtJson
     /// <typeparam name="T"></typeparam>
     /// <param name="source"></param>
     /// <returns></returns>
-    public static T? Copy<T>(this T source) where T : class, new()
-    {
-        if (source == null)
-            return null;
-
-        return source.JsonSerialize().JsonDeserealize<T>();
-    }
+    public static T? Copy<T>(this T source) where T : class, new() =>
+        source?.JsonSerialize().JsonDeserealize<T>();
 }

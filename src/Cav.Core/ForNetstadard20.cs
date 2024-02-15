@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace System
@@ -38,52 +38,29 @@ namespace System
         private Index(int value) => _value = value;
 
         /// <summary>Create an Index pointing at first element.</summary>
-        public static Index Start => new Index(0);
+        public static Index Start => new(0);
 
         /// <summary>Create an Index pointing at beyond last element.</summary>
-        public static Index End => new Index(~0);
+        public static Index End => new(~0);
 
         /// <summary>Create an Index from the start at the position indicated by the value.</summary>
         /// <param name="value">The index value from the start.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Index FromStart(int value)
-        {
-            if (value < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(value), "value must be non-negative");
-            }
-
-            return new Index(value);
-        }
+        public static Index FromStart(int value) =>
+            value < 0
+            ? throw new ArgumentOutOfRangeException(nameof(value), "value must be non-negative")
+            : new Index(value);
 
         /// <summary>Create an Index from the end at the position indicated by the value.</summary>
         /// <param name="value">The index value from the end.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Index FromEnd(int value)
-        {
-            if (value < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(value), "value must be non-negative");
-            }
-
-            return new Index(~value);
-        }
+        public static Index FromEnd(int value) =>
+            value < 0
+            ? throw new ArgumentOutOfRangeException(nameof(value), "value must be non-negative")
+            : new Index(~value);
 
         /// <summary>Returns the index value.</summary>
-        public int Value
-        {
-            get
-            {
-                if (_value < 0)
-                {
-                    return ~_value;
-                }
-                else
-                {
-                    return _value;
-                }
-            }
-        }
+        public int Value => _value < 0 ? ~_value : _value;
 
         /// <summary>Indicates whether the index is from the start or the end.</summary>
         public bool IsFromEnd => _value < 0;
@@ -97,20 +74,8 @@ namespace System
         /// then used to index a collection will get out of range exception which will be same affect as the validation.
         /// </remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetOffset(int length)
-        {
-            var offset = _value;
-            if (IsFromEnd)
-            {
-                // offset = length - (~value)
-                // offset = length + (~(~value) + 1)
-                // offset = length + value + 1
-
-                offset += length + 1;
-            }
-
-            return offset;
-        }
+        public int GetOffset(int length) =>
+            IsFromEnd ? _value : _value + length + 1;
 
         /// <summary>Indicates whether the current Index object is equal to another object of the same type.</summary>
         /// <param name="value">An object to compare with this object</param>
@@ -127,13 +92,10 @@ namespace System
         public static implicit operator Index(int value) => FromStart(value);
 
         /// <summary>Converts the value of the current Index object to its equivalent string representation.</summary>
-        public override string ToString()
-        {
-            if (IsFromEnd)
-                return "^" + ((uint)Value).ToString();
-
-            return ((uint)Value).ToString();
-        }
+        public override string ToString() =>
+            IsFromEnd
+                ? "^" + ((uint)Value).ToString()
+                : ((uint)Value).ToString();
     }
 
     /// <summary>Represent a range has start and end indexes.</summary>
@@ -145,22 +107,16 @@ namespace System
     /// int[] subArray2 = someArray[1..^0]; // { 2, 3, 4, 5 }
     /// </code>
     /// </remarks>
-    internal readonly struct Range : IEquatable<Range>
+    /// <remarks>Construct a Range object using the start and end indexes.</remarks>
+    /// <param name="start">Represent the inclusive start index of the range.</param>
+    /// <param name="end">Represent the exclusive end index of the range.</param>
+    internal readonly struct Range(Index start, Index end) : IEquatable<Range>
     {
         /// <summary>Represent the inclusive start index of the Range.</summary>
-        public Index Start { get; }
+        public Index Start { get; } = start;
 
         /// <summary>Represent the exclusive end index of the Range.</summary>
-        public Index End { get; }
-
-        /// <summary>Construct a Range object using the start and end indexes.</summary>
-        /// <param name="start">Represent the inclusive start index of the range.</param>
-        /// <param name="end">Represent the exclusive end index of the range.</param>
-        public Range(Index start, Index end)
-        {
-            Start = start;
-            End = end;
-        }
+        public Index End { get; } = end;
 
         /// <summary>Indicates whether the current Range object is equal to another object of the same type.</summary>
         /// <param name="value">An object to compare with this object</param>
@@ -180,13 +136,13 @@ namespace System
         public override string ToString() => Start + ".." + End;
 
         /// <summary>Create a Range object starting from start index to the end of the collection.</summary>
-        public static Range StartAt(Index start) => new Range(start, Index.End);
+        public static Range StartAt(Index start) => new(start, Index.End);
 
         /// <summary>Create a Range object starting from first element in the collection to the end Index.</summary>
-        public static Range EndAt(Index end) => new Range(Index.Start, end);
+        public static Range EndAt(Index end) => new(Index.Start, end);
 
         /// <summary>Create a Range object starting from first element to the end.</summary>
-        public static Range All => new Range(Index.Start, Index.End);
+        public static Range All => new(Index.Start, Index.End);
 
         /// <summary>Calculate the start offset and length of range object using a collection length.</summary>
         /// <param name="length">The length of the collection that the range will be used with. length has to be a positive value.</param>
@@ -235,7 +191,7 @@ namespace System.Runtime.CompilerServices
 
                 if (length == 0)
                 {
-                    return Array.Empty<T>();
+                    return [];
                 }
 
                 var dest = new T[length];

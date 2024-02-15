@@ -37,30 +37,18 @@ public static class ExtDateTime
     /// <param name="self">Экземпляр <see cref="DateTime"/></param>
     /// <param name="resolution">Точность, до которой усечь</param>
     /// <returns></returns>
-    public static DateTime Truncate(this DateTime self, DateTimeTruncateResolution resolution = DateTimeTruncateResolution.Second)
-    {
-#pragma warning disable IDE0066 // Преобразовать оператор switch в выражение
-        switch (resolution)
-#pragma warning restore IDE0066 // Преобразовать оператор switch в выражение
+    public static DateTime Truncate(this DateTime self, DateTimeTruncateResolution resolution = DateTimeTruncateResolution.Second) =>
+        resolution switch
         {
-            case DateTimeTruncateResolution.Year:
-                return new DateTime(self.Year, 1, 1, 0, 0, 0, 0, self.Kind);
-            case DateTimeTruncateResolution.Month:
-                return new DateTime(self.Year, self.Month, 1, 0, 0, 0, self.Kind);
-            case DateTimeTruncateResolution.Day:
-                return new DateTime(self.Year, self.Month, self.Day, 0, 0, 0, self.Kind);
-            case DateTimeTruncateResolution.Hour:
-                return self.AddTicks(-(self.Ticks % TimeSpan.TicksPerHour));
-            case DateTimeTruncateResolution.Minute:
-                return self.AddTicks(-(self.Ticks % TimeSpan.TicksPerMinute));
-            case DateTimeTruncateResolution.Second:
-                return self.AddTicks(-(self.Ticks % TimeSpan.TicksPerSecond));
-            case DateTimeTruncateResolution.Millisecond:
-                return self.AddTicks(-(self.Ticks % TimeSpan.TicksPerMillisecond));
-            default:
-                throw new NotImplementedException(resolution.ToString());
-        }
-    }
+            DateTimeTruncateResolution.Year => new DateTime(self.Year, 1, 1, 0, 0, 0, 0, self.Kind),
+            DateTimeTruncateResolution.Month => new DateTime(self.Year, self.Month, 1, 0, 0, 0, self.Kind),
+            DateTimeTruncateResolution.Day => new DateTime(self.Year, self.Month, self.Day, 0, 0, 0, self.Kind),
+            DateTimeTruncateResolution.Hour => self.AddTicks(-(self.Ticks % TimeSpan.TicksPerHour)),
+            DateTimeTruncateResolution.Minute => self.AddTicks(-(self.Ticks % TimeSpan.TicksPerMinute)),
+            DateTimeTruncateResolution.Second => self.AddTicks(-(self.Ticks % TimeSpan.TicksPerSecond)),
+            DateTimeTruncateResolution.Millisecond => self.AddTicks(-(self.Ticks % TimeSpan.TicksPerMillisecond)),
+            _ => throw new NotImplementedException(resolution.ToString()),
+        };
 
     #region Возраст
 
@@ -79,10 +67,7 @@ public static class ExtDateTime
         var tdg = date2.Date;
 
         if (tdl > tdg)
-        {
-            tdg = tdl;
-            tdl = date2.Date;
-        }
+            (tdl, tdg) = (tdg, tdl);
 
         return tdl.AddYears(years) <= tdg;
     }
@@ -94,13 +79,8 @@ public static class ExtDateTime
     /// <param name="date2">Дата 2</param>
     /// <param name="years">Проверяемое количество полных лет</param>
     /// <returns>false, если одна из дат = null</returns>
-    public static bool ExistsAge(this DateTime? date1, DateTime date2, int years)
-    {
-        if (!date1.HasValue)
-            return false;
-
-        return date1.Value.ExistsAge(date2, years);
-    }
+    public static bool ExistsAge(this DateTime? date1, DateTime date2, int years) =>
+        date1.HasValue && date1.Value.ExistsAge(date2, years);
 
     /// <summary>
     /// Проверка, есть ли между датами указанное количество полных лет
@@ -109,13 +89,8 @@ public static class ExtDateTime
     /// <param name="date2">Дата 2</param>
     /// <param name="years">Проверяемое количество полных лет</param>
     /// <returns>false, если одна из дат = null</returns>
-    public static bool ExistsAge(this DateTime? date1, DateTime? date2, int years)
-    {
-        if (!date2.HasValue)
-            return false;
-
-        return date1.ExistsAge(date2.Value, years);
-    }
+    public static bool ExistsAge(this DateTime? date1, DateTime? date2, int years) =>
+        date2.HasValue && date1.ExistsAge(date2.Value, years);
 
     /// <summary>
     /// Проверка, есть ли между датами указанное количество полных лет
@@ -124,20 +99,15 @@ public static class ExtDateTime
     /// <param name="date2">Дата 2</param>
     /// <param name="years">Проверяемое количество полных лет</param>
     /// <returns>false, если одна из дат = null</returns>
-    public static bool ExistsAge(this DateTime date1, DateTime? date2, int years)
-    {
-        if (!date2.HasValue)
-            return false;
-
-        return date1.ExistsAge(date2.Value, years);
-    }
+    public static bool ExistsAge(this DateTime date1, DateTime? date2, int years) =>
+        date2.HasValue && date1.ExistsAge(date2.Value, years);
 
     #endregion
 
     #region FullAge
 
     /// <summary>
-    /// Количество полных лет на дату
+    /// Количество полных лет на дату.
     /// </summary>
     /// <param name="date1">Дата 1</param>
     /// <param name="date2">Дата 2</param>
@@ -148,10 +118,7 @@ public static class ExtDateTime
         var tdg = date2.Date;
 
         if (tdl > tdg)
-        {
-            tdg = tdl;
-            tdl = date2.Date;
-        }
+            (tdl, tdg) = (tdg, tdl);
 
         var res = tdg.Year - tdl.Year;
 
@@ -164,44 +131,26 @@ public static class ExtDateTime
     /// <summary>
     /// Количество полных лет на дату
     /// </summary>
-    /// <param name="date1">Дата 1</param>
+    /// <param name="date1">Дата 1. Если параметр <see langword="null"/> - результат <see langword="null"/></param> 
     /// <param name="date2">Дата 2</param>
-    /// <returns>Количество полных лет (null, если одна из дат = null)</returns>
-    public static int? FullAge(this DateTime? date1, DateTime date2)
-    {
-        if (!date1.HasValue)
-            return null;
-
-        return date1.Value.FullAge(date2);
-    }
+    /// <returns>Количество полных лет</returns>
+    public static int? FullAge(this DateTime? date1, DateTime date2) => date1?.FullAge(date2);
 
     /// <summary>
     /// Количество полных лет на дату
     /// </summary>
     /// <param name="date1">Дата 1</param>
-    /// <param name="date2">Дата 2</param>
-    /// <returns>Количество полных лет (null, если одна из дат = null)</returns>
-    public static int? FullAge(this DateTime? date1, DateTime? date2)
-    {
-        if (!date2.HasValue)
-            return null;
-
-        return date1.FullAge(date2.Value);
-    }
+    /// <param name="date2">Дата 2. Если параметр <see langword="null"/> - результат <see langword="null"/></param>
+    /// <returns>Количество полных лет</returns>
+    public static int? FullAge(this DateTime date1, DateTime? date2) => ((DateTime?)date1).FullAge(date2);
 
     /// <summary>
-    /// Количество полных лет на дату
+    /// Количество полных лет на дату. Если один из параметров <see langword="null"/> - результат <see langword="null"/>
     /// </summary>
     /// <param name="date1">Дата 1</param>
     /// <param name="date2">Дата 2</param>
-    /// <returns>Количество полных лет (null, если одна из дат = null)</returns>
-    public static int? FullAge(this DateTime date1, DateTime? date2)
-    {
-        if (!date2.HasValue)
-            return null;
-
-        return date1.FullAge(date2.Value);
-    }
+    /// <returns>Количество полных лет</returns>
+    public static int? FullAge(this DateTime? date1, DateTime? date2) => date2 is null ? null : date1?.FullAge(date2.Value);
 
     #endregion
 
@@ -221,13 +170,7 @@ public static class ExtDateTime
     /// </summary>
     /// <param name="date"></param>
     /// <returns></returns>
-    public static DateTime? FirstDayMonth(this DateTime? date)
-    {
-        if (!date.HasValue)
-            return null;
-
-        return date.Value.FirstDayMonth();
-    }
+    public static DateTime? FirstDayMonth(this DateTime? date) => date?.FirstDayMonth();
 
     /// <summary>
     /// Последний день месяца
@@ -241,13 +184,7 @@ public static class ExtDateTime
     /// </summary>
     /// <param name="date"></param>
     /// <returns></returns>
-    public static DateTime? LastDayMonth(this DateTime? date)
-    {
-        if (!date.HasValue)
-            return null;
-
-        return date.Value.LastDayMonth();
-    }
+    public static DateTime? LastDayMonth(this DateTime? date) => date?.LastDayMonth();
 
     #endregion
 }

@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using System.Data;
 using System.Data.Common;
 using System.Linq.Expressions;
@@ -31,7 +31,7 @@ public class DataAccesBase<TRow, TSelectParams> : DataAccesBase, IDataAcces<TRow
         Configured();
         var res = new List<THeritorType>();
 
-        var execCom = AddParamToCommand(CommandActionType.Select, selectParams);
+        var execCom = addParamToCommand(CommandActionType.Select, selectParams);
         using (var table = FillTable(execCom))
             foreach (DataRow dbRow in table.Rows)
             {
@@ -57,11 +57,11 @@ public class DataAccesBase<TRow, TSelectParams> : DataAccesBase, IDataAcces<TRow
     {
         Configured();
 
-        var execCom = AddParamToCommand(CommandActionType.Select, selectParams);
+        var execCom = addParamToCommand(CommandActionType.Select, selectParams);
         return ExecuteScalar(execCom);
     }
 
-    internal DbCommand AddParamToCommand(CommandActionType actionType, Expression? paramsExpr, TRow? obj = null)
+    internal DbCommand addParamToCommand(CommandActionType actionType, Expression? paramsExpr, TRow? obj = null)
     {
         if (!comands.TryGetValue(actionType, out var config))
             throw new NotImplementedException($"Команда для {actionType} не настроена");

@@ -1,4 +1,4 @@
-﻿using System.Data;
+using System.Data;
 using System.Data.Common;
 
 namespace Cav.DataAcces;
@@ -29,12 +29,12 @@ public class DataAccesBase : IDataAcces
 
     private object? monitorHelperBefore()
     {
-        if (MonitorCommandBeforeExecute != null)
-            try
-            {
-                return MonitorCommandBeforeExecute.Invoke();
-            }
-            catch { }
+
+        try
+        {
+            return MonitorCommandBeforeExecute?.Invoke();
+        }
+        catch { }
 
         return null;
     }
@@ -65,12 +65,9 @@ public class DataAccesBase : IDataAcces
     /// <returns></returns>
     protected DbCommand? CreateCommandObject() => DbContext.DbProviderFactory(ConnectionName).CreateCommand();
 
-    /// <summary>
-    /// Выполняет запрос и возвращает первый столбец первой строки результирующего набора, возвращаемого запросом. Все другие столбцы и строки игнорируются.
-    /// </summary>
-    /// <param name="cmd">команда</param>
-    /// <returns>Результат выполнения команды</returns>
-    protected object? ExecuteScalar(DbCommand cmd)
+    #region EcecuteScalar
+
+    private async Task<object?> executeScalar(DbCommand cmd, CancellationToken? cancellationToken = null)
     {
         if (cmd is null)
             throw new ArgumentNullException(nameof(cmd));
@@ -79,7 +76,13 @@ public class DataAccesBase : IDataAcces
         {
             var correlationObject = monitorHelperBefore();
 
-            var res = tuneCommand(cmd).ExecuteScalar();
+            tuneCommand(cmd);
+
+#pragma warning disable CA1849 // Вызов асинхронных методов в методе async
+            var res = cancellationToken == null
+                ? cmd.ExecuteScalar()
+                : await cmd.ExecuteScalarAsync(cancellationToken.Value);
+#pragma warning restore CA1849 // Вызов асинхронных методов в методе async
 
             monitorHelperAfter(cmd, correlationObject);
 
@@ -101,11 +104,26 @@ public class DataAccesBase : IDataAcces
     }
 
     /// <summary>
-    /// Выполнене команды с возвратом DbDataReader. После обработки данных необходимо выполнить <see cref="DisposeConnection(DbCommand)"/>
+    /// Выполняет запрос и возвращает первый столбец первой строки результирующего набора, возвращаемого запросом. Все другие столбцы и строки игнорируются.
     /// </summary>
     /// <param name="cmd">команда</param>
-    /// <returns>Ридер</returns>
-    protected DbDataReader ExecuteReader(DbCommand cmd)
+    /// <returns>Результат выполнения команды</returns>
+    protected object? ExecuteScalar(DbCommand cmd) =>
+        executeScalar(cmd).GetAwaiter().GetResult();
+
+    /// <summary>
+    /// Выполняет запрос и возвращает первый столбец первой строки результирующего набора, возвращаемого запросом. Все другие столбцы и строки игнорируются.
+    /// </summary>
+    /// <param name="cmd">команда</param>
+    /// <param name="cancellationToken">токен отмены</param>
+    /// <returns>Результат выполнения команды</returns>
+    protected async Task<object?> ExecuteScalarAsync(DbCommand cmd, CancellationToken cancellationToken = default) =>
+        await executeScalar(cmd, cancellationToken).ConfigureAwait(false);
+
+    #endregion
+
+    #region ExecuteReader
+    private async Task<DbDataReader> executeReader(DbCommand cmd, CancellationToken? cancellationToken = null)
     {
         if (cmd is null)
             throw new ArgumentNullException(nameof(cmd));
@@ -114,7 +132,13 @@ public class DataAccesBase : IDataAcces
         {
             var correlationObject = monitorHelperBefore();
 
-            var res = tuneCommand(cmd).ExecuteReader();
+            tuneCommand(cmd);
+
+#pragma warning disable CA1849 // Вызов асинхронных методов в методе async
+            var res = cancellationToken == null
+                ? cmd.ExecuteReader()
+                : await cmd.ExecuteReaderAsync(cancellationToken.Value);
+#pragma warning restore CA1849 // Вызов асинхронных методов в методе async
 
             monitorHelperAfter(cmd, correlationObject);
 
@@ -132,11 +156,27 @@ public class DataAccesBase : IDataAcces
     }
 
     /// <summary>
-    /// Выполнение команды без возврата данных
+    /// Выполнене команды с возвратом DbDataReader. После обработки данных необходимо выполнить <see cref="DisposeConnection(DbCommand)"/>
     /// </summary>
     /// <param name="cmd">команда</param>
-    /// <returns>Количество затронутых строк</returns>
-    protected int ExecuteNonQuery(DbCommand cmd)
+    /// <returns>Ридер</returns>
+    protected DbDataReader ExecuteReader(DbCommand cmd) =>
+        executeReader(cmd).GetAwaiter().GetResult();
+
+    /// <summary>
+    /// Выполнене команды с возвратом DbDataReader. После обработки данных необходимо выполнить <see cref="DisposeConnection(DbCommand)"/>
+    /// </summary>
+    /// <param name="cmd">команда</param>
+    /// <param name="cancellationToken">токен отмены</param>
+    /// <returns>Ридер</returns>
+    protected async Task<DbDataReader> ExecuteReaderAsync(DbCommand cmd, CancellationToken cancellationToken = default) =>
+        await executeReader(cmd, cancellationToken).ConfigureAwait(false);
+
+    #endregion
+
+    #region ExecuteNonQuery
+
+    private async Task<int> executeNonQuery(DbCommand cmd, CancellationToken? cancellationToken = null)
     {
         if (cmd is null)
             throw new ArgumentNullException(nameof(cmd));
@@ -145,7 +185,66 @@ public class DataAccesBase : IDataAcces
         {
             var correlationObject = monitorHelperBefore();
 
-            var res = tuneCommand(cmd).ExecuteNonQuery();
+            tuneCommand(cmd);
+
+#pragma warning disable CA1849 // Вызов асинхронных методов в методе async
+            var res = cancellationToken == null
+                ? cmd.ExecuteNonQuery()
+                : await cmd.ExecuteNonQueryAsync(cancellationToken.Value);
+#pragma warning restore CA1849 // Вызов асинхронных методов в методе async
+
+            monitorHelperAfter(cmd, correlationObject);
+
+            return res;
+        }
+        catch (Exception ex)
+        {
+            if (ExceptionHandlingExecuteCommand != null)
+                ExceptionHandlingExecuteCommand(ex);
+            else
+                throw;
+        }
+        finally
+        {
+            DisposeConnection(cmd);
+        }
+
+        throw new InvalidOperationException("При обработке исключения выполнения команды дальнейшее выполнение невозможно.");
+    }
+
+    /// <summary>
+    /// Выполнение команды без возврата данных
+    /// </summary>
+    /// <param name="cmd">команда</param>
+    /// <returns>Количество затронутых строк</returns>
+    protected int ExecuteNonQuery(DbCommand cmd) => executeNonQuery(cmd).GetAwaiter().GetResult();
+
+    /// <summary>
+    /// Выполнение команды без возврата данных
+    /// </summary>
+    /// <param name="cmd">команда</param>
+    /// <param name="cancellationToken">токен отмены</param>
+    /// <returns>Количество затронутых строк</returns>
+    protected async Task<int> ExecuteNonQueryAsync(DbCommand cmd, CancellationToken cancellationToken = default) =>
+        await executeNonQuery(cmd, cancellationToken).ConfigureAwait(false);
+
+    #endregion
+
+    #region FillTable
+
+    private async Task<DataTable> fillTable(DbCommand cmd, CancellationToken? cancellationToken = null)
+    {
+        if (cmd is null)
+            throw new ArgumentNullException(nameof(cmd));
+
+        try
+        {
+            var res = new DataTable();
+
+            var correlationObject = monitorHelperBefore();
+
+            using var reader = await executeReader(cmd, cancellationToken);
+            res.Load(reader);
 
             monitorHelperAfter(cmd, correlationObject);
 
@@ -171,40 +270,20 @@ public class DataAccesBase : IDataAcces
     /// </summary>
     /// <param name="cmd">Команда на выполенение.</param>
     /// <returns>Результат работы команды</returns>
-    protected DataTable FillTable(DbCommand cmd)
-    {
-        if (cmd is null)
-            throw new ArgumentNullException(nameof(cmd));
-
-        try
-        {
 #pragma warning disable CA2000 // Ликвидировать объекты перед потерей области
-            var res = new DataTable();
+    protected DataTable FillTable(DbCommand cmd) =>
+        fillTable(cmd).GetAwaiter().GetResult();
 #pragma warning restore CA2000 // Ликвидировать объекты перед потерей области
 
-            var correlationObject = monitorHelperBefore();
+    /// <summary>
+    /// Получение результата в <see cref="DataTable"/>. (Заполняется через <see cref="DataTable.Load(IDataReader)"/> из результата типа <see cref="DbDataReader"/> метода <see cref="DbCommand.ExecuteReader()"/>)
+    /// </summary>
+    /// <param name="cmd">Команда на выполенение.</param>
+    /// <returns>Результат работы команды</returns>
+    protected async Task<DataTable> FillTableAsync(DbCommand cmd, CancellationToken cancellationToken = default) =>
+        await fillTable(cmd, cancellationToken).ConfigureAwait(false);
 
-            using (var reader = ExecuteReader(cmd))
-                res.Load(reader);
-
-            monitorHelperAfter(cmd, correlationObject);
-
-            return res;
-        }
-        catch (Exception ex)
-        {
-            if (ExceptionHandlingExecuteCommand != null)
-                ExceptionHandlingExecuteCommand(ex);
-            else
-                throw;
-        }
-        finally
-        {
-            DisposeConnection(cmd);
-        }
-
-        throw new InvalidOperationException("При обработке исключения выполнения команды дальнейшее выполнение невозможно.");
-    }
+    #endregion
 
     /// <summary>
     /// Освобождение соедиения с БД

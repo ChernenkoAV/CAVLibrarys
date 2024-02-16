@@ -27,7 +27,7 @@ public class DataAccesBase<TRow, TSelectParams, TUpdateParams, TDeleteParams> : 
     {
         Configured();
 
-        var execCom = AddParamToCommand(CommandActionType.Insert, insertExpression, newObj);
+        var execCom = addParamToCommand(CommandActionType.Insert, insertExpression, newObj);
         if (insertPropKeyFieldMap.Any())
         {
             using var resExec = FillTable(execCom);
@@ -98,7 +98,7 @@ public class DataAccesBase<TRow, TSelectParams, TUpdateParams, TDeleteParams> : 
     {
         Configured();
 
-        var execCom = AddParamToCommand(CommandActionType.Delete, deleteParams);
+        var execCom = addParamToCommand(CommandActionType.Delete, deleteParams);
         ExecuteNonQuery(execCom);
     }
 
@@ -129,7 +129,7 @@ public class DataAccesBase<TRow, TSelectParams, TUpdateParams, TDeleteParams> : 
     {
         Configured();
 
-        var execCom = AddParamToCommand(CommandActionType.Update, updateParams);
+        var execCom = addParamToCommand(CommandActionType.Update, updateParams);
         ExecuteNonQuery(execCom);
     }
 

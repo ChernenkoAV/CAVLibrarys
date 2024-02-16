@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Runtime.Serialization;
 using Cav.Json;
 using Newtonsoft.Json;
@@ -85,36 +85,28 @@ public static class ExtJson
         this string? s,
         Type type,
         StreamingContextStates state,
-        object? additional = null)
-    {
-        if (type is null)
-            throw new ArgumentNullException(nameof(type));
-
-        if (s.IsNullOrWhiteSpace())
-        {
-            if (type.IsArray)
-                return Array.CreateInstance(type.GetElementType()!, 0);
-
-            // Для всяких HashList и тд
-            if (
-                    ( // этот код и массивы определяет, но не пропусает на ограничении, что генерик аргумент должен быть один
-                        (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>)) ||
-                        type.GetInterfaces().Any(x => x.IsConstructedGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-                    ) &&
-                    type.GetGenericArguments().Length == 1 &&
-                    type != typeof(string)
-                )
-                return Array.CreateInstance(type.GetGenericArguments().Single(), 0);
-
-            //Для Dictionary<> и тд
-            return
-                typeof(IEnumerable).IsAssignableFrom(type) && type.GetConstructor([]) != null
-                    ? Activator.CreateInstance(type)
-                    : type.GetDefault();
-        }
-
-        return JsonConvert.DeserializeObject(s!, type, getJsetting(state, additional));
-    }
+        object? additional = null) =>
+            type is null
+                ? throw new ArgumentNullException(nameof(type))
+                : s.IsNullOrWhiteSpace()
+                    ? type.IsArray
+                        ? Array.CreateInstance(type.GetElementType()!, 0)
+                        :
+                            // Для всяких HashList и тд
+                            (
+                                ( // этот код и массивы определяет, но не пропусает на ограничении, что генерик аргумент должен быть один
+                                    (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>)) ||
+                                    type.GetInterfaces().Any(x => x.IsConstructedGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                                ) &&
+                                type.GetGenericArguments().Length == 1 &&
+                                type != typeof(string)
+                            )
+                            ||
+                            //Для Dictionary<> и тд
+                            (typeof(IEnumerable).IsAssignableFrom(type) && type.GetConstructor([]) != null)
+                                ? Activator.CreateInstance(type)
+                                : type.GetDefault()
+                    : JsonConvert.DeserializeObject(s!, type, getJsetting(state, additional));
 
     /// <summary>
     /// Json десериализация из файла. возврат: Если тип реализует <see cref="IList"/> - пустую коллекцию(что б в коде не проверять на null и сразу юзать foreach)

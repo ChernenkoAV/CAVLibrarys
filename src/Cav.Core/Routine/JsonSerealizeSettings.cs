@@ -59,9 +59,10 @@ internal class FlagEnumStringConverter : StringEnumConverter
 
 internal class NullListValueProvider(JsonProperty jsonProperty) : IValueProvider
 {
+    private readonly IValueProvider valueProvider = jsonProperty.ValueProvider!;
     public object? GetValue(object target)
     {
-        var inst = jsonProperty.ValueProvider!.GetValue(target);
+        var inst = valueProvider!.GetValue(target);
 
         return inst == null
             ? null
@@ -83,15 +84,16 @@ internal class NullListValueProvider(JsonProperty jsonProperty) : IValueProvider
             }
         }
 
-        jsonProperty.ValueProvider!.SetValue(target, value);
+        valueProvider.SetValue(target, value);
     }
 }
 
 internal class StringNullEmtyValueProvider(JsonProperty jsonProperty) : IValueProvider
 {
+    private readonly IValueProvider valueProvider = jsonProperty.ValueProvider!;
     public object? GetValue(object target)
     {
-        var inst = jsonProperty.ValueProvider!.GetValue(target);
+        var inst = valueProvider.GetValue(target);
 
         return ((string?)inst).GetNullIfIsNullOrWhiteSpace();
     }
@@ -99,7 +101,7 @@ internal class StringNullEmtyValueProvider(JsonProperty jsonProperty) : IValuePr
     {
         value = ((string?)value).GetNullIfIsNullOrWhiteSpace();
 
-        jsonProperty.ValueProvider!.SetValue(target, value);
+        valueProvider.SetValue(target, value);
     }
 }
 

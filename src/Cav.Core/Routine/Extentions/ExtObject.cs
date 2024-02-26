@@ -12,16 +12,12 @@ public static class ExtObject
     /// </summary>
     /// <param name="type">Тип, для которого необходимо получить значение</param>
     /// <returns>Значение по уполчанию</returns>
-    public static object? GetDefault(this Type type)
-    {
-        if (type is null)
-            throw new ArgumentNullException(nameof(type));
-
-        if (type.IsValueType)
-            return Activator.CreateInstance(type);
-
-        return null;
-    }
+    public static object? GetDefault(this Type type) =>
+        type is null
+            ? throw new ArgumentNullException(nameof(type))
+            : type.IsValueType
+                ? Activator.CreateInstance(type)
+                : null;
 
     /// <summary>
     /// Выражение "null если" для типов структур
@@ -88,7 +84,7 @@ public static class ExtObject
     /// <param name="arg">Проверяемый аргумент</param>
     /// <param name="args">Перечень значений</param>
     /// <returns>Если аргумент IsNullOrWhiteSpace() результат всегда false</returns>
-    public static bool In(this string arg, params string[] args) =>
+    public static bool In(this string? arg, params string[] args) =>
         !arg.IsNullOrWhiteSpace() && args.Contains(arg);
 
     /// <summary>

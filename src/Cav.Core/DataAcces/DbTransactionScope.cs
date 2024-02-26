@@ -42,7 +42,7 @@ public sealed class DbTransactionScope : IDisposable
     private string? connName;
     private static ThreadLocal<Guid?> rootTran = new(() => null);
 
-    private static ThreadLocal<Dictionary<string, DbTransaction>> transactions = new(() => new Dictionary<string, DbTransaction>());
+    private static ThreadLocal<Dictionary<string, DbTransaction>> transactions = new(() => []);
 
     private readonly Guid currentTran;
 

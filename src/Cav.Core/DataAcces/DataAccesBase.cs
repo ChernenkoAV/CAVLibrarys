@@ -73,7 +73,7 @@ public class DataAccesBase : IDataAcces
     /// Получение объекта DbCommand при наличии настроенного соединения с БД
     /// </summary>
     /// <returns></returns>
-    protected DbCommand? CreateCommandObject() => DbContext.DbProviderFactory(ConnectionName).CreateCommand();
+    protected DbCommand CreateCommandObject() => DbContext.CreateCommand(ConnectionName);
 
     #region EcecuteScalar
 
@@ -325,7 +325,8 @@ public class DataAccesBase : IDataAcces
             if (cmdConn == null || cmdTran == null)
                 throw new InvalidOperationException("Несогласованное состояние объекта транзакции в команде. Соедиение с БД сброшено.");
         }
-        else if (cmdConn != null)
+        else
+        if (cmdConn != null)
             try
             {
                 cmdConn.Close();

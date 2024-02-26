@@ -6,6 +6,7 @@ using System.Reflection;
 
 #pragma warning disable CS8604 // Возможно, аргумент-ссылка, допускающий значение NULL.
 #pragma warning disable CS8602 // Разыменование вероятной пустой ссылки.
+#pragma warning disable CA2000 // Ликвидировать объекты перед потерей области
 
 namespace Cav.DataAcces;
 
@@ -68,43 +69,49 @@ public class DataAccesBase<TRow, TSelectParams> : DataAccesBase, IDataAcces<TRow
 
         var command = createCommand(config);
 
-        var key = actionType.ToString();
-
-        var paramValues = parceParams(paramsExpr, obj);
-
-        foreach (var item in commandParams.Where(x => x.Key.StartsWith(key)))
+        try
         {
-            var prmCmd = createParametr(item.Value);
-            var paramValKey = item.Key.Replace(key + " ", string.Empty);
+            var key = actionType.ToString();
 
-            if (paramValues.TryGetValue(paramValKey, out var val))
+            var paramValues = parceParams(paramsExpr, obj);
+
+            foreach (var item in commandParams.Where(x => x.Key.StartsWith(key)))
             {
-                paramValues.Remove(paramValKey);
+                var prmCmd = createParametr(command, item.Value);
+                var paramValKey = item.Key.Replace(key + " ", string.Empty);
 
-                if (item.Value.ConvetProperty != null)
-                    val = item.Value.ConvetProperty(val);
+                if (paramValues.TryGetValue(paramValKey, out var val))
+                {
+                    paramValues.Remove(paramValKey);
+
+                    if (item.Value.ConvetProperty != null)
+                        val = item.Value.ConvetProperty(val);
+                }
+
+                if (val != null)
+                {
+                    var valType = val.GetType();
+                    valType = Nullable.GetUnderlyingType(valType) ?? valType;
+                    if (valType == typeof(DateTime))
+                        val = new DateTimeOffset((DateTime)val).LocalDateTime;
+
+                    prmCmd.Value = val;
+                }
             }
 
-            if (val != null)
+            if (paramValues.Count > 0)
             {
-                var valType = val.GetType();
-                valType = Nullable.GetUnderlyingType(valType) ?? valType;
-                if (valType == typeof(DateTime))
-                    val = new DateTimeOffset((DateTime)val).LocalDateTime;
-
-                prmCmd.Value = val;
+                var lost = paramValues.First();
+                throw new ArgumentException(string.Format("Для свойства '{0}' не настроено сопоставление в операции {1}", lost.Key, key));
             }
 
-            command.Parameters.Add(prmCmd);
+            return command;
         }
-
-        if (paramValues.Count > 0)
+        catch
         {
-            var lost = paramValues.First();
-            throw new ArgumentException(string.Format("Для свойства '{0}' не настроено сопоставление в операции {1}", lost.Key, key));
+            command?.Dispose();
+            throw;
         }
-
-        return command;
     }
 
     private Dictionary<string, object> parceParams(Expression? paramsExpr, TRow? obj)
@@ -346,12 +353,13 @@ public class DataAccesBase<TRow, TSelectParams> : DataAccesBase, IDataAcces<TRow
         return cmmnd;
     }
 
-    private DbParameter createParametr(DbParamSetting paramSetting)
+    private DbParameter createParametr(DbCommand cmd, DbParamSetting paramSetting)
     {
-        var res = DbContext.DbProviderFactory(ConnectionName).CreateParameter();
+        var res = cmd.CreateParameter();
         res.ParameterName = paramSetting.ParamName;
         res.DbType = paramSetting.ParamType;
         res.Value = DBNull.Value;
+        cmd.Parameters.Add(res);
         return res;
     }
 

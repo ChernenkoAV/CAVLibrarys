@@ -2,6 +2,8 @@ using System.Collections.Concurrent;
 using System.Data;
 using System.Linq.Expressions;
 
+#pragma warning disable CA2000 // Ликвидировать объекты перед потерей области
+
 namespace Cav.DataAcces;
 
 /// <summary>

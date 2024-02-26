@@ -1,7 +1,6 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Data.Common;
-using System.Reflection;
 
 namespace Cav;
 
@@ -19,7 +18,8 @@ public static class DbContext
     private struct SettingConnection
     {
         public string ConnectionString { get; set; }
-        public DbProviderFactory ProviderFactory { get; set; }
+        public Type ConnectionType { get; set; }
+        public Type CommandType { get; set; }
     }
 
     /// <summary>
@@ -45,27 +45,28 @@ public static class DbContext
         string connectionString,
         string? connectionName = null)
     {
-        if (typeConnection == null)
-            throw new ArgumentNullException(nameof(typeConnection));
-
-        if (!typeConnection.IsSubclassOf(typeof(DbConnection)))
-            throw new ArgumentException("typeConnection не является наследником DbConnection");
-
         if (connectionString.IsNullOrWhiteSpace())
             throw new ArgumentNullException(nameof(connectionString));
 
         if (connectionName.IsNullOrWhiteSpace())
             connectionName = defaultNameConnection;
 
+        if (typeConnection == null)
+            throw new ArgumentNullException(nameof(typeConnection));
+
+        if (!typeConnection.IsSubclassOf(typeof(DbConnection)))
+            throw new ArgumentException("typeConnection не является наследником DbConnection");
+
         using var conn = (DbConnection)Activator.CreateInstance(typeConnection)!;
         conn.ConnectionString = connectionString;
         conn.Open();
 
-        var pinfo = conn.GetType().GetProperty("DbProviderFactory", BindingFlags.NonPublic | BindingFlags.Instance);
+        using var cmd = conn.CreateCommand();
         var setCon = new SettingConnection()
         {
             ConnectionString = connectionString,
-            ProviderFactory = (pinfo!.GetValue(conn) as DbProviderFactory)!
+            ConnectionType = typeConnection,
+            CommandType = cmd.GetType()
         };
 
         dcsb.TryRemove(connectionName!, out _);
@@ -85,20 +86,25 @@ public static class DbContext
         if (!dcsb.TryGetValue(connectionName!, out var setCon))
             throw new InvalidOperationException("Соединение с БД не настроено");
 
-        var connection = setCon.ProviderFactory.CreateConnection();
-        connection!.ConnectionString = setCon.ConnectionString;
+        var connection = (DbConnection)Activator.CreateInstance(setCon.ConnectionType)!;
+        connection.ConnectionString = setCon.ConnectionString;
         connection.Open();
         return connection;
     }
 
-    internal static DbProviderFactory DbProviderFactory(string? connectionName = null)
+    /// <summary>
+    /// Получение экземпляра открытого соединения с БД
+    /// </summary>
+    /// <param name="connectionName">Имя соединения в коллекции</param>
+    /// <returns></returns>
+    public static DbCommand CreateCommand(string? connectionName = null)
     {
         if (connectionName.IsNullOrWhiteSpace())
             connectionName = defaultNameConnection;
 
         return !dcsb.TryGetValue(connectionName!, out var setCon)
             ? throw new InvalidOperationException("Соединение с БД не настроено")
-            : setCon.ProviderFactory;
+            : (DbCommand)Activator.CreateInstance(setCon.CommandType)!;
     }
 
     /// <summary>

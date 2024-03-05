@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Reflection;
 
 namespace Cav;
@@ -15,10 +15,10 @@ public static class ExtEnum
     /// </summary>
     /// <param name="value">Значение злемента перечесления</param>
     /// <returns>Содержимое <see cref="DescriptionAttribute"/>, либо, если атрибут отсутствует - ToString() элемента</returns>
-    public static string? GetEnumDescription(this Enum value)
+    public static string GetEnumDescription(this Enum value)
     {
         if (value is null)
-            return null;
+            throw new ArgumentNullException(nameof(value));
 
         var fi = value.GetType().GetField(value.ToString());
 

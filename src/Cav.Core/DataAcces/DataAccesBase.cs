@@ -73,7 +73,7 @@ public class DataAccesBase : IDataAcces
     /// Получение объекта DbCommand при наличии настроенного соединения с БД
     /// </summary>
     /// <returns></returns>
-    protected DbCommand CreateCommandObject() => DbContext.CreateCommand(ConnectionName);
+    protected DbCommand CreateCommand() => DbContext.CreateCommand(ConnectionName);
 
     #region EcecuteScalar
 

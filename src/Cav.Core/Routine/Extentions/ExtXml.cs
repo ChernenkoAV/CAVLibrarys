@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using System.Reflection;
 using System.Text;
 using System.Xml;
@@ -125,7 +125,7 @@ public static class ExtXml
     /// <typeparam name="T">Тип для десиарелизации</typeparam>
     /// <param name="xml">Строка, содержащая XML</param>
     /// <returns>Объект указанного типа или default(T), если строка IsNullOrWhiteSpace</returns>
-    public static T? XMLDeserialize<T>(this string xml) => (T?)xml.XMLDeserialize(typeof(T?));
+    public static T? XMLDeserialize<T>(this string? xml) => (T?)xml.XMLDeserialize(typeof(T?));
 
     /// <summary>
     /// Десиреализатор из строки, содержащей XML.
@@ -133,12 +133,12 @@ public static class ExtXml
     /// <param name="xml">Строка, содержащая XML</param>
     /// <param name="type">Тип</param>
     /// <returns>Объект или default(T), если строка IsNullOrWhiteSpace</returns>
-    public static object? XMLDeserialize(this string xml, Type type) =>
+    public static object? XMLDeserialize(this string? xml, Type type) =>
         type == null
             ? throw new ArgumentNullException(nameof(type))
             : xml.IsNullOrWhiteSpace()
                 ? type.GetDefault()
-                : XDocument.Parse(xml).XMLDeserialize(type);
+                : XDocument.Parse(xml!).XMLDeserialize(type);
 
     /// <summary>
     /// Десиарелизатор из файла

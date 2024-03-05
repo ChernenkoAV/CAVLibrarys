@@ -334,7 +334,7 @@ public class DataAccesBase<TRow, TSelectParams> : DataAccesBase, IDataAcces<TRow
 
     private DbCommand createCommand(AdapterConfig config)
     {
-        var cmmnd = CreateCommandObject();
+        var cmmnd = CreateCommand();
 #pragma warning disable CA2100 // Проверка запросов SQL на уязвимости безопасности
         cmmnd.CommandText = config.TextCommand;
 #pragma warning restore CA2100 // Проверка запросов SQL на уязвимости безопасности

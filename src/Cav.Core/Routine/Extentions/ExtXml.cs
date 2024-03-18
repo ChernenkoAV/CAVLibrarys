@@ -246,13 +246,11 @@ public static class ExtXml
         using (var xr = XmlReader.Create(sr))
             xs = XmlSchema.Read(xr, (a, b) => res += b.Message + Environment.NewLine)!;
 
-#pragma warning disable CA1508 // Предотвращение появления неиспользуемого условного кода
         if (!res.IsNullOrWhiteSpace())
-#pragma warning restore CA1508 // Предотвращение появления неиспользуемого условного кода
-            throw new XmlSchemaException(res);
+            return res;
 
         if (xml.Root!.Name.NamespaceName != (xs.TargetNamespace ?? string.Empty))
-            throw new XmlSchemaException($"пространство имен '{xml.Root.Name.NamespaceName}' элемента '{xml.Root.Name.LocalName}' не не соответствует целевому пространству имен схемы '{xs.TargetNamespace ?? string.Empty}'");
+            return $"пространство имен '{xml.Root.Name.NamespaceName}' элемента '{xml.Root.Name.LocalName}' не соответствует целевому пространству имен схемы '{xs.TargetNamespace ?? string.Empty}'";
 
         var shs = new XmlSchemaSet();
         shs.Add(xs);

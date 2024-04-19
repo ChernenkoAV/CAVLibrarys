@@ -27,17 +27,6 @@ public class DataAccesBase : IDataAcces
     /// <remarks>Метод выполняется в отдельном потоке, обернутый в try cath.</remarks>
     public Action<string, object?, DbParameter[]> MonitorCommandAfterExecute { get; set; } = (_, __, ___) => { };
 
-    private object? monitorHelperBefore()
-    {
-
-        try
-        {
-            return MonitorCommandBeforeExecute?.Invoke();
-        }
-        catch { }
-
-        return null;
-    }
     private void monitorHelperAfter(DbCommand command, object? objColrn)
     {
         if (MonitorCommandAfterExecute == null)
@@ -74,7 +63,7 @@ public class DataAccesBase : IDataAcces
 
         try
         {
-            var correlationObject = monitorHelperBefore();
+            var correlationObject = MonitorCommandBeforeExecute?.Invoke();
 
             tuneCommand(cmd);
 
@@ -130,7 +119,7 @@ public class DataAccesBase : IDataAcces
 
         try
         {
-            var correlationObject = monitorHelperBefore();
+            var correlationObject = MonitorCommandBeforeExecute?.Invoke();
 
             tuneCommand(cmd);
 
@@ -183,7 +172,7 @@ public class DataAccesBase : IDataAcces
 
         try
         {
-            var correlationObject = monitorHelperBefore();
+            var correlationObject = MonitorCommandBeforeExecute?.Invoke();
 
             tuneCommand(cmd);
 
@@ -241,7 +230,7 @@ public class DataAccesBase : IDataAcces
         {
             var res = new DataTable();
 
-            var correlationObject = monitorHelperBefore();
+            var correlationObject = MonitorCommandBeforeExecute?.Invoke();
 
             using var reader = await executeReader(cmd, cancellationToken);
             res.Load(reader);

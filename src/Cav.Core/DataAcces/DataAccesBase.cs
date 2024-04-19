@@ -25,7 +25,7 @@ public class DataAccesBase : IDataAcces
     /// <see cref="DbParameter"/>[] - копия параметров, с которыми отработала команда <see cref="DbCommand"/>.
     /// </summary>
     /// <remarks>Метод выполняется в отдельном потоке, обернутый в try cath.</remarks>
-    public Action<string, object, DbParameter[]> MonitorCommandAfterExecute { get; set; } = (_, __, ___) => { };
+    public Action<string, object?, DbParameter[]> MonitorCommandAfterExecute { get; set; } = (_, __, ___) => { };
 
     private object? monitorHelperBefore()
     {
@@ -47,17 +47,7 @@ public class DataAccesBase : IDataAcces
         var dbParm = new DbParameter[command.Parameters.Count];
         if (command.Parameters.Count > 0)
             command.Parameters.CopyTo(dbParm, 0);
-        new Task(mcaftexex!, Tuple.Create(MonitorCommandAfterExecute, cmndText, objColrn, dbParm)).Start();
-
-    }
-    private static void mcaftexex(object o)
-    {
-        try
-        {
-            var p = (Tuple<Action<string, object, DbParameter[]>, string, object, DbParameter[]>)o;
-            p.Item1(p.Item2, p.Item3, p.Item4);
-        }
-        catch { }
+        MonitorCommandAfterExecute(cmndText, objColrn, dbParm);
     }
 
     /// <summary>

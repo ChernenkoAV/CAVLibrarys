@@ -25,19 +25,8 @@ public class DataAccesBase : IDataAcces
     /// <see cref="DbParameter"/>[] - копия параметров, с которыми отработала команда <see cref="DbCommand"/>.
     /// </summary>
     /// <remarks>Метод выполняется в отдельном потоке, обернутый в try cath.</remarks>
-    public Action<string, object, DbParameter[]> MonitorCommandAfterExecute { get; set; } = (_, __, ___) => { };
+    public Action<string, object?, DbParameter[]> MonitorCommandAfterExecute { get; set; } = (_, __, ___) => { };
 
-    private object? monitorHelperBefore()
-    {
-
-        try
-        {
-            return MonitorCommandBeforeExecute?.Invoke();
-        }
-        catch { }
-
-        return null;
-    }
     private void monitorHelperAfter(DbCommand command, object? objColrn)
     {
         if (MonitorCommandAfterExecute == null)
@@ -47,17 +36,7 @@ public class DataAccesBase : IDataAcces
         var dbParm = new DbParameter[command.Parameters.Count];
         if (command.Parameters.Count > 0)
             command.Parameters.CopyTo(dbParm, 0);
-        new Task(mcaftexex!, Tuple.Create(MonitorCommandAfterExecute, cmndText, objColrn, dbParm)).Start();
-
-    }
-    private static void mcaftexex(object o)
-    {
-        try
-        {
-            var p = (Tuple<Action<string, object, DbParameter[]>, string, object, DbParameter[]>)o;
-            p.Item1(p.Item2, p.Item3, p.Item4);
-        }
-        catch { }
+        MonitorCommandAfterExecute(cmndText, objColrn, dbParm);
     }
 
     /// <summary>
@@ -84,7 +63,7 @@ public class DataAccesBase : IDataAcces
 
         try
         {
-            var correlationObject = monitorHelperBefore();
+            var correlationObject = MonitorCommandBeforeExecute?.Invoke();
 
             tuneCommand(cmd);
 
@@ -140,7 +119,7 @@ public class DataAccesBase : IDataAcces
 
         try
         {
-            var correlationObject = monitorHelperBefore();
+            var correlationObject = MonitorCommandBeforeExecute?.Invoke();
 
             tuneCommand(cmd);
 
@@ -193,7 +172,7 @@ public class DataAccesBase : IDataAcces
 
         try
         {
-            var correlationObject = monitorHelperBefore();
+            var correlationObject = MonitorCommandBeforeExecute?.Invoke();
 
             tuneCommand(cmd);
 
@@ -251,7 +230,7 @@ public class DataAccesBase : IDataAcces
         {
             var res = new DataTable();
 
-            var correlationObject = monitorHelperBefore();
+            var correlationObject = MonitorCommandBeforeExecute?.Invoke();
 
             using var reader = await executeReader(cmd, cancellationToken);
             res.Load(reader);

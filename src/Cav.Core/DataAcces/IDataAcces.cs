@@ -1,4 +1,4 @@
-﻿using System.Data.Common;
+using System.Data.Common;
 using System.Linq.Expressions;
 
 namespace Cav.DataAcces;
@@ -25,7 +25,7 @@ public interface IDataAcces
     /// <see cref="DbParameter"/>[] - копия параметров, с которыми отработала команда <see cref="DbCommand"/>.
     /// </summary>
     /// <remarks>Метод выполняется в отдельном потоке, обернутый в try cath.</remarks>
-    Action<string, object, DbParameter[]> MonitorCommandAfterExecute { get; set; }
+    Action<string, object?, DbParameter[]> MonitorCommandAfterExecute { get; set; }
 }
 
 /// <summary>

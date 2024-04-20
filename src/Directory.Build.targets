@@ -156,5 +156,9 @@
             StdOutEncoding="utf-8"
             Command="dotnet pack --no-build -c $(Configuration) --force --nologo -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg -o &quot;$(OutputNuget)&quot;" />
 
+        <Message Text="----- Удаление из кэша nuget $(PackageId) $(PackageVersion)" Importance="High"/>
+
+        <RemoveDir Directories="$(NugetPackageRoot)/$(PackageId.ToLower())/$(PackageVersion)" />
+
     </Target>
 </Project>

@@ -25,6 +25,26 @@ public class DataAccesBase<TRow, TSelectParams, TUpdateParams, TDeleteParams> : 
     /// Добавить объект в БД
     /// </summary>
     /// <param name="newObj">Экземпляр объекта, который необходимо добавит в БД</param>
+    public async Task AddAsync(TRow newObj, CancellationToken cancellationToken = default)
+    {
+        Configured();
+
+        var execCom = addParamToCommand(CommandActionType.Insert, insertExpression, newObj);
+        if (insertPropKeyFieldMap.Any())
+        {
+            using var resExec = await FillTableAsync(execCom, cancellationToken);
+            foreach (DataRow dbrow in resExec.Rows)
+                foreach (var ff in insertPropKeyFieldMap)
+                    ff.Value(newObj, dbrow);
+        }
+        else
+            await ExecuteNonQueryAsync(execCom, cancellationToken);
+    }
+
+    /// <summary>
+    /// Добавить объект в БД
+    /// </summary>
+    /// <param name="newObj">Экземпляр объекта, который необходимо добавит в БД</param>
     public void Add(TRow newObj)
     {
         Configured();
@@ -96,6 +116,20 @@ public class DataAccesBase<TRow, TSelectParams, TUpdateParams, TDeleteParams> : 
     /// Удаление по предикату 
     /// </summary>
     /// <param name="deleteParams"></param>
+    public async Task DeleteAsunc(
+        Expression<Action<TDeleteParams>> deleteParams,
+        CancellationToken cancellationToken = default)
+    {
+        Configured();
+
+        var execCom = addParamToCommand(CommandActionType.Delete, deleteParams);
+        await ExecuteNonQueryAsync(execCom, cancellationToken);
+    }
+
+    /// <summary>
+    /// Удаление по предикату 
+    /// </summary>
+    /// <param name="deleteParams"></param>
     public void Delete(Expression<Action<TDeleteParams>> deleteParams)
     {
         Configured();
@@ -122,6 +156,20 @@ public class DataAccesBase<TRow, TSelectParams, TUpdateParams, TDeleteParams> : 
     #endregion
 
     #region Update
+
+    /// <summary>
+    /// Обновление данных
+    /// </summary>
+    /// <param name="updateParams"></param>
+    public async Task UpdateAsync(
+        Expression<Action<TUpdateParams>> updateParams,
+        CancellationToken cancellationToken = default)
+    {
+        Configured();
+
+        var execCom = addParamToCommand(CommandActionType.Update, updateParams);
+        await ExecuteNonQueryAsync(execCom, cancellationToken);
+    }
 
     /// <summary>
     /// Обновление данных

@@ -1,4 +1,4 @@
-﻿namespace Cav;
+namespace Cav;
 
 /// <summary>
 /// Расширения работы сос троками

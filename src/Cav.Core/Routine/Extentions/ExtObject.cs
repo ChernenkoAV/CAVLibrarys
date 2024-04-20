@@ -1,4 +1,4 @@
-﻿using Cav.ReflectHelpers;
+using Cav.ReflectHelpers;
 
 namespace Cav;
 

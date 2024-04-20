@@ -1,4 +1,4 @@
-﻿using System.Data.Common;
+using System.Data.Common;
 
 #pragma warning disable CA1003 // Используйте экземпляры обработчика универсальных событий
 
@@ -70,7 +70,7 @@ public sealed class DbTransactionScope : IDisposable
     #region Члены IDisposable
 
     /// <summary>
-    /// Пометить, что транзакцию можно закомитеть
+    /// Пометить, что транзакцию можно закомитить
     /// </summary>
     public void Complete() => complete = true;
 

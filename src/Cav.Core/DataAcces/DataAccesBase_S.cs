@@ -20,6 +20,13 @@ public class DataAccesBase<TRow, TSelectParams> : DataAccesBase, IDataAcces<TRow
     where TSelectParams : IAdapterParametrs
 {
     /// <summary>
+    /// Получение данных из БД с записью в класс Trow
+    /// </summary>
+    /// <param name="selectParams">Выражение на основе типа парамеров адаптера на выборку. Если null, то всем параметров присваивается DbNull</param>
+    /// <returns>Коллекция объектов типа Trow</returns>
+    public IEnumerable<TRow> Get(Expression<Action<TSelectParams>>? selectParams = null) => Get<TRow>(selectParams);
+
+    /// <summary>
     /// Получение данных из БД с записью в класс Trow, либо в его наследники
     /// </summary>
     /// <typeparam name="THeritorType">Указание типа для оторажения данных. Должен быть Trow или его наследником </typeparam>
@@ -48,6 +55,47 @@ public class DataAccesBase<TRow, TSelectParams> : DataAccesBase, IDataAcces<TRow
     }
 
     /// <summary>
+    /// Получение данных из БД с записью в класс Trow
+    /// </summary>
+    /// <param name="selectParams">Выражение на основе типа парамеров адаптера на выборку. Если null, то всем параметров присваивается DbNull</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Коллекция объектов типа Trow</returns>
+    public async Task<IEnumerable<TRow>> GetAsync(
+        Expression<Action<TSelectParams>>? selectParams = null,
+        CancellationToken cancellationToken = default) =>
+            await GetAsync<TRow>(selectParams, cancellationToken);
+
+    /// <summary>
+    /// Получение данных из БД с записью в класс Trow, либо в его наследники
+    /// </summary>
+    /// <typeparam name="THeritorType">Указание типа для оторажения данных. Должен быть Trow или его наследником </typeparam>
+    /// <param name="selectParams">Выражение на основе типа парамеров адаптера на выборку. Если null, то всем параметрам присваивается DbNull</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Коллекция объектов типа THeritorType</returns>
+    public async Task<IEnumerable<THeritorType>> GetAsync<THeritorType>(
+        Expression<Action<TSelectParams>>? selectParams = null,
+        CancellationToken cancellationToken = default)
+            where THeritorType : TRow, new()
+    {
+        Configured();
+        var res = new List<THeritorType>();
+
+        var execCom = addParamToCommand(CommandActionType.Select, selectParams);
+        using (var table = await FillTableAsync(execCom, cancellationToken))
+            foreach (DataRow dbRow in table.Rows)
+            {
+                var row = (THeritorType)Activator.CreateInstance(typeof(THeritorType))!;
+
+                foreach (var ff in selectPropFieldMap)
+                    ff.Value(row, dbRow);
+
+                res.Add(row);
+            }
+
+        return res.ToArray();
+    }
+
+    /// <summary>
     /// Выполняет запрос и возвращает первый столбец первой строки результирующего набора, возвращаемого запросом. Все другие столбцы и строки игнорируются.
     /// По сути вызов <see cref="DbCommand.ExecuteScalar"/>
     /// </summary>
@@ -60,6 +108,22 @@ public class DataAccesBase<TRow, TSelectParams> : DataAccesBase, IDataAcces<TRow
 
         var execCom = addParamToCommand(CommandActionType.Select, selectParams);
         return ExecuteScalar(execCom);
+    }
+
+    /// <summary>
+    /// Выполняет запрос и возвращает первый столбец первой строки результирующего набора, возвращаемого запросом. Все другие столбцы и строки игнорируются.
+    /// По сути вызов <see cref="DbCommand.ExecuteScalar"/>
+    /// </summary>
+    /// <param name="selectParams">Выражение на основе типа парамеров адаптера на выборку. Если null, то всем параметрам присваивается DbNull</param>
+    /// <returns>Первый столбец первой строки в результирующем наборе</returns>
+    public async Task<object?> GetScalarAsunc(
+        Expression<Action<TSelectParams>>? selectParams = null,
+        CancellationToken cancellationToken = default)
+    {
+        Configured();
+
+        var execCom = addParamToCommand(CommandActionType.Select, selectParams);
+        return await ExecuteScalarAsync(execCom, cancellationToken);
     }
 
     internal DbCommand addParamToCommand(CommandActionType actionType, Expression? paramsExpr, TRow? obj = null)
@@ -147,13 +211,6 @@ public class DataAccesBase<TRow, TSelectParams> : DataAccesBase, IDataAcces<TRow
 
         d.Add(name, val!);
     }
-
-    /// <summary>
-    /// Получение данных из БД с записью в класс Trow
-    /// </summary>
-    /// <param name="selectParams">Выражение на основе типа парамеров адаптера на выборку. Если null, то всем параметров присваивается DbNull</param>
-    /// <returns>Коллекция объектов типа Trow</returns>
-    public IEnumerable<TRow> Get(Expression<Action<TSelectParams>>? selectParams = null) => Get<TRow>(selectParams);
 
     private bool flagConfigured;
     private object lockObj = new();
@@ -334,7 +391,7 @@ public class DataAccesBase<TRow, TSelectParams> : DataAccesBase, IDataAcces<TRow
 
     private DbCommand createCommand(AdapterConfig config)
     {
-        var cmmnd = CreateCommand();
+        var cmmnd = DbContext.CreateCommand(ConnectionName);
 #pragma warning disable CA2100 // Проверка запросов SQL на уязвимости безопасности
         cmmnd.CommandText = config.TextCommand;
 #pragma warning restore CA2100 // Проверка запросов SQL на уязвимости безопасности

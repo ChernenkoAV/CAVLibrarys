@@ -11,13 +11,13 @@ public interface IDataAcces
     /// <summary>
     /// Обработчик исключения пры запуске <see cref="DbCommand"/>. Должен генерировать новое исключение (Для обертки "страшных" сиключений в "нестрашные")
     /// </summary>
-    Action<Exception> ExceptionHandlingExecuteCommand { get; set; }
+    Action<Exception>? ExceptionHandlingExecuteCommand { get; set; }
 
     /// <summary>
     /// Метод, выполняемый перед выполнением <see cref="DbCommand"/>. Возвращаемое значение - объект кореляции вызовов (с <see cref="DataAccesBase.MonitorCommandAfterExecute"/>)
     /// </summary>
     /// <remarks>Метод выполняется обернутым в try cath.</remarks>
-    Func<object?> MonitorCommandBeforeExecute { get; set; }
+    Func<object?>? MonitorCommandBeforeExecute { get; set; }
     /// <summary>
     /// Метод, выполняемый после выполнения <see cref="DbCommand"/>.
     /// <see cref="String"/> - текст команды,
@@ -25,7 +25,7 @@ public interface IDataAcces
     /// <see cref="DbParameter"/>[] - копия параметров, с которыми отработала команда <see cref="DbCommand"/>.
     /// </summary>
     /// <remarks>Метод выполняется в отдельном потоке, обернутый в try cath.</remarks>
-    Action<string, object?, DbParameter[]> MonitorCommandAfterExecute { get; set; }
+    Action<string, object?, DbParameter[]>? MonitorCommandAfterExecute { get; set; }
 }
 
 /// <summary>

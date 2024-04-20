@@ -18,7 +18,7 @@ public static class ExtEnum
     public static string GetEnumDescription(this Enum value)
     {
         if (value is null)
-            throw new ArgumentNullException(nameof(value));
+            return null!;
 
         var fi = value.GetType().GetField(value.ToString());
 

@@ -1,4 +1,4 @@
-﻿namespace Cav;
+namespace Cav;
 
 /// <summary>
 /// Расширения работы сос троками
@@ -66,7 +66,7 @@ public static class ExtString
     /// <param name="filePath">Путь, имя файла, путь файла</param>
     /// <param name="replasmentChar">Символ для замены. Если символ является запрещенным, то он приводится в подчеркиванию: "_"</param>
     /// <returns></returns>
-    public static string? ReplaceInvalidPathChars(this string filePath, char replasmentChar = '_')
+    public static string? ReplaceInvalidPathChars(this string? filePath, char replasmentChar = '_')
     {
         if (filePath.IsNullOrWhiteSpace())
             return null;
@@ -77,7 +77,7 @@ public static class ExtString
             replasmentChar = '_';
 
         foreach (var ic in invchars)
-            filePath = filePath.Replace(ic, '_');
+            filePath = filePath!.Replace(ic, '_');
 
         return filePath;
     }

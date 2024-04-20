@@ -1,4 +1,4 @@
-﻿using Cav.ReflectHelpers;
+using Cav.ReflectHelpers;
 
 namespace Cav;
 
@@ -82,7 +82,7 @@ public static class ExtObject
     /// <param name="arg">Проверяемый аргумент</param>
     /// <param name="args">Перечень значений</param>
     /// <returns>Если аргумент IsNullOrWhiteSpace() результат всегда false</returns>
-    public static bool In(this string arg, params string[] args) =>
+    public static bool In(this string? arg, params string[] args) =>
         !arg.IsNullOrWhiteSpace() && args.Contains(arg);
 
     /// <summary>

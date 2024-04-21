@@ -89,15 +89,11 @@ public static class ExtJson
             type is null
                 ? throw new ArgumentNullException(nameof(type))
                 : s.IsNullOrWhiteSpace()
-                    ? type.IsArray
-                        ? Array.CreateInstance(type.GetElementType()!, 0)
-                        :
-                            // Для всяких HashList и тд
+                    ? type.IsArray || (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>) && type != typeof(string))
+                        ? Array.CreateInstance(type.GetElementType() ?? type.GetGenericArguments().Single(), 0)
+                        : // Для всяких HashList и тд
                             (
-                                ( // этот код и массивы определяет, но не пропусает на ограничении, что генерик аргумент должен быть один
-                                    (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>)) ||
-                                    type.GetInterfaces().Any(x => x.IsConstructedGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-                                ) &&
+                                type.GetInterfaces().Any(x => x.IsConstructedGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>)) &&
                                 type.GetGenericArguments().Length == 1 &&
                                 type != typeof(string)
                             )

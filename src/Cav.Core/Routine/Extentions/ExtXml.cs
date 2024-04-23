@@ -15,7 +15,7 @@ namespace Cav;
 public static class ExtXml
 {
 
-    // кэш сериализаторов. Ато огромная течка памяти
+    // кэш сериализаторов. А то огромная утечка памяти
     private static ConcurrentDictionary<string, Lazy<XmlSerializer>> cacheXmlSer = new();
 
     private static XmlSerializer getSerialize(Type type, XmlRootAttribute? rootAttrib = null)

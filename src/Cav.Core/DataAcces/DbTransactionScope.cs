@@ -22,49 +22,39 @@ public sealed class DbTransactionScope : IDisposable
     public DbTransactionScope(string? connectionName = null)
     {
         currentTran = Guid.NewGuid();
-        if (connectionName.IsNullOrWhiteSpace())
-            connectionName = DbContext.defaultNameConnection;
+        connName = connectionName.GetNullIfIsNullOrWhiteSpace() ?? DbContext.defaultNameConnection;
 
-        if (!rootTran.Value.HasValue)
+        if (rootTran.Value == null)
             rootTran.Value = currentTran;
 
         if (rootTran.Value != currentTran)
             return;
 
-        if (TransactionGet(connectionName) == null)
+        if (TransactionGet(connName) == null)
         {
-            transactions.Value!.Add(connectionName!, Connection(connectionName).BeginTransaction());
-            connName = connectionName!;
+            if (transactions.Value is null)
+                transactions.Value = [];
+
+            transactions.Value.Add(connName, DbContext.Connection(connName).BeginTransaction());
         }
     }
 
     private bool complete;
-    private string? connName;
-    private static ThreadLocal<Guid?> rootTran = new(() => null);
+    private string connName;
+    private static AsyncLocal<Guid?> rootTran = new();
 
-    private static ThreadLocal<Dictionary<string, DbTransaction>> transactions = new(() => []);
+    private static AsyncLocal<Dictionary<string, DbTransaction>> transactions = new() { };
 
     private readonly Guid currentTran;
-
-    internal static DbConnection Connection(string? connectionName = null)
-    {
-        if (connectionName.IsNullOrWhiteSpace())
-            connectionName = DbContext.defaultNameConnection;
-
-        var tran = TransactionGet(connectionName);
-
-        return tran == null
-            ? DbContext.Connection(connectionName)
-            : tran.Connection ?? throw new InvalidOperationException("Несогласованное состояние транзакции. Соедиение с БД сброшено.");
-    }
 
     internal static DbTransaction? TransactionGet(string? connectionName = null)
     {
         if (connectionName.IsNullOrWhiteSpace())
             connectionName = DbContext.defaultNameConnection;
 
-        transactions.Value!.TryGetValue(connectionName!, out var tran);
-        return tran;
+        DbTransaction? res = null;
+        transactions.Value?.TryGetValue(connectionName!, out res);
+        return res;
     }
 
     #region Члены IDisposable

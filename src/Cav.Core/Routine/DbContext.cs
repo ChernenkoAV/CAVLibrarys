@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Data.Common;
 
@@ -14,7 +13,7 @@ public static class DbContext
     /// <summary>
     /// Коллекция настроек соединения с БД
     /// </summary>
-    private static ConcurrentDictionary<string, SettingConnection> dcsb = new();
+    private static Dictionary<string, SettingConnection> dcsb = [];
     private struct SettingConnection
     {
         public string ConnectionString { get; set; }
@@ -69,8 +68,7 @@ public static class DbContext
             CommandType = cmd.GetType()
         };
 
-        dcsb.TryRemove(connectionName!, out _);
-        dcsb.TryAdd(connectionName!, setCon);
+        dcsb[connectionName!] = setCon;
     }
 
     /// <summary>

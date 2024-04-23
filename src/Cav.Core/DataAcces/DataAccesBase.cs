@@ -320,8 +320,19 @@ public class DataAccesBase : IDataAcces
             cmd.Connection = DbContext.Connection(ConnectionName);
         else
         {
-            cmd.Connection = DbTransactionScope.Connection(ConnectionName);
-            cmd.Transaction = DbTransactionScope.TransactionGet(ConnectionName);
+            var tran = DbTransactionScope.TransactionGet(ConnectionName);
+            var conn = tran?.Connection;
+
+            if (tran != null && conn == null)
+                throw new InvalidOperationException("Несогласованное состояние транзакции. Соедиение с БД сброшено.");
+
+            if (conn == null)
+                conn = DbContext.Connection(ConnectionName);
+
+            cmd.Connection = conn;
+
+            if (tran != null)
+                cmd.Transaction = tran;
         }
 
         return cmd;

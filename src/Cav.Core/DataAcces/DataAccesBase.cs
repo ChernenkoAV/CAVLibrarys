@@ -230,21 +230,10 @@ public class DataAccesBase : IDataAcces
         {
             var res = new DataTable();
 
-            var correlationObject = MonitorCommandBeforeExecute?.Invoke();
-
-            using var reader = await executeReader(cmd, cancellationToken);
+            using var reader = await executeReader(cmd, cancellationToken).ConfigureAwait(false);
             res.Load(reader);
 
-            monitorHelperAfter(cmd, correlationObject);
-
             return res;
-        }
-        catch (Exception ex)
-        {
-            if (ExceptionHandlingExecuteCommand != null)
-                ExceptionHandlingExecuteCommand(ex);
-            else
-                throw;
         }
         finally
         {

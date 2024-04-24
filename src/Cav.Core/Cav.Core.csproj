@@ -22,6 +22,7 @@
         <PackageVersion>10.0.0-dev01</PackageVersion>
         <PackageVersion>10.0.0-dev02</PackageVersion>
         <PackageVersion>10.0.0-dev03</PackageVersion>
+        <PackageVersion>10.0.0-dev04</PackageVersion>
         <Description>A set of utilities that facilitate routine operations</Description>
         <PackageTags>сav utils</PackageTags>
     </PropertyGroup>

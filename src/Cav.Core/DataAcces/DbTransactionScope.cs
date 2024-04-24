@@ -23,6 +23,8 @@ public sealed class DbTransactionScope : IDisposable
     {
         currentTran = Guid.NewGuid();
         connName = connectionName.GetNullIfIsNullOrWhiteSpace() ?? DbContext.defaultNameConnection;
+        if (transactions is null || transactions.Value == null)
+            transactions = new() { Value = [] };
 
         if (rootTran.Value == null)
             rootTran.Value = currentTran;
@@ -31,19 +33,14 @@ public sealed class DbTransactionScope : IDisposable
             return;
 
         if (TransactionGet(connName) == null)
-        {
-            if (transactions.Value is null)
-                transactions.Value = [];
-
-            transactions.Value.Add(connName, DbContext.Connection(connName).BeginTransaction());
-        }
+            transactions.Value!.Add(connName, DbContext.Connection(connName).BeginTransaction());
     }
 
     private bool complete;
     private string connName;
     private static AsyncLocal<Guid?> rootTran = new();
 
-    private static AsyncLocal<Dictionary<string, DbTransaction>> transactions = new() { };
+    private static AsyncLocal<Dictionary<string, DbTransaction>> transactions = new();
 
     private readonly Guid currentTran;
 
@@ -52,8 +49,10 @@ public sealed class DbTransactionScope : IDisposable
         if (connectionName.IsNullOrWhiteSpace())
             connectionName = DbContext.defaultNameConnection;
 
-        DbTransaction? res = null;
-        transactions.Value?.TryGetValue(connectionName!, out res);
+        if (transactions is null || transactions.Value == null)
+            transactions = new() { Value = [] };
+
+        transactions.Value!.TryGetValue(connectionName!, out var res);
         return res;
     }
 
@@ -69,8 +68,6 @@ public sealed class DbTransactionScope : IDisposable
     /// </summary>
     public void Dispose()
     {
-        var connNameEv = connName;
-
         if (connName.IsNullOrWhiteSpace())
             connName = DbContext.defaultNameConnection;
 
@@ -90,7 +87,7 @@ public sealed class DbTransactionScope : IDisposable
                 conn.Close();
                 conn.Dispose();
 
-                TransactionRollback?.Invoke(connNameEv!);
+                TransactionRollback?.Invoke(connName!);
             }
         }
 
@@ -112,7 +109,7 @@ public sealed class DbTransactionScope : IDisposable
                 conn.Close();
                 conn.Dispose();
 
-                TransactionCommit?.Invoke(connNameEv!);
+                TransactionCommit?.Invoke(connName!);
             }
         }
     }

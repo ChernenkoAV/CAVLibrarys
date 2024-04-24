@@ -23,8 +23,6 @@ public sealed class DbTransactionScope : IDisposable
     {
         currentTran = Guid.NewGuid();
         connName = connectionName.GetNullIfIsNullOrWhiteSpace() ?? DbContext.defaultNameConnection;
-        if (transactions is null || transactions.Value == null)
-            transactions = new() { Value = [] };
 
         if (rootTran.Value == null)
             rootTran.Value = currentTran;
@@ -33,7 +31,8 @@ public sealed class DbTransactionScope : IDisposable
             return;
 
         if (TransactionGet(connName) == null)
-            transactions.Value!.Add(connName, DbContext.Connection(connName).BeginTransaction());
+            (transactions.Value ??= []).Add(connName, DbContext.Connection(connName).BeginTransaction());
+
     }
 
     private bool complete;
@@ -49,10 +48,12 @@ public sealed class DbTransactionScope : IDisposable
         if (connectionName.IsNullOrWhiteSpace())
             connectionName = DbContext.defaultNameConnection;
 
-        if (transactions is null || transactions.Value == null)
-            transactions = new() { Value = [] };
+        if (transactions == null)
+            transactions = new();
+        if (transactions.Value == null)
+            transactions.Value = [];
 
-        transactions.Value!.TryGetValue(connectionName!, out var res);
+        transactions.Value.TryGetValue(connectionName!, out var res);
         return res;
     }
 
@@ -75,7 +76,7 @@ public sealed class DbTransactionScope : IDisposable
 
         if (tran != null && !complete)
         {
-            transactions.Value!.Remove(connName!);
+            transactions.Value?.Remove(connName!);
             rootTran.Value = null;
 
             var conn = tran.Connection;
@@ -97,7 +98,7 @@ public sealed class DbTransactionScope : IDisposable
         tran = TransactionGet(connName);
         if (tran != null)
         {
-            transactions.Value!.Remove(connName!);
+            transactions.Value?.Remove(connName!);
             rootTran.Value = null;
 
             var conn = tran.Connection;

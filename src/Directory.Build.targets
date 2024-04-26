@@ -1,18 +1,23 @@
 <Project>
 
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/ChernenkoAV/CAVLibrarys.git</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/ChernenkoAV/CavLibrarys</PackageProjectUrl>
+    </PropertyGroup>
+
     <PropertyGroup>
         <PackageIcon>Cav.png</PackageIcon>
         <Authors>ChernenkoAV</Authors>
         <Owners>ChernenkoAV</Owners>
-        <RepositoryType>git</RepositoryType>
-        <RepositoryUrl>https://github.com/ChernenkoAV/CAVLibrarys.git</RepositoryUrl>
-        <PackageProjectUrl >https://github.com/ChernenkoAV/CavLibrarys</PackageProjectUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageReadmeFile>readme.md</PackageReadmeFile>
         <OutputNuget></OutputNuget>
+
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     </PropertyGroup>
 
-     <PropertyGroup Condition="'$(TargetFramework)' != 'net4.8' AND '$(TargetFrameworkVersion)' != 'v4.8'">
+    <PropertyGroup Condition="'$(TargetFramework)' != 'net4.8' AND '$(TargetFrameworkVersion)' != 'v4.8'">
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
@@ -21,14 +26,47 @@
         <Nullable>disable</Nullable>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <DebugType>portable</DebugType>
+        <Optimize>true</Optimize>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+        <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+        <PackageVersion>$(PackageVersion)-dev.$([System.DateTime]::Now.Tostring("yyyyMMddHHmm"))</PackageVersion>
+        <!--<DebugType>portable</DebugType>-->
+        <!--<DebugType>embedded</DebugType>-->
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <DebugSymbols>true</DebugSymbols>
+        <CopyDebugSymbolFilesFromPackages>true</CopyDebugSymbolFilesFromPackages>
+
+        <ContinuousIntegrationBuild>false</ContinuousIntegrationBuild>
+        <DeterministicSourcePaths>false</DeterministicSourcePaths>
+        <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+
+        <EmbedUntrackedSources>false</EmbedUntrackedSources>
+        <PublishRepositoryUrl>false</PublishRepositoryUrl>
+        <EnableSourceControlManagerQueries>false</EnableSourceControlManagerQueries>
+    </PropertyGroup>
+
+    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+        <SourceRoot Include="$(MSBuildThisFileDirectory)"/>
+    </ItemGroup>
+
     <ItemGroup>
         <None Include="..\Cav.png" Pack="true" PackagePath="\"/>
         <None Include="readme.md" Pack="true" PackagePath="\"/>
     </ItemGroup>
 
     <PropertyGroup>
-        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <MonikerFile>$([System.IO.Path]::Combine('$(IntermediateOutputPath)','$(TargetFrameworkMoniker).AssemblyAttributes$(DefaultLanguageSourceExtension)'))</MonikerFile>
+        <TargetFrameworkMonikerAssemblyAttributesPath>$(MonikerFile)</TargetFrameworkMonikerAssemblyAttributesPath>
 
+        <VersionFile>$(IntermediateOutputPath)$(AssemblyName)_$(PackageVersion)_$(TargetFramework)$(DefaultLanguageSourceExtension)</VersionFile>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -36,16 +74,10 @@
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <DeterministicSourcePaths>true</DeterministicSourcePaths>
 
-        <MonikerFile>$([System.IO.Path]::Combine('$(IntermediateOutputPath)','$(TargetFrameworkMoniker).AssemblyAttributes$(DefaultLanguageSourceExtension)'))</MonikerFile>
-
-        <TargetFrameworkMonikerAssemblyAttributesPath>$(MonikerFile)</TargetFrameworkMonikerAssemblyAttributesPath>
-
         <Copyright>Copyright $([System.DateTime]::Now.Year)©</Copyright>
-
-        <VersionFile>$([System.IO.Path]::Combine('$(IntermediateOutputPath)','$(AssemblyName)_$(PackageVersion)_$(TargetFramework)$(DefaultLanguageSourceExtension)'))</VersionFile>
     </PropertyGroup>
 
-    <ItemGroup>
+    <ItemGroup Condition="'$(Configuration)' == 'Release'">
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="*" PrivateAssets="All" />
     </ItemGroup>
 
@@ -129,14 +161,14 @@
 
         <Message Text="----- Сборка $(AssemblyName): версия пакета $(PackageVersion) версия сборки $(VerAssembly) версия файла $(VerFile)" Importance="High"/>
 
-        <ItemGroup>
+        <ItemGroup  Condition="'$(Configuration)' == 'Release'">
             <Compile Include="$(VersionFile)"/>
         </ItemGroup>
 
     </Target>
 
     <ItemGroup Condition="!'$(ShouldRunTarget)'">
-        <Compile Include="$(VersionFile)"/>
+        <Compile  Condition="'$(Configuration)' == 'Release'" Include="$(VersionFile)"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -151,10 +183,15 @@
 
         <Message Text="----- Запуск пакетирования $(AssemblyName)" Importance="High"/>
 
-        <Exec
+        <Exec Condition="'$(Configuration)' == 'Release'"
             StdErrEncoding="utf-8"
             StdOutEncoding="utf-8"
             Command="dotnet pack --no-build -c $(Configuration) --force --nologo -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg -o &quot;$(OutputNuget)&quot;" />
+
+        <Exec Condition="'$(Configuration)' == 'Debug'"
+            StdErrEncoding="utf-8"
+            StdOutEncoding="utf-8"
+            Command="dotnet pack --no-build -c $(Configuration) --force --nologo -p:IncludeSymbols=true -o &quot;$(OutputNuget)&quot;" />
 
         <Message Text="----- Удаление из кэша nuget $(PackageId)" Importance="High"/>
 

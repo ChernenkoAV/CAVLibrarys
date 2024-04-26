@@ -283,24 +283,28 @@ public class DataAccesBase : IDataAcces
         }
         catch { }
 
-        var tran = DbTransactionScope.TransactionGet(ConnectionName);
-
-        if (tran != null && tran.Connection == null)
-            throw new InvalidOperationException("Несогласованное состояние объекта транзакции. Соедиение с БД сброшено.");
-
-        if (tran != null)
+        if (!ExecuteIsolationConnection)
         {
-            if (cmdConn == null || cmdTran == null)
-                throw new InvalidOperationException("Несогласованное состояние объекта транзакции в команде. Соедиение с БД сброшено.");
-        }
-        else
-        if (cmdConn != null)
-            try
+            var tran = DbTransactionScope.TransactionGet(ConnectionName);
+
+            if (tran != null && tran.Connection == null)
+                throw new InvalidOperationException("DisposeConnection Несогласованное состояние объекта транзакции. Соедиение с БД сброшено.");
+
+            if (tran != null)
             {
-                cmdConn.Close();
-                cmdConn.Dispose();
+                if (cmdConn == null || cmdTran == null)
+                    throw new InvalidOperationException("DisposeConnection Несогласованное состояние объекта транзакции в команде. Соедиение с БД сброшено.");
+
+                cmdConn = null;
             }
-            catch { }
+        }
+
+        try
+        {
+            cmdConn?.Close();
+            cmdConn?.Dispose();
+        }
+        catch { }
     }
 
     private DbCommand tuneCommand(DbCommand cmd)
@@ -313,7 +317,7 @@ public class DataAccesBase : IDataAcces
             var conn = tran?.Connection;
 
             if (tran != null && conn == null)
-                throw new InvalidOperationException("Несогласованное состояние транзакции. Соедиение с БД сброшено.");
+                throw new InvalidOperationException("TransactionGet Несогласованное состояние транзакции. Соедиение с БД сброшено.");
 
             if (conn == null)
                 conn = DbContext.Connection(ConnectionName);

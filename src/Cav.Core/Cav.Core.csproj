@@ -17,7 +17,7 @@
     </ItemGroup>
 
     <PropertyGroup>
-        <PackageVersion>10.0.0-dev05</PackageVersion>
+        <PackageVersion>10.0.0-dev06</PackageVersion>
         <Description>A set of utilities that facilitate routine operations</Description>
         <PackageTags>сav utils</PackageTags>
     </PropertyGroup>

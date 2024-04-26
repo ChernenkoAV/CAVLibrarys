@@ -45,8 +45,6 @@
         <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
         <WarningsAsErrors />
         
-        <DebugType>portable</DebugType>
-        <Optimize>true</Optimize>
         <DefineConstants>DEBUG;TRACE</DefineConstants>
 
         <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>

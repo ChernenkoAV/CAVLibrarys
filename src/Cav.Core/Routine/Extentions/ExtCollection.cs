@@ -1,4 +1,4 @@
-﻿namespace Cav;
+namespace Cav;
 
 /// <summary>
 /// Робота с коллекциями

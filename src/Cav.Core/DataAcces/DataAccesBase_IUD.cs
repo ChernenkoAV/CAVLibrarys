@@ -116,7 +116,7 @@ public class DataAccesBase<TRow, TSelectParams, TUpdateParams, TDeleteParams> : 
     /// Удаление по предикату 
     /// </summary>
     /// <param name="deleteParams"></param>
-    public async Task DeleteAsunc(
+    public async Task DeleteAsync(
         Expression<Action<TDeleteParams>> deleteParams,
         CancellationToken cancellationToken = default)
     {

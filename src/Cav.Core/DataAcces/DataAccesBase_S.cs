@@ -116,7 +116,7 @@ public class DataAccesBase<TRow, TSelectParams> : DataAccesBase, IDataAcces<TRow
     /// </summary>
     /// <param name="selectParams">Выражение на основе типа парамеров адаптера на выборку. Если null, то всем параметрам присваивается DbNull</param>
     /// <returns>Первый столбец первой строки в результирующем наборе</returns>
-    public async Task<object?> GetScalarAsunc(
+    public async Task<object?> GetScalarAsync(
         Expression<Action<TSelectParams>>? selectParams = null,
         CancellationToken cancellationToken = default)
     {

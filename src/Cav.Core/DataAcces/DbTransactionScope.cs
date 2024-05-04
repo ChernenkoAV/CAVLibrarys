@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Data.Common;
 
 #pragma warning disable CA1003 // Используйте экземпляры обработчика универсальных событий
@@ -15,6 +16,18 @@ public delegate void DbTransactionScopeEnd(string connName);
 /// </summary>
 public sealed class DbTransactionScope : IDisposable
 {
+
+    private bool complete;
+    private string connName;
+    private static AsyncLocal<Guid?> rootTran = new();
+
+    private static ConcurrentDictionary<string, DbTransaction> transactions = [];
+
+    private readonly Guid currentTran;
+
+    private static string getKeyTran(string? conName) =>
+        $"{conName ?? DbContext.defaultNameConnection}|{rootTran.Value}";
+
     /// <summary>
     /// Создание нового экземпляра обертки транзации
     /// </summary>
@@ -22,7 +35,8 @@ public sealed class DbTransactionScope : IDisposable
     public DbTransactionScope(string? connectionName = null)
     {
         currentTran = Guid.NewGuid();
-        connName = connectionName.GetNullIfIsNullOrWhiteSpace() ?? DbContext.defaultNameConnection;
+
+        connName = connectionName ??= DbContext.defaultNameConnection;
 
         if (rootTran.Value == null)
             rootTran.Value = currentTran;
@@ -31,30 +45,19 @@ public sealed class DbTransactionScope : IDisposable
             return;
 
         if (TransactionGet(connName) == null)
-            (transactions.Value ??= []).Add(connName, DbContext.Connection(connName).BeginTransaction());
-
+            transactions.AddOrUpdate(
+                getKeyTran(connName),
+                DbContext.Connection(connName).BeginTransaction(),
+                (k, t) => t);
     }
-
-    private bool complete;
-    private string connName;
-    private static AsyncLocal<Guid?> rootTran = new();
-
-    private static AsyncLocal<Dictionary<string, DbTransaction>> transactions = new();
-
-    private readonly Guid currentTran;
 
     internal static DbTransaction? TransactionGet(string? connectionName = null)
     {
-        if (connectionName.IsNullOrWhiteSpace())
-            connectionName = DbContext.defaultNameConnection;
+        transactions.TryGetValue(getKeyTran(connectionName), out var res);
 
-        if (transactions == null)
-            transactions = new();
-        if (transactions.Value == null)
-            transactions.Value = [];
-
-        transactions.Value.TryGetValue(connectionName!, out var res);
-        return res;
+        return res != null && res.Connection == null
+            ? throw new InvalidOperationException("TransactionGet Несогласованное состояние объекта транзакции. Соедиение с БД сброшено.")
+            : res;
     }
 
     #region Члены IDisposable
@@ -69,49 +72,40 @@ public sealed class DbTransactionScope : IDisposable
     /// </summary>
     public void Dispose()
     {
-        if (connName.IsNullOrWhiteSpace())
-            connName = DbContext.defaultNameConnection;
-
-        var tran = TransactionGet(connName);
+        var tranKey = getKeyTran(connName);
+        transactions.TryGetValue(tranKey, out var tran);
 
         if (tran != null && !complete)
         {
-            transactions.Value?.Remove(connName!);
+            transactions.TryRemove(tranKey, out var _);
             rootTran.Value = null;
 
             var conn = tran.Connection;
-            if (conn != null)
-            {
-                tran.Rollback();
-                tran.Dispose();
 
-                conn.Close();
-                conn.Dispose();
+            tran.Rollback();
+            tran.Dispose();
 
-                TransactionRollback?.Invoke(connName!);
-            }
+            conn?.Dispose();
+
+            TransactionRollback?.Invoke(connName!);
         }
 
         if (rootTran.Value != currentTran)
             return;
 
-        tran = TransactionGet(connName);
         if (tran != null)
         {
-            transactions.Value?.Remove(connName!);
+            transactions.TryRemove(tranKey, out var _);
             rootTran.Value = null;
 
             var conn = tran.Connection;
-            if (conn != null)
-            {
-                tran.Commit();
-                tran.Dispose();
 
-                conn.Close();
-                conn.Dispose();
+            tran.Commit();
+            tran.Dispose();
 
-                TransactionCommit?.Invoke(connName!);
-            }
+            conn!.Dispose();
+
+            TransactionCommit?.Invoke(connName!);
         }
     }
 

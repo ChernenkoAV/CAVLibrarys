@@ -325,6 +325,3 @@ dotnet_naming_style.camel_case.capitalization = camel_case
 
 # Default severity for analyzer diagnostics with category 'Globalization'
 dotnet_analyzer_diagnostic.category-Globalization.severity = silent
-
-# Используйте тело выражения для методов
-dotnet_diagnostic.IDE0022.severity = error 

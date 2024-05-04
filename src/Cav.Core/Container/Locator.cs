@@ -92,7 +92,14 @@ public static class Locator
             paramConstr.Add(paramInstance!);
         }
 
-        res = constructor.Invoke(paramConstr.ToArray());
+        try
+        {
+            res = constructor.Invoke(paramConstr.ToArray());
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"ошибка создания объекта типа {typeInstance}", ex);
+        }
 
         if (akaSingleton)
             cacheObjects.TryAdd(res.GetType(), res);

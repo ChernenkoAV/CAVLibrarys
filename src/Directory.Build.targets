@@ -1,11 +1,5 @@
 <Project>
 
-    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-        <RepositoryType>git</RepositoryType>
-        <RepositoryUrl>https://github.com/ChernenkoAV/CAVLibrarys.git</RepositoryUrl>
-        <PackageProjectUrl>https://github.com/ChernenkoAV/CavLibrarys</PackageProjectUrl>
-    </PropertyGroup>
-
     <PropertyGroup>
         <PackageIcon>Cav.png</PackageIcon>
         <Authors>ChernenkoAV</Authors>
@@ -27,12 +21,15 @@
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/ChernenkoAV/CAVLibrarys.git</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/ChernenkoAV/CavLibrarys</PackageProjectUrl>
+
         <DebugType>portable</DebugType>
         <Optimize>true</Optimize>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-        <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
         <PackageVersion>$(PackageVersion)-dev.$([System.DateTime]::Now.Tostring("yyyyMMddHHmm"))</PackageVersion>
         <!--<DebugType>portable</DebugType>-->
         <!--<DebugType>embedded</DebugType>-->
@@ -161,14 +158,14 @@
 
         <Message Text="----- Сборка $(AssemblyName): версия пакета $(PackageVersion) версия сборки $(VerAssembly) версия файла $(VerFile)" Importance="High"/>
 
-        <ItemGroup  Condition="'$(Configuration)' == 'Release'">
+        <ItemGroup>
             <Compile Include="$(VersionFile)"/>
         </ItemGroup>
 
     </Target>
 
     <ItemGroup Condition="!'$(ShouldRunTarget)'">
-        <Compile  Condition="'$(Configuration)' == 'Release'" Include="$(VersionFile)"/>
+        <Compile Include="$(VersionFile)"/>
     </ItemGroup>
 
     <ItemGroup>

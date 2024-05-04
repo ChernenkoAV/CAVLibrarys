@@ -29,8 +29,6 @@
         
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 
-        <!--<GenerateAssemblyInfo>true</GenerateAssemblyInfo>-->
-
         <!--https://learn.microsoft.com/en-us/dotnet/orleans/host/configuration-guide/configuring-garbage-collection-->
         <!--<ServerGarbageCollection>true</ServerGarbageCollection>
         <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>-->

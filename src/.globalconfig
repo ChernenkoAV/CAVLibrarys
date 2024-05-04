@@ -75,3 +75,6 @@ dotnet_diagnostic.IDE0300.severity = warning #IDE0300: Инициализаци�
 dotnet_diagnostic.IDE0301.severity = warning #IDE0301 Инициализацию коллекции можно упростить.
 dotnet_diagnostic.IDE0305.severity = suggestion #IDE0305: Инициализацию коллекции можно упростить.
 dotnet_diagnostic.IDE0090.severity = warning #IDE0090: выражение new можно упростить
+
+dotnet_diagnostic.IDE0022.severity = error # Используйте тело выражения для методов
+dotnet_diagnostic.CA1016.severity = none #CA1016: помечать сборки атрибутом AssemblyVersionAttribute

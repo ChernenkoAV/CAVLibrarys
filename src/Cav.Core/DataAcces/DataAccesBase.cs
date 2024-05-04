@@ -285,12 +285,7 @@ public class DataAccesBase : IDataAcces
 
         if (!ExecuteIsolationConnection)
         {
-            var tran = DbTransactionScope.TransactionGet(ConnectionName);
-
-            if (tran != null && tran.Connection == null)
-                throw new InvalidOperationException("DisposeConnection Несогласованное состояние объекта транзакции. Соедиение с БД сброшено.");
-
-            if (tran != null)
+            if (DbTransactionScope.TransactionGet(ConnectionName) != null)
             {
                 if (cmdConn == null || cmdTran == null)
                     throw new InvalidOperationException("DisposeConnection Несогласованное состояние объекта транзакции в команде. Соедиение с БД сброшено.");

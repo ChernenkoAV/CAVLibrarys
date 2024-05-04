@@ -181,6 +181,9 @@
             <OutputNuget>$([System.IO.Path]::GetPathRoot($(MSBuildProjectDirectory)))localNuget</OutputNuget>
         </PropertyGroup>
 
+        <Message Text="----- Удаление nuget $(AssemblyName) из целевой папки $(OutputNuget)" Importance="High"/>
+        <Exec Command="del /f &quot;$(OutputNuget)\$(AssemblyName)*&quot;"  />
+
         <Message Text="----- Запуск пакетирования $(AssemblyName)" Importance="High"/>
 
         <Exec Condition="'$(Configuration)' == 'Release'"
@@ -194,7 +197,6 @@
             Command="dotnet pack --no-build -c $(Configuration) --force --nologo -p:IncludeSymbols=true -o &quot;$(OutputNuget)&quot;" />
 
         <Message Text="----- Удаление из кэша nuget $(PackageId)" Importance="High"/>
-
         <RemoveDir Directories="$(NugetPackageRoot)/$(PackageId.ToLower())" />
 
     </Target>

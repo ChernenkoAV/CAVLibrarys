@@ -25,7 +25,7 @@
         <CopyDocumentationFileToOutputDirectory>true</CopyDocumentationFileToOutputDirectory>
         <NoWarn>$(NoWarn);CS1591;CS1573;CS1712</NoWarn>
 
-        <Deterministic>false</Deterministic>
+        <!--<Deterministic>true</Deterministic>-->
         
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging.Configuration;
 using Microsoft.Extensions.Options;
 using RestSharp;
 
-namespace Ppr.Extensions.Logger.Telegram;
+namespace Cav.Logger.Telegram;
 
 /// <summary>
 /// Настройки логгера

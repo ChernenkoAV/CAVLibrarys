@@ -1,7 +1,7 @@
+#pragma warning disable CA1003 // Используйте экземпляры обработчика универсальных событий
+
 using System.Collections.Concurrent;
 using System.Data.Common;
-
-#pragma warning disable CA1003 // Используйте экземпляры обработчика универсальных событий
 
 namespace Cav;
 
@@ -26,7 +26,7 @@ public sealed class DbTransactionScope : IDisposable
     private readonly Guid currentTran;
 
     private static string getKeyTran(string? conName) =>
-        $"{conName ?? DbContext.defaultNameConnection}|{rootTran.Value}";
+        $"{conName ?? DbContext.defaultNameConnection}|{rootTran.Value ?? Guid.NewGuid()}";
 
     /// <summary>
     /// Создание нового экземпляра обертки транзации
@@ -44,11 +44,8 @@ public sealed class DbTransactionScope : IDisposable
         if (rootTran.Value != currentTran)
             return;
 
-        if (TransactionGet(connName) == null)
-            transactions.AddOrUpdate(
-                getKeyTran(connName),
-                DbContext.Connection(connName).BeginTransaction(),
-                (k, t) => t);
+        if (!transactions.TryGetValue(getKeyTran(connName), out var transaction))
+            transactions.AddOrUpdate(getKeyTran(connName), DbContext.Connection(connName).BeginTransaction(), (k, t) => t);
     }
 
     internal static DbTransaction? TransactionGet(string? connectionName = null)
@@ -81,11 +78,30 @@ public sealed class DbTransactionScope : IDisposable
             rootTran.Value = null;
 
             var conn = tran.Connection;
-
-            tran.Rollback();
+#if NET7_0_OR_GREATER
+            tran.RollbackAsync().ConfigureAwait(false).GetAwaiter().GetResult();
             tran.Dispose();
 
             conn?.Dispose();
+#else
+            try
+            {
+                tran.Rollback();
+            }
+            catch { }
+
+            try
+            {
+                tran.Dispose();
+            }
+            catch { }
+
+            try
+            {
+                conn?.Dispose();
+            }
+            catch { }
+#endif
 
             TransactionRollback?.Invoke(connName!);
         }

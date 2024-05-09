@@ -102,21 +102,15 @@
         <Error Condition="'$(PackageVersion)' == ''" Text="Необходимо заполнить свойство PackageVersion!" />
 
         <PropertyGroup Condition=" '$(PackageVersion.Split(`.`)[0])' == '0' ">
-            <VerAssembly>0.1.0.0</VerAssembly>
+            <Version>0.1.0.0</Version>
         </PropertyGroup>
 
         <PropertyGroup Condition=" '$(PackageVersion.Split(`.`)[0])' != '0' ">
-            <VerAssembly>$(PackageVersion.Split(`.`, StringSplitOptions.None)[0]).0.0.0</VerAssembly>
-
-            <!--
-                MsBuild овский элемент указания версии сборки
-                А то чото AssemblyVersion в файле не отрабатывает
-            -->
-            <Version>$(VerAssembly)</Version>
+            <Version>$(PackageVersion.Split(`.`, StringSplitOptions.None)[0]).0.0.0</Version>
         </PropertyGroup>
 
         <PropertyGroup>
-            <VerFile>$(VerAssembly.Split(`.`)[0])$([System.DateTime]::Now.Tostring(".yyyy.MM.dd"))</VerFile>
+            <VerFile>$(Version.Split(`.`)[0])$([System.DateTime]::Now.Tostring(".yyyy.MM.dd"))</VerFile>
         </PropertyGroup>
 
         <ItemGroup>
@@ -124,7 +118,7 @@
                 <_Parameter1>$(AssemblyName) $(PackageVersion) $(TargetFramework)</_Parameter1>
             </AssemblyAttributes>
             <AssemblyAttributes Include="AssemblyVersion">
-                <_Parameter1>$(VerAssembly)</_Parameter1>
+                <_Parameter1>$(Version)</_Parameter1>
             </AssemblyAttributes>
             <AssemblyAttributes Include="AssemblyFileVersion">
                 <_Parameter1>$(VerFile)</_Parameter1>
@@ -163,19 +157,13 @@
                            OutputFile="$(VersionFile)"
                            AssemblyAttributes="@(AssemblyAttributes)"/>
 
-        <Message Text="----- Сборка $(AssemblyName) $(PackageVersion) $(TargetFramework) AssemblyVersion $(VerAssembly) FileVersion $(VerFile)" Importance="High"/>
+        <Message Text="----- Сборка $(AssemblyName) $(PackageVersion) $(TargetFramework) AssemblyVersion $(Version) FileVersion $(VerFile)" Importance="High"/>
 
         <ItemGroup>
             <Compile Include="$(VersionFile)"/>
         </ItemGroup>
 
     </Target>
-
-    <!--<Target Name="SetVersionIfShouldRunTarget" BeforeTargets="$(ShouldBeforeTargets)">
-        <ItemGroup>
-            <Compile Include="$(VersionFile)"/>
-        </ItemGroup>
-    </Target>-->
 
     <Target Name="PackNuget" Condition="$(ShouldRunTarget)" AfterTargets="$(ShouldAfterTargets)">
 

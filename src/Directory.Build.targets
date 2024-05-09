@@ -27,10 +27,18 @@
 
         <DebugType>portable</DebugType>
         <Optimize>true</Optimize>
+
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <DeterministicSourcePaths>true</DeterministicSourcePaths>
+
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-        <PackageVersion>$(PackageVersion)-dev.$([System.DateTime]::Now.Tostring("yyyyMMddHHmm"))</PackageVersion>
+        <PackageVersion Condition="'$(PackageVersion)' != '' ">$(PackageVersion)-dev.$([System.DateTime]::Now.Tostring("yyyyMMddHHmm"))</PackageVersion>
         <!--<DebugType>portable</DebugType>-->
         <!--<DebugType>embedded</DebugType>-->
         <DebugType>full</DebugType>
@@ -51,6 +59,10 @@
         <SourceRoot Include="$(MSBuildThisFileDirectory)"/>
     </ItemGroup>
 
+    <ItemGroup Condition="'$(Configuration)' == 'Release'">
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="*" PrivateAssets="All" />
+    </ItemGroup>
+
     <ItemGroup>
         <None Include="..\Cav.png" Pack="true" PackagePath="\"/>
         <None Include="readme.md" Pack="true" PackagePath="\"/>
@@ -60,22 +72,11 @@
         <MonikerFile>$([System.IO.Path]::Combine('$(IntermediateOutputPath)','$(TargetFrameworkMoniker).AssemblyAttributes$(DefaultLanguageSourceExtension)'))</MonikerFile>
         <TargetFrameworkMonikerAssemblyAttributesPath>$(MonikerFile)</TargetFrameworkMonikerAssemblyAttributesPath>
 
-        <VersionFile>$(IntermediateOutputPath)$(AssemblyName)_$(PackageVersion)_$(TargetFramework)$(DefaultLanguageSourceExtension)</VersionFile>
+        <VersionFile>$(IntermediateOutputPath)Version_$(AssemblyName)$(DefaultLanguageSourceExtension)</VersionFile>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-        <IncludeSymbols>true</IncludeSymbols>
-        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-        <PublishRepositoryUrl>true</PublishRepositoryUrl>
-        <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
-        <EmbedUntrackedSources>true</EmbedUntrackedSources>
-        <DeterministicSourcePaths>true</DeterministicSourcePaths>
-
-        <Copyright>Copyright $([System.DateTime]::Now.Year)©</Copyright>
-    </PropertyGroup>
-
-    <ItemGroup Condition="'$(Configuration)' == 'Release'">
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="*" PrivateAssets="All" />
+    <ItemGroup>
+        <EmbeddedFiles Include="$(MonikerFile)"/>
     </ItemGroup>
 
     <!--Для выполнения таргетов один раз-->
@@ -96,7 +97,7 @@
         <ShouldRunTarget Condition="(!'$(IsMultiTarget)' and '$(IsSingleTarget)') or ('$(IsMultiTarget)' and !'$(IsSingleTarget)')">true</ShouldRunTarget>
     </PropertyGroup>
 
-    <Target Name="SetVersion" BeforeTargets="Compile">
+    <Target Name="SetVersion" BeforeTargets="BeforeBuild">
 
         <Error Condition="'$(PackageVersion)' == ''" Text="Необходимо заполнить свойство PackageVersion!" />
 
@@ -106,6 +107,12 @@
 
         <PropertyGroup Condition=" '$(PackageVersion.Split(`.`)[0])' != '0' ">
             <VerAssembly>$(PackageVersion.Split(`.`, StringSplitOptions.None)[0]).0.0.0</VerAssembly>
+
+            <!--
+                MsBuild овский элемент указания версии сборки
+                А то чото AssemblyVersion в файле не отрабатывает
+            -->
+            <Version>$(VerAssembly)</Version>
         </PropertyGroup>
 
         <PropertyGroup>
@@ -156,7 +163,7 @@
                            OutputFile="$(VersionFile)"
                            AssemblyAttributes="@(AssemblyAttributes)"/>
 
-        <Message Text="----- Сборка $(AssemblyName): версия пакета $(PackageVersion) версия сборки $(VerAssembly) версия файла $(VerFile)" Importance="High"/>
+        <Message Text="----- Сборка $(AssemblyName) $(PackageVersion) $(TargetFramework) AssemblyVersion $(VerAssembly) FileVersion $(VerFile)" Importance="High"/>
 
         <ItemGroup>
             <Compile Include="$(VersionFile)"/>
@@ -164,13 +171,11 @@
 
     </Target>
 
-    <ItemGroup Condition="!'$(ShouldRunTarget)'">
-        <Compile Include="$(VersionFile)"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <EmbeddedFiles Include="$(MonikerFile)"/>
-    </ItemGroup>
+    <!--<Target Name="SetVersionIfShouldRunTarget" BeforeTargets="$(ShouldBeforeTargets)">
+        <ItemGroup>
+            <Compile Include="$(VersionFile)"/>
+        </ItemGroup>
+    </Target>-->
 
     <Target Name="PackNuget" Condition="$(ShouldRunTarget)" AfterTargets="$(ShouldAfterTargets)">
 

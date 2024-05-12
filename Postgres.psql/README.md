@@ -1,0 +1,1 @@
+The package contains the PostgreSql 13.4 win-x64 client part in the form of psql, pg_dump, pg_dumpall, pg_restore. Applies to inline script tasks when building msbuild and etc.

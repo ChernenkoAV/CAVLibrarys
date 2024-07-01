@@ -258,7 +258,7 @@ namespace Cav.Wcf
 #pragma warning restore CA3075 // Небезопасная обработка DTD в формате XML
 
             var secNodeList = xmlDocument.GetElementsByTagName("Security", CPSignedXml.WSSecurityWSSENamespaceUrl);
-            foreach (XmlNode secNode in secNodeList)
+            foreach (var secNode in secNodeList.Cast<XmlNode>())
             {
                 var actorAttrib = secNode.Attributes["actor", WcfHelpers.soap11Namespace];
                 if (actorAttrib != null && actorAttrib.Value == factory.RecipientActor)
@@ -321,7 +321,7 @@ namespace Cav.Wcf
             }
 
             var securityXmlNodeList = xmlDocument.GetElementsByTagName("Security", CPSignedXml.WSSecurityWSSENamespaceUrl);
-            foreach (XmlNode securityXmlNode in securityXmlNodeList)
+            foreach (var securityXmlNode in securityXmlNodeList.Cast<XmlNode>())
             {
                 var actorXmlAttribute = xmlDocument.CreateAttribute("actor", WcfHelpers.soap11Namespace);
                 actorXmlAttribute.Value = factory.SenderActor;

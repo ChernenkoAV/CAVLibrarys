@@ -131,8 +131,7 @@ public static class TelegramLoggerExtensions
     public static ILoggingBuilder AddTelegramLogger(
         this ILoggingBuilder builder)
     {
-        if (builder is null)
-            throw new ArgumentNullException(nameof(builder));
+        ArgumentNullException.ThrowIfNull(builder);
 
         builder.AddConfiguration();
 
@@ -153,10 +152,8 @@ public static class TelegramLoggerExtensions
         this ILoggingBuilder builder,
         Action<TelegramLoggerConfiguration> configure)
     {
-        if (builder is null)
-            throw new ArgumentNullException(nameof(builder));
-        if (configure is null)
-            throw new ArgumentNullException(nameof(configure));
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(configure);
 
         builder.AddTelegramLogger();
         builder.Services.Configure(configure);

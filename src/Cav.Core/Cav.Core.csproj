@@ -8,6 +8,10 @@
         <DefineConstants>TRACE</DefineConstants>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(TargetFramework)' != 'netstandard2.0'">
+        <NoWarn>$(NoWarn);CA1510</NoWarn>
+    </PropertyGroup>
+
     <ItemGroup Condition="'$(TargetFramework)' != 'netstandard2.0'">
       <Compile Remove="ForNetstadard20.cs" />
     </ItemGroup>

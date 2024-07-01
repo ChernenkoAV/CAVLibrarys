@@ -53,7 +53,7 @@ public static class ExtEnum
 
         var res = new Dictionary<Enum, string?>();
 
-        foreach (Enum enVal in enumType.GetEnumValues())
+        foreach (var enVal in enumType.GetEnumValues().Cast<Enum>())
         {
             var fi = enumType.GetField(enVal.ToString());
 

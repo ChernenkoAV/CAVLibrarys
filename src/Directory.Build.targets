@@ -5,7 +5,6 @@
         <Authors>ChernenkoAV</Authors>
         <Owners>ChernenkoAV</Owners>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReadmeFile>readme.md</PackageReadmeFile>
         <OutputNuget></OutputNuget>
 
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
@@ -61,11 +60,6 @@
 
     <ItemGroup Condition="'$(Configuration)' == 'Release'">
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="*" PrivateAssets="All" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Include="..\Cav.png" Pack="true" PackagePath="\"/>
-        <None Include="readme.md" Pack="true" PackagePath="\"/>
     </ItemGroup>
 
     <PropertyGroup>
@@ -166,28 +160,31 @@
     </Target>
 
     <Target Name="PackNuget" Condition="$(ShouldRunTarget)" AfterTargets="$(ShouldAfterTargets)">
+ 
+     <PropertyGroup Condition=" '$(OutputNuget)' == '' ">
+         <OutputNuget>$([System.IO.Path]::GetPathRoot($(MSBuildProjectDirectory)))localNuget</OutputNuget>
+     </PropertyGroup>
 
-        <PropertyGroup Condition=" '$(OutputNuget)' == '' ">
-            <OutputNuget>$([System.IO.Path]::GetPathRoot($(MSBuildProjectDirectory)))localNuget</OutputNuget>
-        </PropertyGroup>
+     <Message Text="----- Удаление nuget $(AssemblyName) из целевой папки $(OutputNuget)" Importance="High"/>
+     <Exec
+         WorkingDirectory="$(OutputNuget)"
+         IgnoreExitCode="true"
+         Command="dir * /s/b | for /f &quot;tokens=*&quot; %%a in ('findstr /i /r &quot;$(AssemblyName).[0-9]&quot;') do @del /f %%a"/>
 
-        <Message Text="----- Удаление nuget $(AssemblyName) из целевой папки $(OutputNuget)" Importance="High"/>
-        <Exec Command="del /f &quot;$(OutputNuget)\$(AssemblyName)*&quot;"  />
+     <Message Text="----- Запуск пакетирования $(AssemblyName)" Importance="High"/>
 
-        <Message Text="----- Запуск пакетирования $(AssemblyName)" Importance="High"/>
+     <Exec Condition="'$(Configuration)' == 'Release'"
+         StdErrEncoding="utf-8"
+         StdOutEncoding="utf-8"
+         Command="dotnet pack --no-build -c $(Configuration) --force --nologo -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg -o &quot;$(OutputNuget)&quot;" />
 
-        <Exec Condition="'$(Configuration)' == 'Release'"
-            StdErrEncoding="utf-8"
-            StdOutEncoding="utf-8"
-            Command="dotnet pack --no-build -c $(Configuration) --force --nologo -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg -o &quot;$(OutputNuget)&quot;" />
+     <Exec Condition="'$(Configuration)' == 'Debug'"
+         StdErrEncoding="utf-8"
+         StdOutEncoding="utf-8"
+         Command="dotnet pack --no-build -c $(Configuration) --force --nologo -p:IncludeSymbols=true -o &quot;$(OutputNuget)&quot;" />
 
-        <Exec Condition="'$(Configuration)' == 'Debug'"
-            StdErrEncoding="utf-8"
-            StdOutEncoding="utf-8"
-            Command="dotnet pack --no-build -c $(Configuration) --force --nologo -p:IncludeSymbols=true -o &quot;$(OutputNuget)&quot;" />
+     <Message Text="----- Удаление из кэша nuget $(PackageId)" Importance="High"/>
+     <RemoveDir Directories="$(NugetPackageRoot)/$(PackageId.ToLower())" />
 
-        <Message Text="----- Удаление из кэша nuget $(PackageId)" Importance="High"/>
-        <RemoveDir Directories="$(NugetPackageRoot)/$(PackageId.ToLower())" />
-
-    </Target>
+ </Target>
 </Project>

@@ -114,8 +114,8 @@ csharp_style_prefer_switch_expression = true:warning
 csharp_style_conditional_delegate_call = true:error
 
 # Предпочтения модификатора
-csharp_prefer_static_local_function = false:warning
-csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async
+csharp_prefer_static_local_function = true:suggestion
+csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async:error
 
 # Предпочтения для блоков кода
 csharp_prefer_braces = when_multiline:suggestion
@@ -123,6 +123,7 @@ csharp_prefer_simple_using_statement = true:warning
 
 # Выражения уровень предпочтения
 csharp_prefer_simple_default_expression = true
+dotnet_style_prefer_foreach_explicit_cast_in_source = always
 csharp_style_deconstructed_variable_declaration = true
 csharp_style_implicit_object_creation_when_type_is_apparent = true
 csharp_style_inlined_variable_declaration = true:warning
@@ -325,3 +326,5 @@ dotnet_naming_style.camel_case.capitalization = camel_case
 
 # Default severity for analyzer diagnostics with category 'Globalization'
 dotnet_analyzer_diagnostic.category-Globalization.severity = silent
+
+

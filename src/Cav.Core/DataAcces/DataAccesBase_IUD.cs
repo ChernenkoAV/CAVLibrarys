@@ -31,7 +31,7 @@ public class DataAccesBase<TRow, TSelectParams, TUpdateParams, TDeleteParams> : 
         if (insertPropKeyFieldMap.Any())
         {
             using var resExec = await FillTableAsync(execCom, cancellationToken).ConfigureAwait(false);
-            foreach (DataRow dbrow in resExec.Rows)
+            foreach (var dbrow in resExec.Rows.Cast<DataRow>())
                 foreach (var ff in insertPropKeyFieldMap)
                     ff.Value(newObj, dbrow);
         }
@@ -51,7 +51,7 @@ public class DataAccesBase<TRow, TSelectParams, TUpdateParams, TDeleteParams> : 
         if (insertPropKeyFieldMap.Any())
         {
             using var resExec = FillTable(execCom);
-            foreach (DataRow dbrow in resExec.Rows)
+            foreach (var dbrow in resExec.Rows.Cast<DataRow>())
                 foreach (var ff in insertPropKeyFieldMap)
                     ff.Value(newObj, dbrow);
         }

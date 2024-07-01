@@ -41,7 +41,7 @@ public class DataAccesBase<TRow, TSelectParams> : DataAccesBase, IDataAcces<TRow
 
         var execCom = addParamToCommand(CommandActionType.Select, selectParams);
         using (var table = FillTable(execCom))
-            foreach (DataRow dbRow in table.Rows)
+            foreach (var dbRow in table.Rows.Cast<DataRow>())
             {
                 var row = (THeritorType)Activator.CreateInstance(typeof(THeritorType))!;
 
@@ -82,7 +82,7 @@ public class DataAccesBase<TRow, TSelectParams> : DataAccesBase, IDataAcces<TRow
 
         var execCom = addParamToCommand(CommandActionType.Select, selectParams);
         using (var table = await FillTableAsync(execCom, cancellationToken))
-            foreach (DataRow dbRow in table.Rows)
+            foreach (var dbRow in table.Rows.Cast<DataRow>())
             {
                 var row = (THeritorType)Activator.CreateInstance(typeof(THeritorType))!;
 

@@ -1,4 +1,4 @@
-﻿using System.Security.Cryptography.X509Certificates;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Cav.DigitalSignature;
 
@@ -43,7 +43,7 @@ public static class DSGeneric
         if (cert != null)
             return cert;
 
-        if (!localMachine.HasValue || localMachine.Value == false)
+        if (!localMachine.HasValue || !localMachine.Value)
         {
             using var store = new X509Store(StoreLocation.CurrentUser);
             store.Open(OpenFlags.ReadOnly);

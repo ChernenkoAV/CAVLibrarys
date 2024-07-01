@@ -2,8 +2,6 @@ using System.Collections.Concurrent;
 using System.Data;
 using System.Linq.Expressions;
 
-#pragma warning disable CA2000 // Ликвидировать объекты перед потерей области
-
 namespace Cav.DataAcces;
 
 /// <summary>
@@ -32,13 +30,13 @@ public class DataAccesBase<TRow, TSelectParams, TUpdateParams, TDeleteParams> : 
         var execCom = addParamToCommand(CommandActionType.Insert, insertExpression, newObj);
         if (insertPropKeyFieldMap.Any())
         {
-            using var resExec = await FillTableAsync(execCom, cancellationToken);
+            using var resExec = await FillTableAsync(execCom, cancellationToken).ConfigureAwait(false);
             foreach (DataRow dbrow in resExec.Rows)
                 foreach (var ff in insertPropKeyFieldMap)
                     ff.Value(newObj, dbrow);
         }
         else
-            await ExecuteNonQueryAsync(execCom, cancellationToken);
+            await ExecuteNonQueryAsync(execCom, cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -123,7 +121,7 @@ public class DataAccesBase<TRow, TSelectParams, TUpdateParams, TDeleteParams> : 
         Configured();
 
         var execCom = addParamToCommand(CommandActionType.Delete, deleteParams);
-        await ExecuteNonQueryAsync(execCom, cancellationToken);
+        await ExecuteNonQueryAsync(execCom, cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -168,7 +166,7 @@ public class DataAccesBase<TRow, TSelectParams, TUpdateParams, TDeleteParams> : 
         Configured();
 
         var execCom = addParamToCommand(CommandActionType.Update, updateParams);
-        await ExecuteNonQueryAsync(execCom, cancellationToken);
+        await ExecuteNonQueryAsync(execCom, cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>

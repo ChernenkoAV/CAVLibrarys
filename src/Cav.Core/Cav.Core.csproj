@@ -17,17 +17,6 @@
     </ItemGroup>
 
     <PropertyGroup>
-        <PackageVersion>9.4.3</PackageVersion>
-        <PackageVersion>9.5.0</PackageVersion>
-        <PackageVersion>10.0.0-dev01</PackageVersion>
-        <PackageVersion>10.0.0-dev02</PackageVersion>
-        <PackageVersion>10.0.0-dev03</PackageVersion>
-        <PackageVersion>10.0.0-dev04</PackageVersion>
-        <PackageVersion>10.0.0-dev05</PackageVersion>
-        <PackageVersion>10.0.0-dev06</PackageVersion>
-        <PackageVersion>10.0.0-dev07</PackageVersion>
-        <PackageVersion>10.0.0-dev08</PackageVersion>
-        <PackageVersion>10.0.0-dev09</PackageVersion>
         <PackageVersion>10.0.0</PackageVersion>
         <Description>A set of utilities that facilitate routine operations</Description>
         <PackageTags>сav utils</PackageTags>

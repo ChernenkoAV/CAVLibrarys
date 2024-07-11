@@ -1,4 +1,4 @@
-﻿using System.Security.Cryptography;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Cav;
@@ -48,7 +48,7 @@ public static class ExtMD5
         if (filePath.IsNullOrWhiteSpace())
             throw new ArgumentException($"{nameof(ComputeMD5ChecksumString)}:{nameof(filePath)}");
 
-        using var fs = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+        using var fs = File.OpenRead(filePath);
         return fs.ComputeMD5Checksum();
     }
 

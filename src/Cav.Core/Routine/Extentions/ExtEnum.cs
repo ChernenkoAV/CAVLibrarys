@@ -68,4 +68,22 @@ public static class ExtEnum
         return res;
 
     }
+
+    /// <summary>
+    /// Проверка вхождения значения для значений енумов
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="arg">Проверяемый аргумент</param>
+    /// <param name="args">Перечень значений</param>
+    /// <returns></returns>
+    public static bool Intersect<T>(this T arg, params T[] args)
+        where T : Enum
+    {
+        if (arg.CompareTo(default(T)) == 0 && args.Contains(default))
+            return true;
+
+        var allArgs = args.SelectMany(x => x.FlagToList()).Distinct();
+        var allArg = arg.FlagToList();
+        return allArg.Intersect(allArgs).Any();
+    }
 }

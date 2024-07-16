@@ -24,6 +24,13 @@ public static class Locator
     }
 
     /// <summary>
+    /// Добавить готовый объект в кэш для использования в зависимостях
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="entity"></param>
+    public static void AddCache<T>(T entity) where T : class => cacheObjects.TryAdd(typeof(T), entity);
+
+    /// <summary>
     ///Получить экземпляр указанного типа 
     /// </summary>
     /// <param name="typeInstance"></param>

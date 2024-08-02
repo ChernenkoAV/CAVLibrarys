@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net7.0;net8.0</TargetFrameworks>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <DefineConstants>TRACE</DefineConstants>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Cav.Core" Version="*" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="*" />
+    </ItemGroup>
+
+    <PropertyGroup>
+        <PackageVersion>0.1.0</PackageVersion>
+        <Description>A set of utilities that facilitate routine operations</Description>
+        <PackageTags>сav di utils</PackageTags>
+    </PropertyGroup>
+
+</Project>

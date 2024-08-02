@@ -1,14 +1,7 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.7.34024.191
+VisualStudioVersion = 17.8.34511.84
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cav.Core", "Cav.Core\Cav.Core.csproj", "{B8FBC2B5-DB7A-490D-AB75-610570CA3359}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cav.Wcf", "Cav.Wcf\Cav.Wcf.csproj", "{44DE1AA2-7A4F-4E62-A663-A8E0964D8DBB}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cav.WinForms", "Cav.WinForms\Cav.WinForms.csproj", "{42122121-8E89-4263-9E49-B10598F480AD}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FCCEEC59-ACD0-49F5-93F3-993BDBFE573E}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -19,7 +12,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.targets = Directory.Build.targets
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cav.Core", "Cav.Core\Cav.Core.csproj", "{B8FBC2B5-DB7A-490D-AB75-610570CA3359}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cav.Core.Ioc", "Cav.Core.Ioc\Cav.Core.Ioc.csproj", "{A8FBC2B5-DB7A-490D-AB75-610570CA3358}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cav.Logger.Telegram", "Cav.Logger.Telegram\Cav.Logger.Telegram.csproj", "{51FE634D-A179-407D-842A-CDAC2A0F4956}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cav.Wcf", "Cav.Wcf\Cav.Wcf.csproj", "{44DE1AA2-7A4F-4E62-A663-A8E0964D8DBB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cav.WinForms", "Cav.WinForms\Cav.WinForms.csproj", "{42122121-8E89-4263-9E49-B10598F480AD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +32,14 @@ Global
 		{B8FBC2B5-DB7A-490D-AB75-610570CA3359}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8FBC2B5-DB7A-490D-AB75-610570CA3359}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8FBC2B5-DB7A-490D-AB75-610570CA3359}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8FBC2B5-DB7A-490D-AB75-610570CA3358}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8FBC2B5-DB7A-490D-AB75-610570CA3358}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8FBC2B5-DB7A-490D-AB75-610570CA3358}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8FBC2B5-DB7A-490D-AB75-610570CA3358}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51FE634D-A179-407D-842A-CDAC2A0F4956}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51FE634D-A179-407D-842A-CDAC2A0F4956}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51FE634D-A179-407D-842A-CDAC2A0F4956}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51FE634D-A179-407D-842A-CDAC2A0F4956}.Release|Any CPU.Build.0 = Release|Any CPU
 		{44DE1AA2-7A4F-4E62-A663-A8E0964D8DBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{44DE1AA2-7A4F-4E62-A663-A8E0964D8DBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44DE1AA2-7A4F-4E62-A663-A8E0964D8DBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -39,10 +48,6 @@ Global
 		{42122121-8E89-4263-9E49-B10598F480AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{42122121-8E89-4263-9E49-B10598F480AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{42122121-8E89-4263-9E49-B10598F480AD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{51FE634D-A179-407D-842A-CDAC2A0F4956}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{51FE634D-A179-407D-842A-CDAC2A0F4956}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{51FE634D-A179-407D-842A-CDAC2A0F4956}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{51FE634D-A179-407D-842A-CDAC2A0F4956}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

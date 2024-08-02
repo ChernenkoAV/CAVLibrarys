@@ -157,9 +157,11 @@ internal class GenericJsonSerializerSetting : JsonSerializerSettings
     }
 
     internal GenericJsonSerializerSetting(
+#pragma warning disable SYSLIB0050 // Тип или член устарел
         StreamingContextStates state,
         object? additional) : this() =>
         Context = new StreamingContext(state, additional);
+#pragma warning restore SYSLIB0050 // Тип или член устарел
 
     private GenericJsonSerializerSetting()
     {

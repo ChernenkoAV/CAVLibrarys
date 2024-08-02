@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.0;net7.0</TargetFrameworks>
+        <TargetFrameworks>netstandard2.0;net7.0;net8.0</TargetFrameworks>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -13,15 +13,16 @@
     </PropertyGroup>
 
     <ItemGroup Condition="'$(TargetFramework)' != 'netstandard2.0'">
-      <Compile Remove="ForNetstadard20.cs" />
+        <Compile Remove="ForNetstadard20.cs" />
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Newtonsoft.Json" Version="13.*" />
+        <PackageReference Include="System.Runtime.Caching" Version="*" />
     </ItemGroup>
 
     <PropertyGroup>
-        <PackageVersion>10.2.0</PackageVersion>
+        <PackageVersion>10.3.0</PackageVersion>
         <Description>A set of utilities that facilitate routine operations</Description>
         <PackageTags>сav utils</PackageTags>
     </PropertyGroup>

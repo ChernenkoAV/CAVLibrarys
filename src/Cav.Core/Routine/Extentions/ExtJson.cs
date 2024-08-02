@@ -5,6 +5,8 @@ using Newtonsoft.Json;
 
 namespace Cav;
 
+#pragma warning disable SYSLIB0050 // Тип или член устарел
+
 /// <summary>
 /// Сериализация-десериализация JSON средствами NewtonSoft
 /// </summary>

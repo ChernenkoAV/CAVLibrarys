@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Cav.ReflectHelpers;
 
 namespace Cav;
@@ -108,5 +109,28 @@ public static class ExtObject
         arg.HasValue && args.Contains(arg);
 
     #endregion
+
+    /// <summary>
+    /// Техническая проверка на <see langword="null"/>. Для строки еще на <see cref="string.IsNullOrWhiteSpace(string)"/>
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="test"></param>
+    /// <param name="paramName">Имя параметра или иной текст для исключения</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException" />
+    public static T ChekNull<T>(this T? test, string? paramName) =>
+        test == null || (test is string strTest && strTest.IsNullOrWhiteSpace())
+            ? throw new ArgumentNullException(paramName)
+            : test;
+
+    /// <summary>
+    /// Техническая проверка на <see langword="null"/>. Для строки еще на <see cref="string.IsNullOrWhiteSpace(string)"/>
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="test"></param>
+    /// <param name="paramName"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException">Имя параметра или иной текст для исключения</exception>
+    public static async Task<T> ChekNullAsync<T>([NotNull] this Task<T?> test, string? paramName) => (await test.ConfigureAwait(false)).ChekNull(paramName);
 
 }

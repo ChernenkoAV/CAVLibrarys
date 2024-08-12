@@ -162,9 +162,22 @@ public static class ExtJson
     /// <summary>
     /// Копирование объекта через сериализацию-десериализацию
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TSource"></typeparam>
     /// <param name="source"></param>
     /// <returns></returns>
-    public static T? Copy<T>(this T source) where T : class, new() =>
-        source?.JsonSerialize().JsonDeserealize<T>();
+    public static TSource? Copy<TSource>(this TSource? source)
+        where TSource : class, new() =>
+        source.CopyTo<TSource, TSource>();
+
+    /// <summary>
+    /// Копирование объекта через сериализацию-десериализацию в тип-наследник
+    /// </summary>
+    /// <typeparam name="TSourse">Тип источник</typeparam>
+    /// <typeparam name="TTarget">Тип - наследник</typeparam>
+    /// <param name="source"></param>
+    /// <returns></returns>
+    public static TTarget? CopyTo<TSourse, TTarget>(this TSourse? source)
+        where TSourse : class, new()
+        where TTarget : class, TSourse, new()
+        => source?.JsonSerialize().JsonDeserealize<TTarget>();
 }

@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <PackageId>Postgres.psql</PackageId>
+        <PackageVersion>16.4.0.0</PackageVersion>
+        <Title>Postgres 16.4 win-x64 psql pg_dump pg_dumpall pg_restore</Title>
+        <Description>The package contains the PostgreSql 16.4 win-x64 client part in the form of psql, pg_dump, pg_dumpall, pg_restore. Applies to inline script tasks when building msbuild and etc.</Description>
+        <PackageTags>postgres;win;x64;psql;pg_dump;pg_dumpall;pg_restore</PackageTags>
+        <PackageProjectUrl>https://github.com/ChernenkoAV/CavLibrarys</PackageProjectUrl>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageIcon>elephant.png</PackageIcon>
+        <Authors>ChernenkoAV</Authors>
+        <Owners>ChernenkoAV</Owners>
+        <PackageLicenseExpression>PostgreSQL</PackageLicenseExpression>
+        
+        <NoBuild>true</NoBuild>
+        <IsTool>true</IsTool>
+        <Configuration>Release</Configuration>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <PackageNoAssemblies>true</PackageNoAssemblies>
+        <IncludeBuildOutput>false</IncludeBuildOutput>
+        <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+        <NoWarn>$(NoWarn);NU5128</NoWarn>
+        <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+        
+        <PackageOutputPath>.\</PackageOutputPath>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="\"/>
+        <None Include="elephant.png" Pack="true" PackagePath="\"/>
+        <None Include="tools\**" Pack="true" PackagePath="tools"/>
+    </ItemGroup>
+</Project>

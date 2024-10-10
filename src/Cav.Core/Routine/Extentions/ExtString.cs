@@ -5,19 +5,17 @@ namespace Cav;
 /// </summary>
 public static class ExtString
 {
-    private static readonly char[] trimChars = [' ', '\r', '\n'];
-
     /// <summary>
-    /// Усечение начальных и конечных пробелов и преводов кареток. Если строка null или состояла из пробелов и/или переводов кареток - вернет null.
+    /// Усечение начальных и конечных пробелов, преводов кареток (\r) и окончания строк (\n).
     /// </summary>
     /// <param name="str"></param>
-    /// <returns></returns>
-    public static string? Trim2(this string? str)
+    /// <param name="chars">В строке - дополнительные символы для усечения</param>
+    /// <returns>Если строка <see langword="null"/> или состояла из пробелов и/или переводов кареток - вернет <see langword="null"/></returns>
+    public static string? Trim2(this string? str, string? chars = null)
     {
         if (str == null)
             return null;
-
-        str = str.Trim(trimChars);
+        str = str.Trim($"{chars} \r\n".ToCharArray());
         return str.GetNullIfIsNullOrWhiteSpace();
     }
 
@@ -201,4 +199,25 @@ public static class ExtString
         string.IsNullOrEmpty(termVal) || string.IsNullOrEmpty(str) || !str!.StartsWith(termVal)
             ? str
             : str[termVal!.Length..];
+
+    /// <summary>
+    /// Принадлежность строки диапазону. Аналог BETWEEN для строк в SQL - если любой параметр предиката <see langword="null"/> - результат <see langword="false"/>.
+    /// Сравнение строк строки без учета локального языка и региональных параметров.
+    /// </summary>
+    /// <param name="str">Значение</param>
+    /// <param name="left">Левая граница диапазона</param>
+    /// <param name="right">Правая граница диапазона</param>
+    /// <returns></returns>
+    public static bool Between(this string? str, string? left, string? right) =>
+        str is not null && left is not null && right is not null &&
+        !(String.CompareOrdinal(str, left) < 0) && !(String.CompareOrdinal(right, str) < 0);
+
+    /// <summary>
+    /// Проверка вхождения значения в перечень
+    /// </summary>
+    /// <param name="arg">Проверяемый аргумент</param>
+    /// <param name="args">Перечень значений</param>
+    /// <returns>Если аргумент <see cref="IsNullOrWhiteSpace"/> = <see langword="true"/> результат всегда <see langword="false"/></returns>
+    public static bool In(this string? arg, params string[] args) =>
+        !arg.IsNullOrWhiteSpace() && args.Contains(arg);
 }

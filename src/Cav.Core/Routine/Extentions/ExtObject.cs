@@ -80,15 +80,6 @@ public static class ExtObject
     /// <summary>
     /// Проверка вхождения значения в перечень
     /// </summary>
-    /// <param name="arg">Проверяемый аргумент</param>
-    /// <param name="args">Перечень значений</param>
-    /// <returns>Если аргумент IsNullOrWhiteSpace() результат всегда false</returns>
-    public static bool In(this string? arg, params string[] args) =>
-        !arg.IsNullOrWhiteSpace() && args.Contains(arg);
-
-    /// <summary>
-    /// Проверка вхождения значения в перечень
-    /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="arg">Проверяемый аргумент</param>
     /// <param name="args">Перечень значений</param>
@@ -107,6 +98,64 @@ public static class ExtObject
     public static bool In<T>(this T? arg, params T?[] args)
         where T : struct =>
         arg.HasValue && args.Contains(arg);
+
+    #endregion
+
+    #region Between
+
+    #region int
+
+    /// <summary>
+    /// Принадлежность диапазону. Аналог BETWEEN в SQL.
+    /// </summary>
+    /// <param name="val">Значение</param>
+    /// <param name="left">Левая граница диапазона</param>
+    /// <param name="right">Правая граница диапазона</param>
+    /// <returns></returns>
+    public static bool Between(this int val, int left, int right) =>
+        val >= left && val <= right;
+
+    /// <summary>
+    /// Принадлежность диапазону. Аналог BETWEEN в SQL - если любой параметр предиката <see langword="null"/> - результат <see langword="false"/>.
+    /// </summary>
+    /// <param name="val">Значение</param>
+    /// <param name="left">Левая граница диапазона</param>
+    /// <param name="right">Правая граница диапазона</param>
+    /// <returns></returns>
+    public static bool Between(this int? val, int? left, int? right) =>
+        val is not null && left is not null && right is not null &&
+        val.Value.Between(left.Value, right.Value);
+
+    #endregion
+
+    #region datetime
+
+    /// <summary>
+    /// Принадлежность диапазону. Аналог BETWEEN в SQL.
+    /// </summary>
+    /// <param name="val">Значение</param>
+    /// <param name="left">Левая граница диапазона</param>
+    /// <param name="right">Правая граница диапазона</param>
+    /// <param name="truncateTime">Усечение времени и сравнение только дат</param>
+    /// <returns></returns>
+    public static bool Between(this DateTime val, DateTime left, DateTime right, bool truncateTime = true) =>
+        truncateTime
+        ? val.Date >= left.Date && val <= right.Date
+        : val >= left && val <= right;
+
+    /// <summary>
+    /// Принадлежность диапазону. Аналог BETWEEN в SQL - если любой параметр предиката <see langword="null"/> - результат <see langword="false"/>.
+    /// </summary>
+    /// <param name="val">Значение</param>
+    /// <param name="left">Левая граница диапазона</param>
+    /// <param name="right">Правая граница диапазона</param>
+    /// <param name="truncateTime">Усечение времени и сравнение только дат</param>
+    /// <returns></returns>
+    public static bool Between(this DateTime? val, DateTime? left, DateTime? right, bool truncateTime = true) =>
+        val is not null && left is not null && right is not null &&
+        val.Value.Between(left.Value, right.Value, truncateTime);
+
+    #endregion
 
     #endregion
 

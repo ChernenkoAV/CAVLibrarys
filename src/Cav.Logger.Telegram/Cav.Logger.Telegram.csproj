@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net7.0</TargetFrameworks>
+        <TargetFrameworks>net8.0</TargetFrameworks>
     </PropertyGroup>
 
     <ItemGroup>
@@ -10,11 +10,11 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="*" />
-      <PackageReference Include="RestSharp" Version="110.*" />
+      <PackageReference Include="RestSharp" Version="112.*" />
     </ItemGroup>
 
     <PropertyGroup>
-        <PackageVersion>0.3.0</PackageVersion>
+        <PackageVersion>0.4.0</PackageVersion>
         <Description>Логгер в телеграм</Description>
         <PackageTags>cav logger telegram</PackageTags>
     </PropertyGroup>

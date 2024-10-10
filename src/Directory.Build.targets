@@ -34,6 +34,7 @@
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <DeterministicSourcePaths>true</DeterministicSourcePaths>
 
+        <Deterministic>true</Deterministic>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Debug'">

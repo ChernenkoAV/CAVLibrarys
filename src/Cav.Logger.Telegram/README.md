@@ -35,7 +35,7 @@ The simplest telegram logger for Microsoft DI. The assembly has a strong name. W
              "Default": "Information",
              "Microsoft.Hosting.Lifetime": "None"
          },
-         Telegram: {
+         "Telegram": {
              "LogLevel": {
                  "Default": "Trace"
                  },

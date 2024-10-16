@@ -1,7 +1,7 @@
 namespace Cav;
 
 /// <summary>
-/// Расширения работы сос троками
+/// Расширения работы с cтроками
 /// </summary>
 public static class ExtString
 {

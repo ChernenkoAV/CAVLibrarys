@@ -193,12 +193,12 @@ public static class ExtString
     /// Удаление из начала строки совпадающей строки. Если исходная строка или терм замены <see cref="string.Empty"/> или <see langword="null"/> - возвращается исходная строка
     /// </summary>
     /// <param name="str">Исхоная строка</param>
-    /// <param name="termVal">Терм замены</param>
+    /// <param name="term">Терм замены</param>
     /// <returns></returns>
-    public static string? TrimStart2(this string? str, string? termVal) =>
-        string.IsNullOrEmpty(termVal) || string.IsNullOrEmpty(str) || !str!.StartsWith(termVal)
+    public static string? TrimStart2(this string? str, string? term) =>
+        string.IsNullOrEmpty(term) || string.IsNullOrEmpty(str) || !str!.StartsWith(term)
             ? str
-            : str[termVal!.Length..];
+            : str[term!.Length..];
 
     /// <summary>
     /// Принадлежность строки диапазону. Аналог BETWEEN для строк в SQL - если любой параметр предиката <see langword="null"/> - результат <see langword="false"/>.
@@ -220,4 +220,16 @@ public static class ExtString
     /// <returns>Если аргумент <see cref="IsNullOrWhiteSpace"/> = <see langword="true"/> результат всегда <see langword="false"/></returns>
     public static bool In(this string? arg, params string[] args) =>
         !arg.IsNullOrWhiteSpace() && args.Contains(arg);
+
+    /// <summary>
+    /// Усечение исходной строки на одно значение терма: "ABCBCBC" -> "ABCBC"
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="term"></param>
+    /// <returns></returns>
+    public static string? TrimEndsWith(this string? str, string term) =>
+        str is null || string.IsNullOrEmpty(term) || !str.EndsWith(term)
+            ? str
+            : str.Remove(str.LastIndexOf(term));
+
 }

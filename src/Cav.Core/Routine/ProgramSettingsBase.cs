@@ -76,7 +76,7 @@ public abstract class ProgramSettingsBase<T> : IDisposable
     public static T? Instance => instance.Value;
     private static T initInstasnce()
     {
-        var instance = (T)Activator.CreateInstance(typeof(T))!;
+        var instance = Activator.CreateInstance<T>();
 
         var filename = typeof(T).GetCustomAttribute<ProgramSettingsFileAttribute>()?.FileName!;
 

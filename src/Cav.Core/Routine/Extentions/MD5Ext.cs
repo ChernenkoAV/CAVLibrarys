@@ -6,7 +6,7 @@ namespace Cav;
 /// <summary>
 /// Вычисления MD5
 /// </summary>
-public static class ExtMD5
+public static class MD5Ext
 {
     /// <summary>
     /// Вычисление MD5-хеша для потока

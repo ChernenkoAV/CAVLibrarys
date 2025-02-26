@@ -1,9 +1,9 @@
-﻿namespace Cav;
+namespace Cav;
 
 /// <summary>
 /// Расширения для даты-времени
 /// </summary>
-public static class ExtDateTime
+public static class DateTimeExt
 {
     #region Кварталы даты
 

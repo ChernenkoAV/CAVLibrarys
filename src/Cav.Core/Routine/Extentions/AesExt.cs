@@ -1,4 +1,4 @@
-﻿using System.Security.Cryptography;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Cav;
@@ -6,7 +6,7 @@ namespace Cav;
 /// <summary>
 /// Сериализация-десериализация и шифрование Aes
 /// </summary>
-public static class ExtAes
+public static class AesExt
 {
     /// <summary>
     /// Сериализация объекта и шифрование алгоритмом AES

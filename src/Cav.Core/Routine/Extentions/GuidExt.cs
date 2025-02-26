@@ -1,9 +1,9 @@
-﻿namespace Cav;
+namespace Cav;
 
 /// <summary>
 /// Расширения для Guid
 /// </summary>
-public static class ExtGuid
+public static class GuidExt
 {
     /// <summary>
     /// Получение короткой строки Guid

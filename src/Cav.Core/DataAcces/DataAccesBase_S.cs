@@ -43,7 +43,7 @@ public class DataAccesBase<TRow, TSelectParams> : DataAccesBase, IDataAcces<TRow
         using (var table = FillTable(execCom))
             foreach (var dbRow in table.Rows.Cast<DataRow>())
             {
-                var row = (THeritorType)Activator.CreateInstance(typeof(THeritorType))!;
+                var row = Activator.CreateInstance<THeritorType>();
 
                 foreach (var ff in selectPropFieldMap)
                     ff.Value(row, dbRow);
@@ -84,7 +84,7 @@ public class DataAccesBase<TRow, TSelectParams> : DataAccesBase, IDataAcces<TRow
         using (var table = await FillTableAsync(execCom, cancellationToken))
             foreach (var dbRow in table.Rows.Cast<DataRow>())
             {
-                var row = (THeritorType)Activator.CreateInstance(typeof(THeritorType))!;
+                var row = Activator.CreateInstance<THeritorType>();
 
                 foreach (var ff in selectPropFieldMap)
                     ff.Value(row, dbRow);

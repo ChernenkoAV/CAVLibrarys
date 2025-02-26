@@ -3,74 +3,13 @@ using System.Linq.Expressions;
 using System.Xml.Linq;
 using Cav.ReflectHelpers;
 
-#pragma warning disable CA1707 // Идентификаторы не должны содержать символы подчеркивания
-
 namespace Cav;
 
 /// <summary>
 /// Расширения-хелперы для построения деревьев выражений
 /// </summary>
-public static class ExtExpressionTree
+public static class ExpressionTreeExt
 {
-
-    #region Потом удалить
-
-    /// <summary>
-    /// Добавление <see cref="XElement"/> с контентом в указанный <see cref="XElement"/>
-    /// </summary>
-    /// <param name="instanseXElement">экземляр <see cref="XElement"/>, в который буде производиться добавление дочерненго элемента</param>
-    /// <param name="newElementName">имя нового элемента</param>
-    /// <param name="xmlNamespace">пространство имен нового элемента</param>
-    /// <param name="contentValue">контент нового элемента</param>
-    /// <returns></returns>
-    [Obsolete("Будет удалено. Используйте XElementAddContentValue")]
-    public static Expression XElement_AddContentValue(this Expression instanseXElement, string newElementName, string xmlNamespace, Expression contentValue) =>
-        instanseXElement.XElementAddContentValue(newElementName, xmlNamespace, contentValue);
-
-    /// <summary>
-    /// Добавление контента в существующий экземпляр <see cref="XElement"/>
-    /// </summary>
-    /// <param name="instanseXElement">экземляр <see cref="XElement"/>, в который буде производиться добавление контента</param>
-    /// <param name="contentValue">контент</param>
-    /// <returns></returns>
-    [Obsolete("Будет удалено. Используйте XElementAddContent")]
-    public static Expression XElement_AddContent(this Expression instanseXElement, Expression contentValue) =>
-        instanseXElement.XElementAddContent(contentValue);
-
-    /// <summary>
-    /// Создание нового элемента <see cref="XElement"/> с указанным именем и пространсвом имен
-    /// </summary>
-    /// <param name="newElementName">имя еэлемента</param>
-    /// <param name="xNamespace">Выражение, содержащее пространство имен</param>
-    /// <returns></returns>
-    [Obsolete("Будет удалено")]
-    public static Expression XElementNew(this string newElementName, Expression xNamespace) =>
-        Expression.New(
-            typeof(XElement).GetConstructor([typeof(XName)])!,
-            Expression.Convert(Expression.Add(xNamespace, Expression.Constant(newElementName)), typeof(XName)));
-
-    /// <summary>
-    /// Вызов <see cref="XContainer.Elements(XName)"/> для <see cref="XElement"/>
-    /// </summary>
-    /// <param name="sourceXml">экземпляр <see cref="XElement"/></param>
-    /// <param name="termName">терм поиска имени</param>
-    /// <returns></returns>
-    [Obsolete("Будет удалено. Используйте XElementElements")]
-    public static Expression XElement_Elements(this Expression sourceXml, string termName) =>
-        sourceXml.XElementElements(termName);
-
-    /// <summary>
-    /// Вызов <see cref="XContainer.Element(XName)"/> для <see cref="XElement"/>
-    /// </summary>
-    /// <param name="sourceXml">экземпляр <see cref="XElement"/></param>
-    /// <param name="termName">терм поиска имени</param>
-    /// <returns></returns>
-    [Obsolete("Будет удалено. Используйте XElementElement")]
-    public static Expression XElement_Element(this Expression sourceXml, string termName) =>
-        sourceXml.XElementElement(termName);
-
-    #endregion
-
     /// <summary>
     /// Получение выражения преобразования строки в пространство имен <see cref="System.Xml.Linq.XNamespace"/> 
     /// </summary>
@@ -273,17 +212,17 @@ public static class ExtExpressionTree
     }
 
     /// <summary>
-    /// Вызов расширения <see cref="ExtString.IsNullOrWhiteSpace(string)"/> для строки
+    /// Вызов расширения <see cref="StringExt.IsNullOrWhiteSpace(string)"/> для строки
     /// </summary>
     /// <param name="stringValue">Выражение-строка (<see cref="string"/>)</param>
     /// <returns></returns>
     public static Expression IsNullOrWhiteSpace(this Expression stringValue) =>
         stringValue is null
             ? throw new ArgumentNullException(nameof(stringValue))
-            : Expression.Call(typeof(ExtString).GetMethod(nameof(ExtString.IsNullOrWhiteSpace))!, stringValue);
+            : Expression.Call(typeof(StringExt).GetMethod(nameof(StringExt.IsNullOrWhiteSpace))!, stringValue);
 
     /// <summary>
-    /// Вызов расширения <see cref="ExtCollection.JoinValuesToString{T}(IEnumerable{T}, string, bool, string)"/> для строки
+    /// Вызов расширения <see cref="CollectionExt.JoinValuesToString{T}(IEnumerable{T}, string, bool, string)"/> для строки
     /// </summary>
     /// <param name="collection">Выражение-коллекция</param>
     /// <param name="separator">Разделитель</param>
@@ -293,7 +232,7 @@ public static class ExtExpressionTree
     public static Expression JoinValuesToString(this Expression collection, string separator = ",", bool distinct = true, string? format = null) =>
         collection is null
             ? throw new ArgumentNullException(nameof(collection))
-            : Expression.Call(typeof(ExtCollection).GetMethod(nameof(ExtCollection.JoinValuesToString))!.MakeGenericMethod(collection.Type.GenericTypeArguments),
+            : Expression.Call(typeof(CollectionExt).GetMethod(nameof(CollectionExt.JoinValuesToString))!.MakeGenericMethod(collection.Type.GenericTypeArguments),
                 collection,
                 Expression.Constant(separator, typeof(string)),
                 Expression.Constant(distinct),

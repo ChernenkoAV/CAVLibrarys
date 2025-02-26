@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Reflection;
 
 namespace Cav.ReflectHelpers;
@@ -6,7 +6,7 @@ namespace Cav.ReflectHelpers;
 /// <summary>
 /// Расширения упрощения вызовов рефлексии
 /// </summary>
-public static class ExtReflection
+public static class ReflectionExt
 {
     /// <summary>
     /// Получения значения свойства у объекта

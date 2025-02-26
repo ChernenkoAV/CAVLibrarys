@@ -10,7 +10,7 @@ namespace Cav;
 /// <summary>
 /// Сериализация-десериализация JSON средствами NewtonSoft
 /// </summary>
-public static class ExtJson
+public static class JsonExt
 {
     private static GenericJsonSerializerSetting getJsetting(
         StreamingContextStates state,

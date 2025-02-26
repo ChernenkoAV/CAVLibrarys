@@ -5,7 +5,7 @@ namespace Cav;
 /// <summary>
 /// Расширения для вызова типовых расширений LINQ для асинхронных объектов
 /// </summary>
-public static class ExtAsync
+public static class AsyncExt
 {
     /// <summary>
     /// 

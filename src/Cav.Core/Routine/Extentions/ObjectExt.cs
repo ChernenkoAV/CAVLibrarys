@@ -6,7 +6,7 @@ namespace Cav;
 /// <summary>
 /// Расширения для работы с объектами
 /// </summary>
-public static class ExtObject
+public static class ObjectExt
 {
     /// <summary>
     /// Получение значения по умолчанию для типа

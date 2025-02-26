@@ -3,7 +3,7 @@ namespace Cav;
 /// <summary>
 /// Расширения работы с cтроками
 /// </summary>
-public static class ExtString
+public static class StringExt
 {
     /// <summary>
     /// Усечение начальных и конечных пробелов, преводов кареток (\r) и окончания строк (\n).
@@ -230,6 +230,6 @@ public static class ExtString
     public static string? TrimEndsWith(this string? str, string term) =>
         str is null || string.IsNullOrEmpty(term) || !str.EndsWith(term)
             ? str
-            : str.Remove(str.LastIndexOf(term));
+            : str[..str.LastIndexOf(term)];
 
 }

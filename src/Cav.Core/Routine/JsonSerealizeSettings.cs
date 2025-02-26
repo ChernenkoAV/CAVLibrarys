@@ -138,12 +138,12 @@ internal class CustomJsonContractResolver : DefaultContractResolver
 /// <summary>
 /// Общая настройка сериализатора Json
 /// </summary>
-internal class GenericJsonSerializerSetting : JsonSerializerSettings
+public class GenericJsonSerializerSetting : JsonSerializerSettings
 {
     private static GenericJsonSerializerSetting? instance;
 
     /// <summary>
-    /// Получеие 
+    /// Получение экземпляра настроек
     /// </summary>
     public static GenericJsonSerializerSetting Instance
     {

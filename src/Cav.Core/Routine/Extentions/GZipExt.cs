@@ -1,11 +1,11 @@
-﻿using System.IO.Compression;
+using System.IO.Compression;
 
 namespace Cav;
 
 /// <summary>
 /// Работа с GZip и ZipArchive
 /// </summary>
-public static class ExtGZip
+public static class GZipExt
 {
     /// <summary>
     /// Gzip сжатие массива байт

@@ -12,7 +12,7 @@ namespace Cav;
 /// <summary>
 /// Вспомогательные расширения для работы с Xml. Сериализация-десериализация, трансформация, валидация XML
 /// </summary>
-public static class ExtXml
+public static class XmlExt
 {
 
     // кэш сериализаторов. А то огромная утечка памяти

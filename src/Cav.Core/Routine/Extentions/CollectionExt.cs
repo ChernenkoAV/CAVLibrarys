@@ -3,9 +3,7 @@ namespace Cav;
 /// <summary>
 /// Робота с коллекциями
 /// </summary>
-#pragma warning disable CA1711 // Идентификаторы не должны иметь неправильных суффиксов
-public static class ExtCollection
-#pragma warning restore CA1711 // Идентификаторы не должны иметь неправильных суффиксов
+public static class CollectionExt
 {
     /// <summary>
     /// Соеденяет значения в коллекции с заданым разделителем

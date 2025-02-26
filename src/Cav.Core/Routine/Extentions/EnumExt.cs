@@ -6,9 +6,7 @@ namespace Cav;
 /// <summary>
 /// Работа с Enum
 /// </summary>
-#pragma warning disable CA1711 // Идентификаторы не должны иметь неправильных суффиксов
-public static class ExtEnum
-#pragma warning restore CA1711 // Идентификаторы не должны иметь неправильных суффиксов
+public static class EnumExt
 {
     /// <summary>
     /// Получение значений <see cref="DescriptionAttribute"/> элементов перечесления

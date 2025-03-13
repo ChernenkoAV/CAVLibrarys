@@ -35,6 +35,8 @@
         <DeterministicSourcePaths>true</DeterministicSourcePaths>
 
         <Deterministic>true</Deterministic>
+
+        <DefineConstants>TRACE</DefineConstants>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Debug'">

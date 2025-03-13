@@ -58,6 +58,7 @@
 
     <PropertyGroup>
         <PackageIcon>Cav.png</PackageIcon>
+        <PackageTags>cav</PackageTags>
     </PropertyGroup>
 
 </Project>

@@ -16,7 +16,7 @@
     <PropertyGroup>
         <PackageVersion>0.4.0</PackageVersion>
         <Description>Логгер в телеграм</Description>
-        <PackageTags>cav logger telegram</PackageTags>
+        <PackageTags>$(PackageTags) logger telegram</PackageTags>
     </PropertyGroup>
 
 </Project>

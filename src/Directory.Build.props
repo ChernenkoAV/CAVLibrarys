@@ -16,7 +16,7 @@
 
         <SignAssembly>true</SignAssembly>
         <DelaySign>false</DelaySign>
-        <AssemblyOriginatorKeyFile>$(SolutionDir)cav.snk</AssemblyOriginatorKeyFile>
+        <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)cav.snk</AssemblyOriginatorKeyFile>
 
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
